@@ -17,7 +17,9 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 ├── AGENTS.md              # Agent routing and intent classification (planning vs execution)
 ├── README.md              # This file
 ├── changes-log.txt        # Change log for directory reorganizations
-├── query-log.txt          # Log of SQL queries practiced
+│
+├── script/                # SQL practice scripts
+│   └── 01-sql/            # SQL query logs (e.g. query-log.txt)
 │
 ├── learning/              # All learning material and progress
 │   ├── 00-.notes/         # Daily session summaries (progress truth) — excluded from numbering rules

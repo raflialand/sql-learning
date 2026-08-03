@@ -56,6 +56,7 @@ Domain agents are project-specific. Add agent definitions to `.opencode/agents/`
 │
 ├── agent-blueprints/      # Canonical agent plans for execution agents
 ├── learning/              # Learning material and progress notes
+├── script/                # SQL practice scripts (e.g. 01-sql/query-log.txt)
 ├── data/                  # Data assets
 ├── docs/                  # Documentation (dedicated folders per topic)
 │   ├── 01-erd-diagram/    # ERD diagrams

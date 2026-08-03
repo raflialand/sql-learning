@@ -16,3 +16,15 @@ change #2: dedicated folders for docs files (3-Aug-2026)
    - docs/02-excel-coach/excel-coach-agent-plan.md (internal self-reference path)
    - AGENTS.md (directory map)
    - README.md (directory map)
+
+---
+
+change #3: create script/01-sql/ and move query-log.txt (3-Aug-2026)
+
+1. created dedicated folder in @script/:
+   - script/01-sql/  (new folder for SQL practice scripts/queries)
+2. moved file into it:
+   - script/01-sql/query-log.txt  (moved from root, filename unchanged)
+3. updated references to the moved file:
+   - README.md (directory map)
+   - AGENTS.md (directory map)

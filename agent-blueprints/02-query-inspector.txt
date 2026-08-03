@@ -10,7 +10,7 @@ Requirement:
 - query-inspector shows parts that do not match the logic and provides solution recommendations in the form of queries.
 
 Input: 
-- mentioned .sql file that lived in @script/
+- mentioned .sql file that lived in @script/01-sql/
 
 Output:
 - query-analysis.md in @docs/03-query-inspector/
