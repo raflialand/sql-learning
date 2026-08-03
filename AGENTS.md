@@ -32,6 +32,7 @@ When the intent is planning, the main agent SHALL delegate to `@openspec-agent`.
 
 | Agent                | Purpose                                                       |
 | -------------------- | ------------------------------------------------------------- |
+| `query-inspector`    | Inspects learner-submitted SQL queries for query-logic correctness and business-requirement alignment; writes `query-analysis.md` to `docs/03-query-inspector/` |
 
 Domain agents are project-specific. Add agent definitions to `.opencode/agents/` and register them in this table. The `sql-learning` execution capability is defined in `.opencode/skills/sql-learning/` and `agent-blueprints/01-sql-learning.md`.
 
@@ -56,8 +57,11 @@ Domain agents are project-specific. Add agent definitions to `.opencode/agents/`
 │
 ├── agent-blueprints/      # Canonical agent plans for execution agents
 ├── learning/              # Learning material and progress notes
+├── script/                # SQL practice scripts (e.g. 01-sql/query-log.txt)
 ├── data/                  # Data assets
-├── docs/                  # Documentation
+├── docs/                  # Documentation (dedicated folders per topic)
+│   ├── 01-erd-diagram/    # ERD diagrams
+│   └── 02-excel-coach/    # Excel coach agent plan
 │
 └── openspec/
     ├── AGENTS.md          # Complete OpenSpec methodology (loaded by openspec-agent only)

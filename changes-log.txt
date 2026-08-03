@@ -4,3 +4,82 @@ re-oroganize directory
 2. the numbering rules start from the oldest file/folder created time and date
 3. IF the folder or file is start with '.' then its a special file/folder, means this file/folder are not stricted on time and date rules, then the numbering name will be 00-'file/folder name' followed with the 01-nn numbering rules
 4. analyze every file/folder/agents/skills that affected by this changes, then make an update according to changes
+
+---
+
+change #2: dedicated folders for docs files (3-Aug-2026)
+
+1. created dedicated folders in @docs/:
+   - docs/01-erd-diagram/  (moved from docs/01-ERD-diagram.md, renamed to ERD-diagram.md)
+   - docs/02-excel-coach/  (moved from docs/02-excel-coach-agent-plan.md, renamed to excel-coach-agent-plan.md)
+2. updated references to moved files:
+   - docs/02-excel-coach/excel-coach-agent-plan.md (internal self-reference path)
+   - AGENTS.md (directory map)
+   - README.md (directory map)
+
+---
+
+change #3: create script/01-sql/ and move query-log.txt (3-Aug-2026)
+
+1. created dedicated folder in @script/:
+   - script/01-sql/  (new folder for SQL practice scripts/queries)
+2. moved file into it:
+   - script/01-sql/query-log.txt  (moved from root, filename unchanged)
+3. updated references to the moved file:
+   - README.md (directory map)
+   - AGENTS.md (directory map)
+
+---
+
+change #4: add query-inspector agent (3-Aug-2026)
+
+1. created dedicated folder in @docs/:
+   - docs/03-query-inspector/  (new folder for query analysis outputs)
+2. added new agent:
+   - .opencode/agents/query-inspector.md  (inspects learner-submitted SQL queries for logic correctness and business-requirement alignment)
+3. registered the agent in the domain agents table:
+   - AGENTS.md
+4. added OpenSpec artifacts for the capability:
+   - openspec/specs/query-inspector/spec.md
+   - openspec/changes/2026-08-03-add-query-inspector/ (proposal.md, design.md, tasks.md)
+5. added sample output:
+   - docs/03-query-inspector/query-analysis.md
+
+---
+
+change #5: add Data Quality Engineer learning module (3-Aug-2026)
+
+1. created new dedicated module in @learning/:
+   - learning/03-dq-learning/  (MySQL-based DQ learning path, beginner to advanced; renamed from 04-data-quality in change #6)
+2. added datasets:
+   - datasets/dq_dataset.sql         (dirty e-commerce data with 29 seeded defects)
+   - datasets/dq_dataset_clean.sql   (clean "master data" reference for accuracy checks)
+   - datasets/dq_dataset_schema.md   (table map + documented seeded defects)
+3. added 13 self-paced units with lessons + exercises + self-assessment:
+   - 01-dq-foundations / 02-business-context (conceptual)
+   - 03-data-profiling through 11-dq-monitoring-and-reporting (SQL practice)
+   - 12-dq-process-and-tooling (conceptual) / 13-capstone (full DQ audit)
+4. added solution files for all SQL practice units:
+   - solutions/solution_03..11 and solution_13_capstone.sql
+5. added module README:
+   - learning/03-dq-learning/README.md (overview, MySQL setup, unit map, progress tracker; renamed from 04-data-quality in change #6)
+
+---
+
+change #6: reorganize @learning/ folders (3-Aug-2026)
+
+1. deleted @learning/02-ai-based-business-roadmap/:
+   - removed learning/02-ai-based-business-roadmap/ai-business-reporting-roadmap.md (superseded)
+2. renamed folders for meaningful names + sequential numbering:
+   - learning/03-tools/  → learning/02-sql-learning/   (SQL roadmaps + SQL Mastery modules)
+   - learning/04-data-quality/ → learning/03-dq-learning/  (MySQL-based DQ learning path)
+   - learning/01-de-roadmap/  → learning/01-de-learning/   (data engineering roadmap)
+   - learning/00-.notes/      → learning/00-notes/         (special dot-prefixed folder → 00)
+3. updated references to renamed/deleted folders:
+   - README.md (directory map, Getting Started, Related Roadmaps; added 03-dq-learning)
+   - agent-blueprints/01-sql-learning.md (roadmap + notes paths)
+   - .opencode/skills/sql-learning/SKILL.md (notes path in description + quick reference)
+   - learning/02-sql-learning/sql-mastery/README.md (self-reference path)
+   - learning/02-sql-learning/sql-mastery/01-window-functions/05-practical-patterns/capstone.md (self-reference path)
+   - learning/03-dq-learning/README.md (self-reference path + fixed broken ../sql-roadmaps/ link)
+   - learning/00-notes/session-summary-29-june-2026.md (historical file path reference)
