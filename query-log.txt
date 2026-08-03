@@ -1,0 +1,1369 @@
+
+Q1. select * from employees order by salary desc limit 3;
+Q2. select name, email from employees where department_id = 1;
+Q3. select name from employees where hire_date < '2022-01-01';
+Q4. select name from customers order by join_date desc limit 5;
+Q5. select name, city from customers where city in ('New York', 'Los Angeles')
+
+==============================================================================================================================================================================
+
+Q6. select name, membership_date from members order by membership_date asc limit 3;
+Q7. select name, nationality from authors where email is null;
+Q8. select title, pages from books order by pages asc limit 5;
+Q9. select title, published_year from books where published_year between '1950-01-01' and '2000-12-31';
+Q10. select name from members where membership_type = 'premium';
+
+==============================================================================================================================================================================
+
+Q1. select name, category_id, price from products where category_id in (1, 2) and price between 50 and 500 order by price desc;
+Q2. select name, price from products where name like'%Shirt%' or name like'%Shoe%';
+Q3. select name, department_id, salary from employees where department_id in (1, 4) and salary >= 5000 order by salary desc;
+Q4. select name, price, stock from products where stock >= 100 order by price asc limit 3;
+Q5. select name, city, join_date from customers where not city in ('Chicago') and join_date between '2022-12-31' and '2024-01-01' order by join_date desc;
+
+==============================================================================================================================================================================
+
+Q6. select title, genre_id, published_year from books where genre_id in (3, 4) and published_year < 1980 order by published_year asc;
+Q7. select name, email, phone from members where email is null or phone is null;
+Q8. select title, pages from books where publisher_id = 1 order by pages desc limit 3;
+Q9. select title, pages, published_year from books where published_year between 1930 and 1960 and pages > 300 order by pages asc;
+Q10. select name, membership_date from members where membership_date between '2021-12-31' and '2024-01-01' and membership_type = 'standard' order by membership_date asc;
+
+==============================================================================================================================================================================
+
+WEEK 4 DAY 7 PRACTICE EXERCISES
+
+1.  insert into
+        employees (name, email, department_id, hire_date, salary)
+    values
+        ('Sarah Connor', 'sarah@hr.com', 3, '2026-06-29', 5500);
+
+2.  insert into
+        departments (name, budget)
+    values
+        ('Finance', 80000),
+        ('Legal', 95000),
+        ('Operations', 75000);
+
+3.  update
+        employees
+    set
+        salary = 6200,
+        email = 'alice.johnson@company.com'
+    where
+        name = 'Alice Johnson';
+
+4.  update
+        employees
+    set
+        salary = salary * 110/100
+    where
+        department_id = 2;
+
+5.  update
+        orders
+    set
+        status = 'delivered',
+        total = 359.99
+    where
+        id = 7;
+
+6.  begin transaction;
+
+    delete from
+        orders
+    where
+        customer_id = 6;
+    
+    delete from
+        customers
+    where
+        name = 'Lisa Garcia';
+
+    commit;
+
+7.  begin transaction;
+    
+    delete from
+        orders
+    where
+        status = 'pending' and
+        order_date < '2026-01-01';
+    
+    commit;
+
+8.  --for this one i will update his salary to 7500 first then rollback, cuz his current salary already 7000
+
+    begin transaction;
+
+    update
+        employees
+    set
+        salary = 7500
+    where
+        name = 'David Brown';
+
+    rollback;
+
+9.  begin transaction;
+
+    update
+        departments
+    set
+        budget = 120000
+    where
+        name = 'IT';
+    
+    commit;
+
+10. select
+        name as 'Name',
+        price as 'Price',
+        stock as 'Stock',
+        price * stock as 'Stock Value'
+    from
+        products;
+
+==============================================================================================================================================================================
+
+WEEK 5 DAY 2 PRACTICE EXERCISES:
+
+What data type should each field have for a gift_cards table?
+gift_card_code, initial_amount, current_balance, issue_date, expiration_date, recipient_email, is_redeemed
+
+What data type for a stock_movements table?
+movement_id, product_id, quantity_change, movement_type (in/out), movement_date, notes
+
+Create the gift_cards table with appropriate types
+
+Create the stock_movements table with appropriate types
+
+ANSWERS:
+
+1.  gift_card_code text primary key,
+    initial_amount real,
+    current_balance real, 
+    issue_date text, 
+    expiration_date text, 
+    recipient_email text,
+    is_redeemed integer
+
+2.  movement_id integer primary key, 
+    product_id integer references products(id), 
+    quantity_change integer, 
+    movement_type text, 
+    movement_date text,
+    notes text
+
+3.  create table
+        gift_cards (
+            gift_card_code text primary key,
+            initial_amount real,
+            current_balance real,
+            issue_date text,
+            expiration_date text,
+            recipient_email text,
+            is_redeemed integer
+        );
+
+4.  create table
+        stock_movements (
+            movement_id integer primary key, 
+            product_id integer references products(id), 
+            quantity_change integer, 
+            movement_type text, 
+            movement_date text,
+            notes text
+        );
+
+==============================================================================================================================================================================
+
+WEEK 5 DAY 3 PRACTICE EXERCISES:
+
+1.  Add appropriate constraints to your product_reviews table from Day 1
+
+2.  Create a employees_audit table to track salary changes with constraints
+
+3.  Create a coupon_usage table to track when customers use coupons
+
+4.  Add CHECK constraint to products table ensuring price is always positive
+
+ANSWERS:
+
+1.  create table
+        product_reviews (
+            id integer primary key autoincrement,
+            product_id integer references products (id),
+            customer_id integer references customers (id),
+            rating integer check (rating >=1 and rating <=5),
+            review_text text,
+            review_date text default current_timestamp
+        );
+
+2. create table
+        employees_audit (
+            id integer primary key autoincrement,
+            employee_id integer not null references employees (id),
+            old_salary real not null,
+            new_salary real not null,
+            change_date text not null default current_timestamp,
+            reason text not null
+        );
+
+3. create table
+        coupon_usage (
+            id integer primary key autoincrement,
+            coupon_code text not null,
+            customer_id integer not null references customers (id),
+            order_id integer not null references orders (id),
+            usage_date text not null default current_timestamp,
+            discount_amount real not null check (discount_amount > 0)
+        );
+
+4. skip this for now
+
+==============================================================================================================================================================================
+
+WEEK 5 DAY 4 PRACTICE EXERCISES:
+
+1.  Look at the structure of all tables in sql_learn_db and identify their Primary Keys
+
+2.  Create a suppliers table with proper PRIMARY KEY
+
+3.  Create an product_images table where the same product can have multiple images (each image needs unique ID)
+
+4.  What would happen if we didn't have a PRIMARY KEY?
+
+ANSWERS:
+
+1.  categories (
+        id integer primary key autoincrement,
+        name text
+        )
+
+    customers (
+        id integer primary key autoincrement, 
+        name text not null, 
+        email text unique, 
+        city text not null, 
+        join_date text not null
+        )
+
+    departments (
+        id integer primary key autoincrement, 
+        name text not null, 
+        budget real not null
+        )
+
+    employees (
+        id integer primary key autoincrement, 
+        name text not null, 
+        email text unique, 
+        department_id integer not null references departments(id), 
+        hire_date text not null, 
+        salary real not null
+    )
+
+    orders (
+        id integer primary key autoincrement, 
+        customer_id integer not null references customers(id), 
+        order_date text not null, 
+        status text not null check (status in ('pending', 'shipped', 'delivered', 'completed')) default 'pending', 
+        total real not null
+    )
+
+    order_items (
+        id integer primary key autoincrement, 
+        order_id integer not null references orders(id), 
+        product_id integer not null references products(id), 
+        quantity integer not null, 
+        price real not null
+    )
+
+    products (
+        id integer primary key autoincrement, 
+        name text not null, 
+        category_id integer references categories(id), 
+        price real not null, 
+        stock real not null
+    )
+
+    sqlite_sequence (
+        name text not null, 
+        seq integer not null
+    )
+
+2.  create table
+        suppliers (
+            id integer primary key autoincrement, 
+            name text not null, 
+            email text unique not null, 
+            phone text default 'unknown', 
+            city text not null, 
+            country text not null, 
+            created_at text default current_timestamp
+        );
+
+3.  create table
+        product_images (
+            id integer primary key autoincrement, 
+            product_id integer not null references products(id), 
+            image_url text not null, 
+            is_primary integer default 1 check (is_primary in (0, 1)), 
+            created_at text default current_timestamp
+        );
+
+4.  the probability of duplicated row, dont have a references make the other table that probably need a stable data will crash, ambiguous when dml ing
+
+==============================================================================================================================================================================
+
+WEEK 5 DAY 5 PRACTICE EXERCISES:
+
+1.  Create a order_returns table linking orders, products, and customers
+
+2.  Create a supplier_products table to track which suppliers provide which products (many-to-many)
+
+3.  Add a foreign key to product_reviews referencing customers
+
+4.  Try inserting invalid data (wrong foreign key) and see the error
+
+ANSWERS:
+
+1.  create table
+        order_returns (
+            id integer primary key autoincrement, 
+            order_id integer not null references orders(id), 
+            product_id integer not null references products(id), 
+            customer_id integer not null references customers(id), 
+            return_date text default current_timestamp, 
+            reason text not null,
+            refund_amount real,
+            status text default 'pending' check (status in('pending', 'approved', 'rejected', 'completed'))
+        );
+
+2.  create table
+        supplier_products (
+            id integer primary key autoincrement, 
+            supplier_id integer not null references suppliers(id), 
+            product_id integer not null references products(id), 
+            cost_price real not null, 
+            contract_date text default current_timestamp, 
+            is_active integer default 1 check (is_active in(0, 1)),
+            unique (supplier_id, product_id)
+        );
+
+3.  create table
+        product_reviews (
+            id integer primary key autoincrement,
+            product_id integer not null references products(id),
+            customer_id integer not null references customers(id),
+            rating integer check(rating >=1 and rating <=5),
+            review_text text not null,
+            review_date text default current_timestamp
+        );
+
+4.  yes it is error, the query wont run the result
+
+==============================================================================================================================================================================
+
+WEEK 5 DAY 6 PRACTICE EXERCISES:
+
+1.  Add a last_updated column to the products table
+
+2.  Add a notes column to orders table for special instructions
+
+3.  Rename the stock column in products to stock_quantity
+
+4.  Create a backup of customers table, then drop it, then restore it
+
+ANSWER:
+
+1.  alter table 
+        products 
+            add last_updated text default 'unknown'
+            ;
+
+2.  alter table
+        orders 
+            add notes text default 'unknown'
+            ;
+
+3.  alter table
+        products
+            rename stock to stock_quantity
+            ;
+
+4.  create table
+        customers_backup (
+            id integer  primary key autoincrement, 
+            name text not null, 
+            email text unique default 'unknown', 
+            city text default 'unknown', 
+            join_date text not null 
+        );
+    
+    drop table if exists customers_backup;
+
+==============================================================================================================================================================================
+
+WEEK 5 DAY 7 PRACTICE EXERCISES:
+
+--1. Create a suppliers
+
+CREATE TABLE
+	suppliers (
+      id integer primary key AUTOINCREMENT,
+      name text not null,
+      email text unique,
+      city text,
+      country text
+    );
+    
+--2. What data type should you use for a product price? Answer: data type = real
+
+--3. Add a constraint to ensure rating is between 1 and 5categories
+
+create table
+    ratings(
+        id integer primary key autoincrement,
+        product_id integer references products(id),
+        customer_id integer references customers(id),
+        rating integer check (rating >= 1 and rating <= 5)
+    );
+    
+--4. Create a foreign key linking orders to customers
+
+alter TABLE
+	orders
+    add customer_id integer references customers(id)
+    ;
+    
+--5. What is the PRIMARY KEY rule? Answer: the primary key must be unique and not null, each row need a unique identifier that cant be empty
+
+--6. Add a phone column to suppliers table
+
+alter TABLE
+	suppliers
+    add phone text;
+    
+--7. Create a product_reviews table with proper constraints
+
+CREATE TABLE
+	product_reviews (
+      id integer PRIMARY key AUTOINCREMENT,
+      product_id integer REFERENCES products(id),
+      customer_id integer REFERENCES customers(id),
+      rating integer check (rating >=1 and rating <=5),
+      review_text text,
+      review_date text default CURRENT_TIMESTAMP
+    );
+    
+--8. What does DEFAULT CURRENT_TIMESTAMP do? Answer: Auto-fills current date+time when row is INSERTed
+
+--9. Create a shipments table linking to orders and suppliers
+
+create TABLE
+	shipments (
+      id integer primary key AUTOINCREMENT,
+      order_id integer REFERENCES orders(id),
+      supplier_id integer REFERENCES suppliers(id),
+      shipment_date text,
+      delivery_date text,
+      tracking_number text,
+      status text default 'pending'
+    );
+    
+--10. Why use foreign keys? Give two reasons. Answer: for data integrity, prevents inserting invalid references. for table relationship so we can query across related data
+
+==============================================================================================================================================================================
+
+--JOIN OPERATIONS 
+
+select
+    column
+from
+    table1
+inner join
+    table2 
+    on table1.column = table2.column
+    ;
+
+select
+    o.id,
+    o.order_date,
+    o.total,
+    c.name as customer_name,
+    c.city
+from orders o
+inner join
+    customers c 
+    on o.customers_id = c.id
+    ;
+
+select
+    p.id,
+    p.name as product_name, 
+    p.price,
+    c.name as category_name
+from products p 
+inner join categories c
+    on p.category_id = c.id
+    ;
+
+select
+    e.id,
+    e.name as employee_name,
+    e.salary,
+    d.name as department
+from employee e 
+inner join department d
+    on e.department_id = d.id
+    ;
+
+==============================================================================================================================================================================
+
+WEEK 6 DAY 1 PRACTICE EXERCISES:
+
+1.  Write an INNER JOIN to find all orders with status 'completed' showing customer name and total
+
+2.  Show products that belong to the 'Electronics' category (use INNER JOIN, not WHERE)
+
+3.  Find all employees in the 'Sales' department with their hire dates
+
+4.  List order_items for order_id = 6, showing product name, quantity, and price
+
+5.  Show all customers from 'New York' who have placed orders
+
+ANSWERS:
+
+1.  SELECT 
+        o.id,
+        c.name AS customer_name,
+        o.total,
+        o.status
+    FROM orders o
+    INNER JOIN customers c
+    ON o.customer_id = c.id
+    WHERE o.status = 'completed'
+    ;
+
+2.  SELECT
+        p.id, 
+        p.name AS Product,
+        c.name AS Category
+    FROM categories c
+    INNER JOIN products p
+    ON p.category_id = c.id
+    AND c.name = 'Electronics'
+    ;
+
+3.  SELECT
+        e.id,
+        e.name as employee_name,
+        d.name as department,
+        e.hire_date
+    FROM
+        employees e 
+    INNER JOIN
+        departments d
+    ON
+        e.department_id = d.id
+    WHERE
+        d.name = 'Sales'
+    ;
+
+4.  SELECT
+        p.name as product,
+        oi.quantity,
+        oi.price
+    FROM
+        products p 
+    INNER JOIN
+        order_items oi 
+    ON
+        oi.product_id = p.id
+    WHERE 
+        oi.order_id = 6
+        ;
+
+==============================================================================================================================================================================
+
+WEEK 6 DAY 2 PRACTICE EXERCISES:
+
+1.  Show all customers and their order counts (include customers with 0 orders)
+
+2.  List all products with their reviews (products without reviews should still appear)
+
+3.  Find customers who have NOT placed any orders
+
+4.  Show all departments and the number of employees in each (departments with 0 employees should appear)
+
+5.  List all promotions and the orders that used them (unused promotions should still appear)
+
+ANSWERS:
+
+1.  SELECT
+        c.id,
+        c.name as customer_name,
+        count(o.id) as order_amount
+    FROM
+        customers c
+    LEFT JOIN
+        orders o
+    ON
+        o.customer_id = c.id
+    GROUP BY
+        c.id, c.name
+        ;
+
+2.  SELECT
+        pr.customer_id,
+        p.name as product_name,
+        pr.rating,
+        pr.review_text
+    FROM
+        products p
+    LEFT JOIN
+        product_reviews pr
+    ON
+        pr.product_id = p.id
+    ORDER BY pr.customer_id
+    ;
+
+3.  SELECT
+        c.id,
+        c.name as customer_name
+    FROM
+        customers c
+    LEFT JOIN
+        orders o
+    ON
+        o.customer_id = c.id
+    WHERE
+        o.id is null
+    GROUP BY
+        c.id,
+        c.name
+        ;
+
+4.  SELECT
+        d.id,
+        d.name as department,
+        count(e.department_id) as total_member
+    FROM
+        departments d 
+    LEFT JOIN
+        employees e 
+    ON
+        e.department_id = d.id
+    GROUP BY
+        d.id,
+        d.name
+        ;
+
+5.  SELECT
+        pro.id as promo_id,
+        pro.code as promo_type,
+        o.id as order_id
+    FROM
+        promotions pro
+    LEFT JOIN
+        orders o
+    ON
+        o.promotion_id = pro.id
+    ORDER BY
+        pro.id
+        ;
+
+==============================================================================================================================================================================
+
+WEEK 6 DAY 3 PRACTICE EXERCISES:
+
+1.  Find orders that don't have any shipments assigned
+
+2.  List all products with their average rating (products without reviews should show NULL)
+
+3.  Show customers who have placed orders but never used a gift card
+
+4.  Find products that have reviews but have never been ordered
+
+5.  List all promotions and orders that used them (unused promotions should appear with NULL order info)
+
+ANSWERS:
+
+1.  SELECT
+        o.id,
+        c.name as customer_name
+    FROM
+        orders o 
+    INNER JOIN
+        customers c 
+    ON
+        o.customer_id = c.id
+    LEFT JOIN
+        shipments s 
+    ON
+        s.order_id = o.id
+    WHERE
+        s.id is null
+        ;
+
+2.  SELECT
+        p.id,
+        p.name as Product,
+        avg(pr.rating)
+    FROM
+        products p 
+    LEFT JOIN
+        product_reviews pr
+    ON
+        pr.product_id = p.id
+    GROUP BY
+        p.id,
+        p.name
+        ;
+
+3.  SELECT
+        c.id,
+        c.name as customer_name,
+        gc.is_redeemed
+    FROM
+        customers c
+    INNER JOIN
+        orders o 
+    ON
+        o.customer_id = c.id
+    LEFT JOIN
+        gift_cards gc
+    ON 
+        gc.customer_id = c.id
+    AND 
+        gc.is_redeemed = 1
+    WHERE
+        gc.id is null
+    GROUP BY
+        c.id,
+        c.name
+        ;
+
+4.  SELECT
+        p.id,
+        p.name as Product
+    FROM
+        products p 
+    INNER JOIN
+        product_reviews pr
+    ON
+        pr.product_id = p.id
+    LEFT JOIN
+        order_items oi  
+    ON
+        oi.product_id = p.id
+    WHERE oi.id is null
+    GROUP BY
+        p.id,
+        p.name
+        ;
+
+5.  SELECT
+        pro.id,
+        pro.code as promo_type,
+        o.id as order_id
+    FROM
+        promotions pro  
+    LEFT JOIN
+        orders o 
+    ON
+        o.promotion_id = pro.id
+    ORDER BY
+        pro.id
+        ;
+
+==============================================================================================================================================================================
+
+WEEK 6 DAY 4 PRACTICE EXERCISES:
+
+EXAMPLES:
+
+-- Generate all possible category-status pairs for a report
+
+SELECT
+    c.name AS category,
+    s.status
+FROM 
+    categories c 
+CROSS JOIN
+    (SELECT DISTINCT
+        status
+    FROM
+        orders) s 
+ORDER BY    
+    c.name,
+    s.status
+    ;
+
+-- Create a comparison matrix of products and potential suppliers
+
+SELECT
+    p.name AS product,
+    p.price,
+    s.name AS supplier,
+    s.rating
+FROM
+    products p 
+CROSS JOIN
+    suppliers s 
+WHERE
+    s.is_active = 1
+ORDER BY
+    p.name,
+    s.rating desc
+    ;
+
+-- Employee-Manager Relationships
+
+SELECT
+    e.id,
+    e.name as employee,
+    e.salary,
+    m.id as manager_id,
+    m.name as manager
+FROM 
+    employees e 
+LEFT JOIN
+    employees m 
+ON 
+    e.manager_id = m.id
+ORDER BY
+    m.name,
+    e.name
+    ;
+
+-- Find employees who share the same department (excluding self-matches)
+
+SELECT
+    e1.name as employee,
+    e1.department_id,
+    e2.name as colleague
+FROM
+    employees e1
+LEFT JOIN
+    employees e2
+ON
+    e1.department_id = e2.department_id
+WHERE   
+    e1.id < e2.id
+ORDER BY
+    e1.department_id,
+    e1.name
+    ;
+
+-- PRACTICE EXERCISES
+
+1.  Generate all possible combinations of customers and promotion codes
+
+2.  Find employees who are managers (have at least one direct report)
+
+3.  List all products with all possible order statuses as columns (using CROSS JOIN)
+
+4.  Show the management chain for a specific employee (e.g., Eve Davis)
+
+5.  Create a price comparison matrix: products vs suppliers showing price differences
+
+-- ANSWERS:
+
+1.  SELECT
+        c.id,
+        c.name as customer_name,
+        pro.code as promotion_code
+    FROM
+        customers c 
+    CROSS JOIN
+        promotions pro
+        ;
+
+2.  SELECT DISTINCT 
+        m.id,
+        m.name as manager_name
+    FROM
+        employees m
+    INNER JOIN
+        employees e
+    ON
+        e.manager_id = m.id
+        ;
+    
+3.  SELECT
+        p.id,
+        p.name as product,
+        o.status
+    FROM
+        products p 
+    CROSS JOIN
+        (SELECT DISTINCT status FROM orders) o 
+    ORDER BY
+        p.id,
+        p.name,
+        o.status
+        ;
+
+4.  SELECT
+        e.name as employee_name,
+        m.name as manager_name,
+        tm.name as top_manager_name
+    FROM
+        employees e 
+    LEFT JOIN
+        employees m 
+    ON
+        e.manager_id = m.id 
+    LEFT JOIN
+        employees tm 
+    ON 
+        m.manager_id = tm.id
+    WHERE
+        e.name = 'Eve Davis'
+        ;
+
+5.  SELECT
+        p.id,
+        p.name as product,
+        p.price,
+        s.name as supplier,
+        s.rating
+    FROM
+        products p
+    CROSS JOIN
+        suppliers s
+    ORDER BY
+        p.id,
+        p.name,
+        s.rating desc
+        ;
+
+==============================================================================================================================================================================
+
+WEEK 6 DAY 5 PRACTICE EXERCISES:
+
+1.  Create a report showing all completed orders with customer name, product names, and total
+
+SELECT
+    o.id,
+    c.name as customer_name,
+    p.name as product,
+    oi.quantity,
+    p.price as product_price,
+    oi.quantity * p.price as total_price,
+    o.status as order_status 
+FROM
+    customers c 
+INNER JOIN
+    orders o 
+ON
+    o.customer_id = c.id
+LEFT JOIN
+    order_items oi 
+ON
+    oi.order_id = o.id
+LEFT JOIN
+    products p
+ON 
+    oi.product_id = p.id 
+WHERE
+    o.status = 'completed'
+ORDER BY
+    o.id
+    ;
+
+2.  Show all orders with their shipment status and supplier information
+
+SELECT
+    o.id,
+    shi.status as shipments_status,
+    sup.name as supplier_name,
+    sup.city,
+    sup.rating
+FROM
+    orders o 
+LEFT JOIN
+    shipments shi 
+ON
+    shi.order_id = o.id
+LEFT JOIN
+    suppliers sup
+ON 
+    shi.supplier_id = sup.id
+    ;
+
+3.  Find the top 3 customers by total spending with their order count
+
+SELECT
+    c.id,
+    c.name as customer_name,
+    COUNT(o.id) as order_count,
+    SUM(o.total) as total_spending
+FROM
+    customers c 
+INNER JOIN
+    orders o 
+ON
+    o.customer_id = c.id
+GROUP BY
+    c.id,
+    c.name
+ORDER BY
+    total_spending DESC
+LIMIT
+    3
+    ;
+
+4.  Create a product summary showing category, product name, times ordered, and revenue
+
+SELECT
+    p.id,
+    cat.name as category,
+    p.name as product_name,
+    count(oi.id) as times_ordered,
+    sum(oi.quantity * oi.price) as revenue
+FROM
+    products p 
+INNER JOIN
+    categories cat 
+ON
+    p.category_id = cat.id
+INNER JOIN
+    order_items oi 
+ON 
+    oi.product_id = p.id
+GROUP BY
+    p.id,
+    p.name
+ORDER BY
+    p.id,
+    revenue desc
+    ;
+
+5.  Show employees with their department and manager names in one report
+
+SELECT
+    e.id,
+    e.name as employee_name,
+    d.name as department,
+    m.name as manager
+FROM
+    employees e 
+INNER JOIN
+    departments d 
+ON 
+    e.department_id = d.id 
+LEFT JOIN
+    employees m 
+ON 
+    e.manager_id = m.id
+    ;
+
+==============================================================================================================================================================================
+
+WEEK 6 DAY 6 PRACTICE EXERCISES:
+
+1.  Find the top 3 products by revenue in each category
+
+-- SUBQUERY VER
+
+SELECT * FROM (
+    SELECT
+        cat.name as category,
+        p.name as product,
+        p.price,
+        coalesce(sum(oi.quantity * oi.price),0) as revenue,
+        ROW_NUMBER() OVER(
+            PARTITION BY cat.name
+            ORDER BY coalesce(sum(oi.quantity * oi.price),0) DESC
+        ) AS rank_in_category
+    FROM 
+        categories cat
+    INNER JOIN
+        products p ON p.category_id = cat.id
+    LEFT JOIN
+        order_items oi ON oi.product_id = p.id
+    GROUP BY cat.name, p.name, p.price
+    )
+WHERE
+    rank_in_category <= 3
+    ;
+
+-- CTE VER
+
+WITH ranked_products AS (
+    SELECT
+        cat.name as category,
+        p.name as product,
+        p.price,
+        coalesce(sum(oi.quantity * oi.price),0) as revenue,
+        ROW_NUMBER() OVER(
+            PARTITION BY cat.name
+            ORDER BY coalesce(sum(oi.quantity * oi.price),0) DESC
+        ) AS rank_in_category
+    FROM 
+        categories cat
+    INNER JOIN
+        products p ON p.category_id = cat.id
+    LEFT JOIN
+        order_items oi ON oi.product_id = p.id
+    GROUP BY cat.name, p.name, p.price
+    )
+SELECT * FROM
+    ranked_products
+WHERE
+    rank_in_category <= 3
+    ;
+
+2.  List all customers from New York or Los Angeles who have spent over $500
+
+SELECT
+    c.id,
+    c.name as customer_name,
+    c.city,
+    sum(o.total) as total_spending
+FROM
+    customers c 
+LEFT JOIN
+    orders o
+        ON o.customer_id = c.id
+WHERE
+    c.city in ('New York', 'Los Angeles')
+GROUP BY
+    c.id,
+    c.name,
+    c.city
+HAVING
+    total_spending > 500
+ORDER BY
+    total_spending DESC
+    ;
+
+3.  Show all orders with their customer city and shipment status, ordered by total descending
+
+SELECT
+    o.id as order_id,
+    c.city,
+    s.status as shipment_status,
+    o.total
+FROM
+    orders o
+LEFT JOIN
+    customers c
+        ON o.customer_id = c.id
+LEFT JOIN
+    shipments s 
+        ON s.order_id = o.id
+ORDER BY
+    o.total desc
+    ;
+
+4.  Find products that have never been ordered (using LEFT JOIN with NULL check)
+
+SELECT
+    p.id as product_id,
+    p.name as product,
+    count(o.id) as ordered_history
+FROM
+    products p 
+LEFT JOIN
+    order_items oi 
+        ON oi.product_id = p.id
+LEFT JOIN
+    orders o 
+        ON oi.order_id = o.id
+GROUP BY
+    p.id,
+    p.name
+HAVING
+    count(o.id) = 0
+ORDER BY
+    product_id
+    ;
+
+-- conclusion: all products has been ordered
+
+5.  Create a report showing each department, employee count, average salary, and total salary budget
+
+SELECT
+    d.id as department_id,
+    d.name as department_name,
+    d.budget as department_budget,
+    avg(e.salary) as avg_salary,
+    sum(e.salary) as actual_salary_spent
+FROM
+    departments d 
+LEFT JOIN
+    employees e 
+        ON e.department_id = d.id
+GROUP BY
+    d.id,
+    d.name
+    ;
+
+==============================================================================================================================================================================
+
+WEEK 6 DAY 7 Mini Quiz:
+
+1.  Write a query to show all orders with their customer names and cities.
+
+SELECT
+    o.id as order_id,
+    c.name as customer_name,
+    c.city
+FROM
+    orders o 
+LEFT JOIN
+    customers c
+        ON o.customer_id = c.id
+ORDER BY
+    o.id,
+    c.name
+    ;
+
+2.  Find customers who have NEVER placed an order.
+
+SELECT
+    c.id as customer_id,
+    c.name
+FROM
+    customers c 
+LEFT JOIN
+    orders o 
+        ON o.customer_id = c.id 
+WHERE
+    o.id IS NULL
+    ;
+
+3.  Show order details: order_id, customer_name, product_name, quantity, price.
+
+SELECT
+    o.id as order_id,
+    c.name as customer_id,
+    p.name as product_name,
+    oi.quantity,
+    p.price * oi.quantity as price
+FROM
+    orders o 
+LEFT JOIN
+    customers c 
+        ON o.customer_id = c.id
+LEFT JOIN
+    order_items oi
+        ON oi.order_id = o.id
+LEFT JOIN
+    products p 
+        ON oi.product_id = p.id
+        ;
+
+4.  Show each customer with their total number of orders and total spent.
+
+SELECT
+    c.id as customer_id,
+    c.name as customer_name,
+    count(o.id) as order_count,
+    coalesce(sum(o.total), 0) as total_spent
+FROM
+    customers c
+LEFT JOIN
+    orders o 
+        ON o.customer_id = c.id
+GROUP BY
+    c.id,
+    c.name
+ORDER BY
+    total_spent desc
+    ;
+
+==============================================================================================================================================================================
+
+WEEK 7 DAY 1:
+
+1.  MIN/MAX Salary Per Department
+
+SELECT
+    d.id as department_id,
+    d.name as department_name,
+    min(e.salary) as lowest_salary,
+    max(e.salary) as highest_salary,
+    max(e.salary) - min(e.salary) as salary_range
+FROM
+    departments d 
+INNER JOIN
+    employees e 
+        ON e.department_id = d.id
+GROUP BY
+    d.id,
+    d.name
+ORDER BY
+    e.salary desc
+    ;
+
+2.  Best and Worst Performing Products (by Revenue)
+
+SELECT
+    p.name as product,
+    p.price,
+    sum(oi.quantity) as total_sold,
+    sum(oi.quantity * oi.price) as total_revenue,
+    min(oi.order_id) as first_order_id,
+    max(oi.order_id) as last_order_id
+FROM products p 
+INNER JOIN
+    order_items oi 
+        ON oi.product_id = p.id
+GROUP BY
+    p.id,
+    p.name,
+    p.price
+ORDER BY
+    total_revenue DESC
+    ;
+
+3.  MIN/MAX with Dates - Finding Order Extremes
+
+SELECT
+    o.id as order_id,
+    o.order_date,
+    o.total,
+    c.name as customer,
+    (SELECT max(total) 
+    FROM orders) as max_order_value,
+    CASE 
+        WHEN o.total = (SELECT max(total) FROM orders)
+            THEN 'HIGHEST VALUE'
+        WHEN o.total = (SELECT min(total) FROM orders WHERE status = 'completed')
+            THEN 'LOWEST COMPLETED'
+        ELSE 'NORMAL'
+    END as order_classification
+FROM
+    orders o 
+INNER JOIN
+    customers c 
+        ON o.customer_id = c.id
+ORDER BY
+    o.total desc
+    ;
+
+PRACTICE EXERCISES:
+
+1.  Find the highest and lowest rated product reviews (by rating score)
+
+SELECT
+    p.id as product_id,
+    p.name as product_name,
+    avg(pr.rating) as product_rating
+FROM
+    products p 
+INNER JOIN
+    product_reviews pr
+        ON pr.product_id = p.id
+GROUP BY
+    p.id,
+    p.name
+ORDER BY
+    product_rating desc
+    ;

@@ -1,0 +1,6 @@
+re-oroganize directory
+
+1. set numbering rules 01-'file/folder name' until nn-'file/folder name' in folder @agent-blueprints/, @docs/, @learning/
+2. the numbering rules start from the oldest file/folder created time and date
+3. IF the folder or file is start with '.' then its a special file/folder, means this file/folder are not stricted on time and date rules, then the numbering name will be 00-'file/folder name' followed with the 01-nn numbering rules
+4. analyze every file/folder/agents/skills that affected by this changes, then make an update according to changes
