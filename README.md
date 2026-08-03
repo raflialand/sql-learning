@@ -6,10 +6,10 @@ A personal, AI-assisted 3-month SQL learning environment — a structured 12-wee
 
 This directory is a living learning workspace where daily SQL sessions are taught through conversation and tracked automatically by an opencode skill (`sql-learning`). It combines:
 
-- A **canonical roadmap** (`learning/02-sql-learning/sql-roadmaps/sql-learning-roadmap-3months.md`) breaking 3 months into 12 weeks × 7 days with topics, exercises, quizzes, and milestones.
-- **Automatic progress reporting** — each session saves a structured note (`learning/00-notes/session-summary-*.md`), and the skill computes completed days/weeks as a percentage of the 84-day plan, with a Mermaid progress chart.
+- A **canonical roadmap** (`learning/03-tools/sql-roadmaps/sql-learning-roadmap-3months.md`) breaking 3 months into 12 weeks × 7 days with topics, exercises, quizzes, and milestones.
+- **Automatic progress reporting** — each session saves a structured note (`learning/00-.notes/session-summary-*.md`), and the skill computes completed days/weeks as a percentage of the 84-day plan, with a Mermaid progress chart.
 - **Practice databases** (SQLite) used for exercises: library management, e-commerce, and a `sales-records` dataset for the SQL Mastery modules.
-- **Deep-dive modules** under `learning/02-sql-learning/sql-mastery/` (currently: window functions) with lessons, exercises, datasets, and solutions.
+- **Deep-dive modules** under `learning/03-tools/sql-mastery/` (currently: window functions) with lessons, exercises, datasets, and solutions.
 
 ## Directory Map
 
@@ -17,26 +17,22 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 ├── AGENTS.md              # Agent routing and intent classification (planning vs execution)
 ├── README.md              # This file
 ├── changes-log.txt        # Change log for directory reorganizations
-│
-├── script/                # SQL practice scripts
-│   └── 01-sql/            # SQL query logs (e.g. query-log.txt)
+├── query-log.txt          # Log of SQL queries practiced
 │
 ├── learning/              # All learning material and progress
-│   ├── 00-notes/           # Daily session summaries (progress truth) — excluded from numbering rules
-│   ├── 01-de-learning/     # 6-month data engineering roadmap
-│   ├── 02-sql-learning/    # SQL roadmaps + SQL Mastery modules
-│   │   ├── sql-roadmaps/   # 3-month roadmap + per-week deep dives (Weeks 1–7)
-│   │   └── sql-mastery/    # Module-based learning path (window functions, etc.)
-│   └── 03-dq-learning/     # MySQL-based Data Quality Engineer module
+│   ├── 00-.notes/         # Daily session summaries (progress truth) — excluded from numbering rules
+│   ├── 01-de-roadmap/     # 6-month data engineering roadmap
+│   ├── 02-ai-based-business-roadmap/  # AI business reporting roadmap
+│   └── 03-tools/          # SQL roadmaps + SQL Mastery modules
+│       ├── sql-roadmaps/  # 3-month roadmap + per-week deep dives (Weeks 1–7)
+│       └── sql-mastery/   # Module-based learning path (window functions, etc.)
 │
 ├── data/                  # Practice SQLite databases & schema files
 │   ├── library-db.sql/.db     # Library management system
 │   ├── ecommerce.db           # E-commerce database
 │   └── sql-learn-db*.sql/.db  # Roadmap practice databases (Week 6 etc.)
 │
-├── docs/                  # Documentation (dedicated folders per topic)
-│   ├── 01-erd-diagram/    # ERD diagrams
-│   └── 02-excel-coach/    # Excel coach agent plan
+├── docs/                  # Documentation (ERD diagrams, agent plans)
 ├── agent-blueprints/      # Canonical agent plans (e.g. 01-sql-learning.md)
 ├── adr/                   # Architecture Decision Records (conventions in adr/AGENTS.md)
 │
@@ -56,7 +52,7 @@ The `sql-learning` skill (`.opencode/skills/sql-learning/SKILL.md`) executes on 
 | Mode | Triggers | Behavior |
 |------|----------|----------|
 | **REPORT** | "continue learning", "where am I", "progress" | Read-only: shows current position, progress %, Mermaid pie chart, completed/in-progress/pending weeks, last session summary, and next topic |
-| **SUMMARIZE** | "summarize", "daily summary", "rangkuman", "ringkasan" | Saves/appends the session to `learning/00-notes/session-summary-{day}-{month}-{year}.md`, then runs the same progress report |
+| **SUMMARIZE** | "summarize", "daily summary", "rangkuman", "ringkasan" | Saves/appends the session to `learning/00-.notes/session-summary-{day}-{month}-{year}.md`, then runs the same progress report |
 
 Progress rules:
 - Roadmap = source of truth for the timeline; session notes = source of truth for actual progress.
@@ -77,8 +73,8 @@ Three capstone projects punctuate the journey: a personal budget tracker (end of
 
 ## Getting Started
 
-1. **Open the roadmap** — `learning/02-sql-learning/sql-roadmaps/sql-learning-roadmap-3months.md`.
-2. **Open a practice database** in VSCode with the SQLite extension (e.g. `data/sql-learn-db-week6.db` or `learning/02-sql-learning/sql-mastery/datasets/sales-records.db`).
+1. **Open the roadmap** — `learning/03-tools/sql-roadmaps/sql-learning-roadmap-3months.md`.
+2. **Open a practice database** in VSCode with the SQLite extension (e.g. `data/sql-learn-db-week6.db` or `learning/03-tools/sql-mastery/datasets/sales-records.db`).
 3. **Start a session** — say "continue learning" to get your current position and next topic, then learn and practice in conversation.
 4. **Save your progress** — say "summarize" (or "rangkuman") to persist the session as a structured note and see the updated progress report.
 
@@ -90,5 +86,5 @@ Three capstone projects punctuate the journey: a personal budget tracker (end of
 
 ## Related Roadmaps
 
-- `learning/01-de-learning/data-engineering-roadmap-6months.md` — broader data engineering path
-- `learning/03-dq-learning/README.md` — Data Quality Engineer module (MySQL-based, standalone)
+- `learning/01-de-roadmap/data-engineering-roadmap-6months.md` — broader data engineering path
+- `learning/02-ai-based-business-roadmap/ai-business-reporting-roadmap.md` — AI-assisted business reporting path
