@@ -4,3 +4,15 @@ re-oroganize directory
 2. the numbering rules start from the oldest file/folder created time and date
 3. IF the folder or file is start with '.' then its a special file/folder, means this file/folder are not stricted on time and date rules, then the numbering name will be 00-'file/folder name' followed with the 01-nn numbering rules
 4. analyze every file/folder/agents/skills that affected by this changes, then make an update according to changes
+
+---
+
+change #2: dedicated folders for docs files (3-Aug-2026)
+
+1. created dedicated folders in @docs/:
+   - docs/01-erd-diagram/  (moved from docs/01-ERD-diagram.md, renamed to ERD-diagram.md)
+   - docs/02-excel-coach/  (moved from docs/02-excel-coach-agent-plan.md, renamed to excel-coach-agent-plan.md)
+2. updated references to moved files:
+   - docs/02-excel-coach/excel-coach-agent-plan.md (internal self-reference path)
+   - AGENTS.md (directory map)
+   - README.md (directory map)

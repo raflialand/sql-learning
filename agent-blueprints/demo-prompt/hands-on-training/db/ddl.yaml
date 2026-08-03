@@ -1,0 +1,786 @@
+# =============================================================================
+# SimpleMart E-Commerce — Table Configuration Sidecar
+# Each table entry describes metadata, load strategy, and DW mapping hints
+# =============================================================================
+
+tables:
+
+  # ---------------------------------------------------------------------------
+  # 1. users
+  # ---------------------------------------------------------------------------
+  - name: users
+    schema: public
+    type: dimension
+    description: Customer account records
+    primary_key: user_id
+    load_strategy: full_snapshot
+    incremental_key: updated_at
+    estimated_rows: 50000
+    columns:
+      - name: user_id
+        type: INTEGER
+        nullable: false
+        description: Surrogate primary key
+        dw_role: surrogate_key
+      - name: email
+        type: VARCHAR(255)
+        nullable: false
+        description: Unique login email
+        dw_role: natural_key
+        pii: true
+      - name: password_hash
+        type: VARCHAR(255)
+        nullable: false
+        description: Hashed password credential
+        pii: true
+        exclude_from_dw: true
+      - name: first_name
+        type: VARCHAR(100)
+        nullable: false
+        description: Customer first name
+        dw_role: attribute
+      - name: last_name
+        type: VARCHAR(100)
+        nullable: false
+        description: Customer last name
+        dw_role: attribute
+      - name: phone
+        type: VARCHAR(20)
+        nullable: true
+        description: Contact phone number
+        dw_role: attribute
+        pii: true
+      - name: status
+        type: VARCHAR(20)
+        nullable: false
+        description: Account status (active, suspended, deleted)
+        dw_role: attribute
+        default: active
+      - name: created_at
+        type: TIMESTAMP
+        nullable: false
+        description: Account registration timestamp
+        dw_role: scd_timestamp
+        default: CURRENT_TIMESTAMP
+      - name: updated_at
+        type: TIMESTAMP
+        nullable: false
+        description: Last modification timestamp
+        dw_role: scd_timestamp
+        default: CURRENT_TIMESTAMP
+    scd_strategy: type2
+    dw_target_table: dim_customer
+
+  # ---------------------------------------------------------------------------
+  # 2. user_addresses
+  # ---------------------------------------------------------------------------
+  - name: user_addresses
+    schema: public
+    type: dimension
+    description: Customer shipping and billing addresses
+    primary_key: address_id
+    load_strategy: full_snapshot
+    incremental_key: created_at
+    estimated_rows: 80000
+    columns:
+      - name: address_id
+        type: INTEGER
+        nullable: false
+        description: Surrogate primary key
+        dw_role: surrogate_key
+      - name: user_id
+        type: INTEGER
+        nullable: false
+        description: FK to users
+        dw_role: foreign_key
+        references: users.user_id
+      - name: label
+        type: VARCHAR(50)
+        nullable: false
+        description: Address label (home, office, etc.)
+        dw_role: attribute
+      - name: recipient_name
+        type: VARCHAR(200)
+        nullable: false
+        description: Recipient full name
+        dw_role: attribute
+      - name: street
+        type: TEXT
+        nullable: false
+        description: Street address
+        dw_role: attribute
+      - name: city
+        type: VARCHAR(100)
+        nullable: false
+        description: City name
+        dw_role: attribute
+      - name: state
+        type: VARCHAR(100)
+        nullable: true
+        description: State or province
+        dw_role: attribute
+      - name: postal_code
+        type: VARCHAR(20)
+        nullable: false
+        description: Postal / ZIP code
+        dw_role: attribute
+      - name: country
+        type: VARCHAR(100)
+        nullable: false
+        description: Country name
+        dw_role: attribute
+        default: Indonesia
+      - name: phone
+        type: VARCHAR(20)
+        nullable: true
+        description: Contact phone at address
+        dw_role: attribute
+      - name: is_default
+        type: BOOLEAN
+        nullable: false
+        description: Whether this is the default address
+        dw_role: attribute
+        default: false
+      - name: created_at
+        type: TIMESTAMP
+        nullable: false
+        description: Record creation timestamp
+        dw_role: scd_timestamp
+        default: CURRENT_TIMESTAMP
+    scd_strategy: type1
+    dw_target_table: dim_customer_address
+
+  # ---------------------------------------------------------------------------
+  # 3. categories
+  # ---------------------------------------------------------------------------
+  - name: categories
+    schema: public
+    type: dimension
+    description: Product category hierarchy (self-referencing)
+    primary_key: category_id
+    load_strategy: full_snapshot
+    incremental_key: created_at
+    estimated_rows: 200
+    columns:
+      - name: category_id
+        type: INTEGER
+        nullable: false
+        description: Surrogate primary key
+        dw_role: surrogate_key
+      - name: parent_id
+        type: INTEGER
+        nullable: true
+        description: Self-reference FK for hierarchy
+        dw_role: foreign_key
+        references: categories.category_id
+      - name: name
+        type: VARCHAR(100)
+        nullable: false
+        description: Category display name
+        dw_role: attribute
+      - name: slug
+        type: VARCHAR(100)
+        nullable: false
+        description: URL-friendly category identifier
+        dw_role: natural_key
+      - name: description
+        type: TEXT
+        nullable: true
+        description: Category description
+        dw_role: attribute
+      - name: is_active
+        type: BOOLEAN
+        nullable: false
+        description: Whether category is visible to customers
+        dw_role: attribute
+        default: true
+      - name: created_at
+        type: TIMESTAMP
+        nullable: false
+        description: Record creation timestamp
+        dw_role: scd_timestamp
+        default: CURRENT_TIMESTAMP
+    scd_strategy: type1
+    dw_target_table: dim_category
+
+  # ---------------------------------------------------------------------------
+  # 4. products
+  # ---------------------------------------------------------------------------
+  - name: products
+    schema: public
+    type: dimension
+    description: Sellable product catalog
+    primary_key: product_id
+    load_strategy: full_snapshot
+    incremental_key: updated_at
+    estimated_rows: 10000
+    columns:
+      - name: product_id
+        type: INTEGER
+        nullable: false
+        description: Surrogate primary key
+        dw_role: surrogate_key
+      - name: category_id
+        type: INTEGER
+        nullable: false
+        description: FK to categories
+        dw_role: foreign_key
+        references: categories.category_id
+      - name: name
+        type: VARCHAR(200)
+        nullable: false
+        description: Product display name
+        dw_role: attribute
+      - name: slug
+        type: VARCHAR(200)
+        nullable: false
+        description: URL-friendly product identifier
+        dw_role: natural_key
+      - name: description
+        type: TEXT
+        nullable: true
+        description: Product long description
+        dw_role: attribute
+      - name: base_price
+        type: NUMERIC(12,2)
+        nullable: false
+        description: Base selling price
+        dw_role: measure
+      - name: sku
+        type: VARCHAR(50)
+        nullable: false
+        description: Stock keeping unit code
+        dw_role: natural_key
+      - name: weight_grams
+        type: INTEGER
+        nullable: true
+        description: Product weight in grams
+        dw_role: attribute
+      - name: is_active
+        type: BOOLEAN
+        nullable: false
+        description: Whether product is available for sale
+        dw_role: attribute
+        default: true
+      - name: created_at
+        type: TIMESTAMP
+        nullable: false
+        description: Product listing timestamp
+        dw_role: scd_timestamp
+        default: CURRENT_TIMESTAMP
+      - name: updated_at
+        type: TIMESTAMP
+        nullable: false
+        description: Last modification timestamp
+        dw_role: scd_timestamp
+        default: CURRENT_TIMESTAMP
+    scd_strategy: type2
+    dw_target_table: dim_product
+
+  # ---------------------------------------------------------------------------
+  # 5. product_images
+  # ---------------------------------------------------------------------------
+  - name: product_images
+    schema: public
+    type: dimension
+    description: Product image gallery
+    primary_key: image_id
+    load_strategy: full_snapshot
+    incremental_key: created_at
+    estimated_rows: 30000
+    columns:
+      - name: image_id
+        type: INTEGER
+        nullable: false
+        description: Surrogate primary key
+        dw_role: surrogate_key
+      - name: product_id
+        type: INTEGER
+        nullable: false
+        description: FK to products
+        dw_role: foreign_key
+        references: products.product_id
+      - name: url
+        type: TEXT
+        nullable: false
+        description: Image URL
+        dw_role: attribute
+      - name: alt_text
+        type: VARCHAR(200)
+        nullable: true
+        description: Accessibility alt text
+        dw_role: attribute
+      - name: sort_order
+        type: INTEGER
+        nullable: false
+        description: Display sort order
+        dw_role: attribute
+        default: 0
+      - name: is_primary
+        type: BOOLEAN
+        nullable: false
+        description: Whether this is the primary product image
+        dw_role: attribute
+        default: false
+      - name: created_at
+        type: TIMESTAMP
+        nullable: false
+        description: Image upload timestamp
+        dw_role: scd_timestamp
+        default: CURRENT_TIMESTAMP
+    scd_strategy: type1
+    dw_target_table: dim_product_image
+
+  # ---------------------------------------------------------------------------
+  # 6. inventory
+  # ---------------------------------------------------------------------------
+  - name: inventory
+    schema: public
+    type: fact
+    description: Current warehouse stock levels
+    primary_key: inventory_id
+    load_strategy: full_snapshot
+    incremental_key: updated_at
+    estimated_rows: 10000
+    snapshot_grain: daily
+    columns:
+      - name: inventory_id
+        type: INTEGER
+        nullable: false
+        description: Surrogate primary key
+        dw_role: surrogate_key
+      - name: product_id
+        type: INTEGER
+        nullable: false
+        description: FK to products
+        dw_role: foreign_key
+        references: products.product_id
+      - name: quantity
+        type: INTEGER
+        nullable: false
+        description: Available stock quantity
+        dw_role: measure
+        default: 0
+      - name: reserved_qty
+        type: INTEGER
+        nullable: false
+        description: Quantity reserved for pending orders
+        dw_role: measure
+        default: 0
+      - name: warehouse_code
+        type: VARCHAR(20)
+        nullable: false
+        description: Warehouse location code
+        dw_role: degenerate_dimension
+        default: WH-001
+      - name: last_restock_at
+        type: TIMESTAMP
+        nullable: true
+        description: Most recent restock timestamp
+        dw_role: attribute
+      - name: updated_at
+        type: TIMESTAMP
+        nullable: false
+        description: Last stock update timestamp
+        dw_role: scd_timestamp
+        default: CURRENT_TIMESTAMP
+    dw_target_table: fact_inventory_snapshot
+
+  # ---------------------------------------------------------------------------
+  # 7. carts
+  # ---------------------------------------------------------------------------
+  - name: carts
+    schema: public
+    type: fact
+    description: Active and expired shopping carts
+    primary_key: cart_id
+    load_strategy: incremental
+    incremental_key: updated_at
+    estimated_rows: 30000
+    columns:
+      - name: cart_id
+        type: INTEGER
+        nullable: false
+        description: Surrogate primary key
+        dw_role: surrogate_key
+      - name: user_id
+        type: INTEGER
+        nullable: false
+        description: FK to users
+        dw_role: foreign_key
+        references: users.user_id
+      - name: status
+        type: VARCHAR(20)
+        nullable: false
+        description: Cart status (active, converted, expired, abandoned)
+        dw_role: degenerate_dimension
+        default: active
+      - name: created_at
+        type: TIMESTAMP
+        nullable: false
+        description: Cart creation timestamp
+        dw_role: event_timestamp
+        default: CURRENT_TIMESTAMP
+      - name: updated_at
+        type: TIMESTAMP
+        nullable: false
+        description: Last cart activity timestamp
+        dw_role: event_timestamp
+        default: CURRENT_TIMESTAMP
+    dw_target_table: fact_cart
+
+  # ---------------------------------------------------------------------------
+  # 8. cart_items
+  # ---------------------------------------------------------------------------
+  - name: cart_items
+    schema: public
+    type: fact
+    description: Line items within shopping carts
+    primary_key: cart_item_id
+    load_strategy: incremental
+    incremental_key: added_at
+    estimated_rows: 100000
+    columns:
+      - name: cart_item_id
+        type: INTEGER
+        nullable: false
+        description: Surrogate primary key
+        dw_role: surrogate_key
+      - name: cart_id
+        type: INTEGER
+        nullable: false
+        description: FK to carts
+        dw_role: foreign_key
+        references: carts.cart_id
+      - name: product_id
+        type: INTEGER
+        nullable: false
+        description: FK to products
+        dw_role: foreign_key
+        references: products.product_id
+      - name: quantity
+        type: INTEGER
+        nullable: false
+        description: Item quantity in cart
+        dw_role: measure
+        default: 1
+      - name: unit_price
+        type: NUMERIC(12,2)
+        nullable: false
+        description: Unit price at time of adding to cart
+        dw_role: measure
+      - name: added_at
+        type: TIMESTAMP
+        nullable: false
+        description: Item added timestamp
+        dw_role: event_timestamp
+        default: CURRENT_TIMESTAMP
+    dw_target_table: fact_cart_item
+
+  # ---------------------------------------------------------------------------
+  # 9. orders
+  # ---------------------------------------------------------------------------
+  - name: orders
+    schema: public
+    type: fact
+    description: Customer orders (transaction grain)
+    primary_key: order_id
+    load_strategy: incremental
+    incremental_key: updated_at
+    estimated_rows: 200000
+    columns:
+      - name: order_id
+        type: INTEGER
+        nullable: false
+        description: Surrogate primary key
+        dw_role: surrogate_key
+      - name: user_id
+        type: INTEGER
+        nullable: false
+        description: FK to users
+        dw_role: foreign_key
+        references: users.user_id
+      - name: address_id
+        type: INTEGER
+        nullable: false
+        description: FK to user_addresses (shipping address snapshot)
+        dw_role: foreign_key
+        references: user_addresses.address_id
+      - name: order_number
+        type: VARCHAR(30)
+        nullable: false
+        description: Human-readable order number
+        dw_role: natural_key
+      - name: status
+        type: VARCHAR(20)
+        nullable: false
+        description: Order status (pending, confirmed, paid, shipped, delivered, cancelled)
+        dw_role: degenerate_dimension
+        default: pending
+      - name: subtotal
+        type: NUMERIC(12,2)
+        nullable: false
+        description: Sum of order item subtotals
+        dw_role: measure
+      - name: shipping_cost
+        type: NUMERIC(12,2)
+        nullable: false
+        description: Shipping fee
+        dw_role: measure
+        default: 0
+      - name: tax_amount
+        type: NUMERIC(12,2)
+        nullable: false
+        description: Tax amount
+        dw_role: measure
+        default: 0
+      - name: total_amount
+        type: NUMERIC(12,2)
+        nullable: false
+        description: Total order amount (subtotal + shipping + tax)
+        dw_role: measure
+      - name: notes
+        type: TEXT
+        nullable: true
+        description: Customer or internal notes
+        dw_role: attribute
+      - name: created_at
+        type: TIMESTAMP
+        nullable: false
+        description: Order placement timestamp
+        dw_role: event_timestamp
+        default: CURRENT_TIMESTAMP
+      - name: updated_at
+        type: TIMESTAMP
+        nullable: false
+        description: Last status change timestamp
+        dw_role: event_timestamp
+        default: CURRENT_TIMESTAMP
+    dw_target_table: fact_order
+    dw_accumulating_snapshot: true
+
+  # ---------------------------------------------------------------------------
+  # 10. order_items
+  # ---------------------------------------------------------------------------
+  - name: order_items
+    schema: public
+    type: fact
+    description: Line items within orders
+    primary_key: order_item_id
+    load_strategy: incremental
+    incremental_key: null
+    estimated_rows: 600000
+    columns:
+      - name: order_item_id
+        type: INTEGER
+        nullable: false
+        description: Surrogate primary key
+        dw_role: surrogate_key
+      - name: order_id
+        type: INTEGER
+        nullable: false
+        description: FK to orders
+        dw_role: foreign_key
+        references: orders.order_id
+      - name: product_id
+        type: INTEGER
+        nullable: false
+        description: FK to products
+        dw_role: foreign_key
+        references: products.product_id
+      - name: quantity
+        type: INTEGER
+        nullable: false
+        description: Quantity ordered
+        dw_role: measure
+      - name: unit_price
+        type: NUMERIC(12,2)
+        nullable: false
+        description: Unit price at order time
+        dw_role: measure
+      - name: subtotal
+        type: NUMERIC(12,2)
+        nullable: false
+        description: Line subtotal (quantity × unit_price)
+        dw_role: measure
+    dw_target_table: fact_order_item
+
+  # ---------------------------------------------------------------------------
+  # 11. payments
+  # ---------------------------------------------------------------------------
+  - name: payments
+    schema: public
+    type: fact
+    description: Payment transactions per order
+    primary_key: payment_id
+    load_strategy: incremental
+    incremental_key: created_at
+    estimated_rows: 200000
+    columns:
+      - name: payment_id
+        type: INTEGER
+        nullable: false
+        description: Surrogate primary key
+        dw_role: surrogate_key
+      - name: order_id
+        type: INTEGER
+        nullable: false
+        description: FK to orders
+        dw_role: foreign_key
+        references: orders.order_id
+      - name: payment_method
+        type: VARCHAR(30)
+        nullable: false
+        description: Payment method (credit_card, debit_card, bank_transfer, ewallet)
+        dw_role: degenerate_dimension
+      - name: transaction_ref
+        type: VARCHAR(100)
+        nullable: true
+        description: External payment gateway reference
+        dw_role: attribute
+      - name: amount
+        type: NUMERIC(12,2)
+        nullable: false
+        description: Payment amount
+        dw_role: measure
+      - name: status
+        type: VARCHAR(20)
+        nullable: false
+        description: Payment status (pending, completed, failed, refunded)
+        dw_role: degenerate_dimension
+        default: pending
+      - name: paid_at
+        type: TIMESTAMP
+        nullable: true
+        description: Payment completion timestamp
+        dw_role: event_timestamp
+      - name: created_at
+        type: TIMESTAMP
+        nullable: false
+        description: Payment record creation timestamp
+        dw_role: event_timestamp
+        default: CURRENT_TIMESTAMP
+    dw_target_table: fact_payment
+
+  # ---------------------------------------------------------------------------
+  # 12. shipments
+  # ---------------------------------------------------------------------------
+  - name: shipments
+    schema: public
+    type: fact
+    description: Shipment and delivery tracking per order
+    primary_key: shipment_id
+    load_strategy: incremental
+    incremental_key: updated_at
+    estimated_rows: 200000
+    columns:
+      - name: shipment_id
+        type: INTEGER
+        nullable: false
+        description: Surrogate primary key
+        dw_role: surrogate_key
+      - name: order_id
+        type: INTEGER
+        nullable: false
+        description: FK to orders
+        dw_role: foreign_key
+        references: orders.order_id
+      - name: carrier
+        type: VARCHAR(100)
+        nullable: false
+        description: Shipping carrier name
+        dw_role: degenerate_dimension
+      - name: tracking_number
+        type: VARCHAR(100)
+        nullable: true
+        description: Carrier tracking number
+        dw_role: attribute
+      - name: status
+        type: VARCHAR(20)
+        nullable: false
+        description: Shipment status (pending, picked, packed, in_transit, delivered, returned)
+        dw_role: degenerate_dimension
+        default: pending
+      - name: estimated_delivery
+        type: DATE
+        nullable: true
+        description: Estimated delivery date
+        dw_role: attribute
+      - name: shipped_at
+        type: TIMESTAMP
+        nullable: true
+        description: Actual ship-out timestamp
+        dw_role: event_timestamp
+      - name: delivered_at
+        type: TIMESTAMP
+        nullable: true
+        description: Actual delivery timestamp
+        dw_role: event_timestamp
+      - name: created_at
+        type: TIMESTAMP
+        nullable: false
+        description: Shipment record creation timestamp
+        dw_role: event_timestamp
+        default: CURRENT_TIMESTAMP
+      - name: updated_at
+        type: TIMESTAMP
+        nullable: false
+        description: Last status update timestamp
+        dw_role: event_timestamp
+        default: CURRENT_TIMESTAMP
+    dw_target_table: fact_shipment
+    dw_accumulating_snapshot: true
+
+  # ---------------------------------------------------------------------------
+  # 13. reviews
+  # ---------------------------------------------------------------------------
+  - name: reviews
+    schema: public
+    type: fact
+    description: Product reviews by customers after purchase
+    primary_key: review_id
+    load_strategy: incremental
+    incremental_key: created_at
+    estimated_rows: 80000
+    columns:
+      - name: review_id
+        type: INTEGER
+        nullable: false
+        description: Surrogate primary key
+        dw_role: surrogate_key
+      - name: user_id
+        type: INTEGER
+        nullable: false
+        description: FK to users
+        dw_role: foreign_key
+        references: users.user_id
+      - name: product_id
+        type: INTEGER
+        nullable: false
+        description: FK to products
+        dw_role: foreign_key
+        references: products.product_id
+      - name: order_id
+        type: INTEGER
+        nullable: false
+        description: FK to orders (verified purchase)
+        dw_role: foreign_key
+        references: orders.order_id
+      - name: rating
+        type: SMALLINT
+        nullable: false
+        description: Star rating (1 to 5)
+        dw_role: measure
+        constraint: CHECK (rating BETWEEN 1 AND 5)
+      - name: comment
+        type: TEXT
+        nullable: true
+        description: Review text comment
+        dw_role: attribute
+      - name: created_at
+        type: TIMESTAMP
+        nullable: false
+        description: Review submission timestamp
+        dw_role: event_timestamp
+        default: CURRENT_TIMESTAMP
+    dw_target_table: fact_review

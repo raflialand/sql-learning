@@ -283,7 +283,8 @@ Checklist for Day N:
 │   └── changes/           # Active and archived change proposals
 │
 ├── docs/                  # Project documentation
-│   └── 02-excel-coach-agent-plan.md   # This file
+│   └── 02-excel-coach/
+│       └── excel-coach-agent-plan.md   # This file
 │
 └── learning/
     ├── excel-30day-intensive/

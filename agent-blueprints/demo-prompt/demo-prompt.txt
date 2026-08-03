@@ -1,0 +1,17 @@
+CSE Asset Manager 
+====================================================================================================================================================================================
+
+@openspec-agent
+Plan me an opencode agent called cse-asset-manager.
+
+Requirement:
+- cse-asset-manager are an ai agent that has a role to gathering all cse asset from documentation.
+- cse asset contains all airflow pipeline, tables, and business usecase.
+- analyze the source documentation to get main cse asset and business context.
+
+Input: 
+- CSE documentation @cse-asset-documentation.md
+
+Output:
+- yaml in asset/*.yaml seperated by business use case.
+- ADR report in @adr/

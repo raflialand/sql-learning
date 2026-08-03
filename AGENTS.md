@@ -57,7 +57,9 @@ Domain agents are project-specific. Add agent definitions to `.opencode/agents/`
 ├── agent-blueprints/      # Canonical agent plans for execution agents
 ├── learning/              # Learning material and progress notes
 ├── data/                  # Data assets
-├── docs/                  # Documentation
+├── docs/                  # Documentation (dedicated folders per topic)
+│   ├── 01-erd-diagram/    # ERD diagrams
+│   └── 02-excel-coach/    # Excel coach agent plan
 │
 └── openspec/
     ├── AGENTS.md          # Complete OpenSpec methodology (loaded by openspec-agent only)

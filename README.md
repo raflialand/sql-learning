@@ -32,7 +32,9 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 │   ├── ecommerce.db           # E-commerce database
 │   └── sql-learn-db*.sql/.db  # Roadmap practice databases (Week 6 etc.)
 │
-├── docs/                  # Documentation (ERD diagrams, agent plans)
+├── docs/                  # Documentation (dedicated folders per topic)
+│   ├── 01-erd-diagram/    # ERD diagrams
+│   └── 02-excel-coach/    # Excel coach agent plan
 ├── agent-blueprints/      # Canonical agent plans (e.g. 01-sql-learning.md)
 ├── adr/                   # Architecture Decision Records (conventions in adr/AGENTS.md)
 │

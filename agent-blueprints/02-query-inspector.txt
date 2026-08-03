@@ -1,0 +1,16 @@
+Query Inspector 
+====================================================================================================================================================================================
+
+@openspec-agent
+Plan me an opencode agent called query-inspector.
+
+Requirement:
+- query-inspector are an ai agent that has a role to inspect a queries from the learner (me or anyone use the agent).
+- query-inspector have to analyze whether the given query is in accordance with the query logic and whether the query is in accordance with the business requirements logic.
+- query-inspector shows parts that do not match the logic and provides solution recommendations in the form of queries.
+
+Input: 
+- mentioned .sql file that lived in @script/
+
+Output:
+- query-analysis.md in @docs/03-query-inspector/

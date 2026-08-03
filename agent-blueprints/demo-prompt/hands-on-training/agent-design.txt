@@ -1,0 +1,46 @@
+docs-agent
+Input: 
+- db/ddl.sql & db/ddl.yaml
+- business-context.md
+Ouput:
+- system analysis document
+- ADR report in folder adr/docs-agent/
+Requirement:
+- C4
+- Flowchart
+- Sequence 
+- ERD
+
+dwh-agent
+Input:
+- db/ddl.sql & db/ddl.yaml
+- business-context.md
+- system analysis document
+- ADR docs-agent
+Output:
+- ddl schema dim, fact, mart
+- Data Warehouse architecture documentations
+- ADR report in folder adr/dwh-agent/
+Requirement:
+- Kimball Methodology
+- Snowflake schema
+- SCD 1 & SCD 2 only
+- bus matrix
+
+reviewer-agent
+Input:
+- db/ddl.sql & db/ddl.yaml
+- business-context.md
+- system analysis document
+- ADR docs-agent
+- ddl schema dim, fact, mart
+- Data Warehouse architecture documentations
+- ADR dwh-agent
+Output:
+- reviewer report
+- ADR report in folder adr/reviewer-agent/
+Requirement:
+- validity of the result dwh-agent compared to source and docs-agents.
+- Score Review Scale 1-10
+
+
