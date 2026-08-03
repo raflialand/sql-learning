@@ -10,6 +10,8 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 - **Automatic progress reporting** — each session saves a structured note (`learning/00-notes/session-summary-*.md`), and the skill computes completed days/weeks as a percentage of the 84-day plan, with a Mermaid progress chart.
 - **Practice databases** (SQLite) used for exercises: library management, e-commerce, and a `sales-records` dataset for the SQL Mastery modules.
 - **Deep-dive modules** under `learning/02-sql-learning/sql-mastery/` (currently: window functions) with lessons, exercises, datasets, and solutions.
+- **An execution agent** (`query-inspector`) that reviews learner-submitted SQL from `script/01-sql/` for query-logic correctness and business-requirement alignment, writing analysis reports to `docs/03-query-inspector/`.
+- **Two complementary learning tracks**: a 6-month data engineering roadmap (`learning/01-de-learning/`) and a standalone MySQL-based Data Quality Engineer module (`learning/03-dq-learning/`, 13 self-paced units against a purpose-built "dirty" dataset).
 
 ## Directory Map
 
@@ -32,16 +34,20 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 ├── data/                  # Practice SQLite databases & schema files
 │   ├── library-db.sql/.db     # Library management system
 │   ├── ecommerce.db           # E-commerce database
-│   └── sql-learn-db*.sql/.db  # Roadmap practice databases (Week 6 etc.)
+│   └── sql-learn.db / sql-learn-db-week6.*  # Roadmap practice databases (Week 6 etc.)
 │
 ├── docs/                  # Documentation (dedicated folders per topic)
 │   ├── 01-erd-diagram/    # ERD diagrams
-│   └── 02-excel-coach/    # Excel coach agent plan
-├── agent-blueprints/      # Canonical agent plans (e.g. 01-sql-learning.md)
+│   ├── 02-excel-coach/    # Excel coach agent plan
+│   └── 03-query-inspector/    # Query analysis reports (query-inspector agent output)
+├── agent-blueprints/      # Canonical agent plans
+│   ├── 01-sql-learning.md     # SQL learning execution plan
+│   ├── 02-query-inspector.txt # Query inspector agent plan
+│   └── demo-prompt/           # Sample prompts & hands-on training (CSE asset manager)
 ├── adr/                   # Architecture Decision Records (conventions in adr/AGENTS.md)
 │
 ├── .opencode/             # opencode configuration
-│   ├── agents/            # Agent definitions (e.g. openspec-agent)
+│   ├── agents/            # Agent definitions (openspec-agent, query-inspector)
 │   └── skills/            # Skills (e.g. sql-learning)
 │
 └── openspec/              # OpenSpec methodology for spec-driven, plan-first changes
@@ -57,6 +63,8 @@ The `sql-learning` skill (`.opencode/skills/sql-learning/SKILL.md`) executes on 
 |------|----------|----------|
 | **REPORT** | "continue learning", "where am I", "progress" | Read-only: shows current position, progress %, Mermaid pie chart, completed/in-progress/pending weeks, last session summary, and next topic |
 | **SUMMARIZE** | "summarize", "daily summary", "rangkuman", "ringkasan" | Saves/appends the session to `learning/00-notes/session-summary-{day}-{month}-{year}.md`, then runs the same progress report |
+
+Beyond progress tracking, a `query-inspector` domain agent reviews learner-submitted SQL files under `script/01-sql/`, checks them for query-logic correctness and business-requirement alignment, and writes the full analysis to `docs/03-query-inspector/query-analysis.md` (dated variants when the file exists). It is an execution agent — it never creates OpenSpec change proposals.
 
 Progress rules:
 - Roadmap = source of truth for the timeline; session notes = source of truth for actual progress.
@@ -81,6 +89,7 @@ Three capstone projects punctuate the journey: a personal budget tracker (end of
 2. **Open a practice database** in VSCode with the SQLite extension (e.g. `data/sql-learn-db-week6.db` or `learning/02-sql-learning/sql-mastery/datasets/sales-records.db`).
 3. **Start a session** — say "continue learning" to get your current position and next topic, then learn and practice in conversation.
 4. **Save your progress** — say "summarize" (or "rangkuman") to persist the session as a structured note and see the updated progress report.
+5. **Get query feedback** — put your SQL in `script/01-sql/` and run `@query-inspector` to have it checked for correctness and business alignment.
 
 ## Prerequisites
 
