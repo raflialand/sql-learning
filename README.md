@@ -30,14 +30,14 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 ├── data/                  # Practice SQLite databases & schema files
 │   ├── library-db.sql/.db     # Library management system
 │   ├── ecommerce.db           # E-commerce database
-│   └── sql-learn-db*.sql/.db  # Roadmap practice databases (Week 6 etc.)
+│   └── sql-learn.db / sql-learn-db-week6.*  # Roadmap practice databases (Week 6 etc.)
 │
 ├── docs/                  # Documentation (ERD diagrams, agent plans)
 ├── agent-blueprints/      # Canonical agent plans (e.g. 01-sql-learning.md)
 ├── adr/                   # Architecture Decision Records (conventions in adr/AGENTS.md)
 │
 ├── .opencode/             # opencode configuration
-│   ├── agents/            # Agent definitions (e.g. openspec-agent)
+│   ├── agents/            # Agent definitions (openspec-agent, query-inspector)
 │   └── skills/            # Skills (e.g. sql-learning)
 │
 └── openspec/              # OpenSpec methodology for spec-driven, plan-first changes
@@ -53,6 +53,8 @@ The `sql-learning` skill (`.opencode/skills/sql-learning/SKILL.md`) executes on 
 |------|----------|----------|
 | **REPORT** | "continue learning", "where am I", "progress" | Read-only: shows current position, progress %, Mermaid pie chart, completed/in-progress/pending weeks, last session summary, and next topic |
 | **SUMMARIZE** | "summarize", "daily summary", "rangkuman", "ringkasan" | Saves/appends the session to `learning/00-.notes/session-summary-{day}-{month}-{year}.md`, then runs the same progress report |
+
+Beyond progress tracking, a `query-inspector` domain agent reviews learner-submitted SQL files under `script/01-sql/`, checks them for query-logic correctness and business-requirement alignment, and writes the full analysis to `docs/03-query-inspector/query-analysis.md` (dated variants when the file exists). It is an execution agent — it never creates OpenSpec change proposals.
 
 Progress rules:
 - Roadmap = source of truth for the timeline; session notes = source of truth for actual progress.
@@ -77,6 +79,7 @@ Three capstone projects punctuate the journey: a personal budget tracker (end of
 2. **Open a practice database** in VSCode with the SQLite extension (e.g. `data/sql-learn-db-week6.db` or `learning/03-tools/sql-mastery/datasets/sales-records.db`).
 3. **Start a session** — say "continue learning" to get your current position and next topic, then learn and practice in conversation.
 4. **Save your progress** — say "summarize" (or "rangkuman") to persist the session as a structured note and see the updated progress report.
+5. **Get query feedback** — put your SQL in `script/01-sql/` and run `@query-inspector` to have it checked for correctness and business alignment.
 
 ## Prerequisites
 
