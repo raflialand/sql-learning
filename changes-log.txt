@@ -44,3 +44,22 @@ change #4: add query-inspector agent (3-Aug-2026)
    - openspec/changes/2026-08-03-add-query-inspector/ (proposal.md, design.md, tasks.md)
 5. added sample output:
    - docs/03-query-inspector/query-analysis.md
+
+---
+
+change #5: add Data Quality Engineer learning module (3-Aug-2026)
+
+1. created new dedicated module in @learning/:
+   - learning/04-data-quality/  (MySQL-based DQ learning path, beginner to advanced)
+2. added datasets:
+   - datasets/dq_dataset.sql         (dirty e-commerce data with 29 seeded defects)
+   - datasets/dq_dataset_clean.sql   (clean "master data" reference for accuracy checks)
+   - datasets/dq_dataset_schema.md   (table map + documented seeded defects)
+3. added 13 self-paced units with lessons + exercises + self-assessment:
+   - 01-dq-foundations / 02-business-context (conceptual)
+   - 03-data-profiling through 11-dq-monitoring-and-reporting (SQL practice)
+   - 12-dq-process-and-tooling (conceptual) / 13-capstone (full DQ audit)
+4. added solution files for all SQL practice units:
+   - solutions/solution_03..11 and solution_13_capstone.sql
+5. added module README:
+   - learning/04-data-quality/README.md (overview, MySQL setup, unit map, progress tracker)
