@@ -31,7 +31,7 @@ The workflow taught throughout:
 ## Prerequisites
 
 - **MySQL 8.0** installed and running (Windows: `C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe`).
-- Comfort with basic `SELECT`, `WHERE`, `GROUP BY`, `JOIN`. If you are new to SQL, finish Month 1–2 of the [3-month SQL roadmap](../sql-roadmaps/sql-learning-roadmap-3months.md) first.
+- Comfort with basic `SELECT`, `WHERE`, `GROUP BY`, `JOIN`. If you are new to SQL, finish Month 1–2 of the [3-month SQL roadmap](../02-sql-learning/sql-roadmaps/sql-learning-roadmap-3months.md) first.
 - Optionally MySQL Workbench for a GUI.
 
 ---
@@ -51,12 +51,12 @@ The workflow taught throughout:
 
 3. **Load the dirty dataset**
    ```sql
-   SOURCE learning/04-data-quality/datasets/dq_dataset.sql;
+   SOURCE learning/03-dq-learning/datasets/dq_dataset.sql;
    ```
 
 4. **Load the clean reference dataset** (needed for Unit 07 Accuracy)
    ```sql
-   SOURCE learning/04-data-quality/datasets/dq_dataset_clean.sql;
+   SOURCE learning/03-dq-learning/datasets/dq_dataset_clean.sql;
    ```
 
 5. **Sanity check**
@@ -77,7 +77,7 @@ The workflow taught throughout:
 ## Folder Structure
 
 ```
-learning/04-data-quality/
+learning/03-dq-learning/
 ├── README.md                    # This file
 ├── datasets/
 │   ├── dq_dataset.sql           # Dirty dataset (schema + seeded defects)

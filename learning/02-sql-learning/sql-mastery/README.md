@@ -7,7 +7,7 @@ A comprehensive SQL learning path covering essential topics for data engineering
 ## Learning Path Overview
 
 ```
-learning/03-tools/sql-mastery/
+learning/02-sql-learning/sql-mastery/
 ├── 01-window-functions/          (Current Module)
 │   ├── 01-foundations/
 │   ├── 02-ranking-functions/

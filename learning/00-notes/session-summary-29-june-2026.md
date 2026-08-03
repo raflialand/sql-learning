@@ -136,7 +136,7 @@ MONTH 3: ADVANCED
 
 ## Week 5 Module Created! 🎉
 
-**File:** `learning/03-tools/sql-roadmaps/week-5-table-design-and-relationships.md`
+**File:** `learning/02-sql-learning/sql-roadmaps/week-5-table-design-and-relationships.md`
 
 ### Decisions Made:
 

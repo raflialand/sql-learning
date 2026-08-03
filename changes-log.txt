@@ -50,7 +50,7 @@ change #4: add query-inspector agent (3-Aug-2026)
 change #5: add Data Quality Engineer learning module (3-Aug-2026)
 
 1. created new dedicated module in @learning/:
-   - learning/04-data-quality/  (MySQL-based DQ learning path, beginner to advanced)
+   - learning/03-dq-learning/  (MySQL-based DQ learning path, beginner to advanced; renamed from 04-data-quality in change #6)
 2. added datasets:
    - datasets/dq_dataset.sql         (dirty e-commerce data with 29 seeded defects)
    - datasets/dq_dataset_clean.sql   (clean "master data" reference for accuracy checks)
@@ -62,4 +62,24 @@ change #5: add Data Quality Engineer learning module (3-Aug-2026)
 4. added solution files for all SQL practice units:
    - solutions/solution_03..11 and solution_13_capstone.sql
 5. added module README:
-   - learning/04-data-quality/README.md (overview, MySQL setup, unit map, progress tracker)
+   - learning/03-dq-learning/README.md (overview, MySQL setup, unit map, progress tracker; renamed from 04-data-quality in change #6)
+
+---
+
+change #6: reorganize @learning/ folders (3-Aug-2026)
+
+1. deleted @learning/02-ai-based-business-roadmap/:
+   - removed learning/02-ai-based-business-roadmap/ai-business-reporting-roadmap.md (superseded)
+2. renamed folders for meaningful names + sequential numbering:
+   - learning/03-tools/  → learning/02-sql-learning/   (SQL roadmaps + SQL Mastery modules)
+   - learning/04-data-quality/ → learning/03-dq-learning/  (MySQL-based DQ learning path)
+   - learning/01-de-roadmap/  → learning/01-de-learning/   (data engineering roadmap)
+   - learning/00-.notes/      → learning/00-notes/         (special dot-prefixed folder → 00)
+3. updated references to renamed/deleted folders:
+   - README.md (directory map, Getting Started, Related Roadmaps; added 03-dq-learning)
+   - agent-blueprints/01-sql-learning.md (roadmap + notes paths)
+   - .opencode/skills/sql-learning/SKILL.md (notes path in description + quick reference)
+   - learning/02-sql-learning/sql-mastery/README.md (self-reference path)
+   - learning/02-sql-learning/sql-mastery/01-window-functions/05-practical-patterns/capstone.md (self-reference path)
+   - learning/03-dq-learning/README.md (self-reference path + fixed broken ../sql-roadmaps/ link)
+   - learning/00-notes/session-summary-29-june-2026.md (historical file path reference)

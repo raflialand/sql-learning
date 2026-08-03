@@ -132,7 +132,7 @@ Create a single query that produces an executive summary showing:
 ## Expected Output Structure
 
 ```
-learning/03-tools/sql-mastery/
+learning/02-sql-learning/sql-mastery/
 └── 01-window-functions/
     └── solutions/
         ├── capstone_query.sql
