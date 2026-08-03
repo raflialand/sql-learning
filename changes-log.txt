@@ -28,3 +28,19 @@ change #3: create script/01-sql/ and move query-log.txt (3-Aug-2026)
 3. updated references to the moved file:
    - README.md (directory map)
    - AGENTS.md (directory map)
+
+---
+
+change #4: add query-inspector agent (3-Aug-2026)
+
+1. created dedicated folder in @docs/:
+   - docs/03-query-inspector/  (new folder for query analysis outputs)
+2. added new agent:
+   - .opencode/agents/query-inspector.md  (inspects learner-submitted SQL queries for logic correctness and business-requirement alignment)
+3. registered the agent in the domain agents table:
+   - AGENTS.md
+4. added OpenSpec artifacts for the capability:
+   - openspec/specs/query-inspector/spec.md
+   - openspec/changes/2026-08-03-add-query-inspector/ (proposal.md, design.md, tasks.md)
+5. added sample output:
+   - docs/03-query-inspector/query-analysis.md
