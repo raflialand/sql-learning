@@ -105,3 +105,19 @@ change #7: fix MySQL CTE placement in DQ dataset loaders (4-Aug-2026)
      - learning/03-dq-learning/solutions/solution_09_timeliness.sql
    - expected data outcomes unchanged (daily_sales 184, dq_clean_daily_sales 184; spike/dip/NULL defects intact)
 3. verification: re-run dq_dataset.sql then dq_dataset_clean.sql against dq_learning; daily_sales count = 184
+
+---
+
+change #8: reorganize @learning/00-notes/ (4-Aug-2026)
+
+1. moved every .md file in @learning/00-notes/ into a new dedicated folder:
+   - learning/00-notes/02-sql-progress/  (new folder)
+   - moved 12 files (all session-summary-*.md + rangkuman-belajar-sql.md)
+2. renamed @learning/00-notes/personal-dicuss/ → learning/00-notes/00-personal-discuss/
+   (00 = special/non-time-based folder per numbering rule; typo "dicuss" fixed)
+3. updated references to the moved/renamed paths (skill, agent plan, README):
+   - .opencode/skills/sql-learning/SKILL.md (description + REPORT/SUMMARIZE paths → 02-sql-progress/)
+   - agent-blueprints/01-sql-learning.md (notes dir + SUMMARIZE + report generator paths → 02-sql-progress/)
+   - README.md (progress-reporting note path, SUMMARIZE table, directory map → shows 00-personal-discuss/ + 02-sql-progress/)
+4. not affected (no path references): AGENTS.md, openspec/, docs/, other learning modules
+5. note: changes-log historical entry for change #6 (line 85) left untouched — it records the past state

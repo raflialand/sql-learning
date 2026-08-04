@@ -7,7 +7,7 @@ A personal, AI-assisted 3-month SQL learning environment — a structured 12-wee
 This directory is a living learning workspace where daily SQL sessions are taught through conversation and tracked automatically by an opencode skill (`sql-learning`). It combines:
 
 - A **canonical roadmap** (`learning/02-sql-learning/sql-roadmaps/sql-learning-roadmap-3months.md`) breaking 3 months into 12 weeks × 7 days with topics, exercises, quizzes, and milestones.
-- **Automatic progress reporting** — each session saves a structured note (`learning/00-notes/session-summary-*.md`), and the skill computes completed days/weeks as a percentage of the 84-day plan, with a Mermaid progress chart.
+- **Automatic progress reporting** — each session saves a structured note (`learning/00-notes/02-sql-progress/session-summary-*.md`), and the skill computes completed days/weeks as a percentage of the 84-day plan, with a Mermaid progress chart.
 - **Practice databases** (SQLite) used for exercises: library management, e-commerce, and a `sales-records` dataset for the SQL Mastery modules.
 - **Deep-dive modules** under `learning/02-sql-learning/sql-mastery/` (currently: window functions) with lessons, exercises, datasets, and solutions.
 - **An execution agent** (`query-inspector`) that reviews learner-submitted SQL from `script/01-sql/` for query-logic correctness and business-requirement alignment, writing analysis reports to `docs/03-query-inspector/`.
@@ -24,7 +24,9 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 │   └── 01-sql/            # SQL query logs (e.g. query-log.txt)
 │
 ├── learning/              # All learning material and progress
-│   ├── 00-notes/           # Daily session summaries (progress truth) — excluded from numbering rules
+│   ├── 00-notes/           # Learning notes — excluded from numbering rules
+│   │   ├── 00-personal-discuss/  # Personal discussion notes (00 = special, not time-based)
+│   │   └── 02-sql-progress/      # Daily session summaries (progress truth)
 │   ├── 01-de-learning/     # 6-month data engineering roadmap
 │   ├── 02-sql-learning/    # SQL roadmaps + SQL Mastery modules
 │   │   ├── sql-roadmaps/   # 3-month roadmap + per-week deep dives (Weeks 1–7)
@@ -62,7 +64,7 @@ The `sql-learning` skill (`.opencode/skills/sql-learning/SKILL.md`) executes on 
 | Mode | Triggers | Behavior |
 |------|----------|----------|
 | **REPORT** | "continue learning", "where am I", "progress" | Read-only: shows current position, progress %, Mermaid pie chart, completed/in-progress/pending weeks, last session summary, and next topic |
-| **SUMMARIZE** | "summarize", "daily summary", "rangkuman", "ringkasan" | Saves/appends the session to `learning/00-notes/session-summary-{day}-{month}-{year}.md`, then runs the same progress report |
+| **SUMMARIZE** | "summarize", "daily summary", "rangkuman", "ringkasan" | Saves/appends the session to `learning/00-notes/02-sql-progress/session-summary-{day}-{month}-{year}.md`, then runs the same progress report |
 
 Beyond progress tracking, a `query-inspector` domain agent reviews learner-submitted SQL files under `script/01-sql/`, checks them for query-logic correctness and business-requirement alignment, and writes the full analysis to `docs/03-query-inspector/query-analysis.md` (dated variants when the file exists). It is an execution agent — it never creates OpenSpec change proposals.
 

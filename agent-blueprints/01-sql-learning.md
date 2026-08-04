@@ -35,7 +35,7 @@ Measurable success criteria:
 
 - Roadmap file exists: `learning/02-sql-learning/sql-roadmaps/sql-learning-roadmap-3months.md`
   - Source of truth for structure: 12 weeks × 7 days = 84 days, week/day topics, exercises, quiz milestones.
-- Notes directory exists: `learning/00-notes/`
+- Notes directory exists: `learning/00-notes/02-sql-progress/`
 - Note filename convention: `session-summary-{dd}-{mmm}-{yyyy}.md` with lowercase month, e.g. `session-summary-22-june-2026.md`.
 
 ### Invariants (must never be violated)
@@ -87,7 +87,7 @@ Two modes, selected by trigger phrase:
 
 ### Artifacts (files)
 
-- **SUMMARIZE mode:** create or append `learning/00-notes/session-summary-{date}.md` following the structured note template below; then emit a progress report.
+- **SUMMARIZE mode:** create or append `learning/00-notes/02-sql-progress/session-summary-{date}.md` following the structured note template below; then emit a progress report.
 - **REPORT mode:** no file changes (read-only); emits a progress report only.
 
 ### Structured note template
@@ -187,7 +187,7 @@ Let me know when you want to start!
 Both modes end with this block:
 
 1. Read `learning/02-sql-learning/sql-roadmaps/sql-learning-roadmap-3months.md` → total 12 weeks / 84 days, week structure.
-2. List `learning/00-notes/session-summary-*.md`, sort by date.
+2. List `learning/00-notes/02-sql-progress/session-summary-*.md`, sort by date.
 3. Determine: completed weeks, in-progress week, days done in that week, quiz scores.
 4. Calculate: completed days = (completed weeks × 7) + days done in current week; remaining = 84 − completed; progress % = completed / 84 × 100.
 5. Read the most recent summary for last-session bullets and next topic.
@@ -197,7 +197,7 @@ Both modes end with this block:
 
 1. Extract topics from the conversation (Section 4 extraction schema).
 2. Get current date → filename `{day}-{month}-{year}` (lowercase month).
-3. List `learning/00-notes/`, find the most recent `session-summary-*.md`.
+3. List `learning/00-notes/02-sql-progress/`, find the most recent `session-summary-*.md`.
 4. Decide: last summary date = today → append under `---` (preserve existing content); earlier → create new file.
 5. Save the structured summary.
 6. Run the shared report generator.
