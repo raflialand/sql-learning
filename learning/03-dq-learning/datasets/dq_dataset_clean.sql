@@ -176,12 +176,12 @@ INSERT INTO dq_clean_order_items VALUES
 -- =====================================================================
 -- CLEAN DAILY_SALES (consistent baseline; no spikes or dips; no NULL metrics)
 -- =====================================================================
+INSERT INTO dq_clean_daily_sales (sale_date, region_id, total_orders, total_revenue, total_items)
 WITH RECURSIVE date_spine AS (
     SELECT CAST('2026-05-01' AS DATE) AS d
     UNION ALL
     SELECT DATE_ADD(d, INTERVAL 1 DAY) FROM date_spine WHERE d < '2026-07-31'
 )
-INSERT INTO dq_clean_daily_sales (sale_date, region_id, total_orders, total_revenue, total_items)
 SELECT
     d,
     r.region_id,

@@ -83,3 +83,25 @@ change #6: reorganize @learning/ folders (3-Aug-2026)
    - learning/02-sql-learning/sql-mastery/01-window-functions/05-practical-patterns/capstone.md (self-reference path)
    - learning/03-dq-learning/README.md (self-reference path + fixed broken ../sql-roadmaps/ link)
    - learning/00-notes/session-summary-29-june-2026.md (historical file path reference)
+
+---
+
+change #7: fix MySQL CTE placement in DQ dataset loaders (4-Aug-2026)
+
+1. fixed MySQL #1064 syntax error in both dataset loaders (MySQL 8 does not allow a
+   WITH clause to precede an INSERT; the CTE must sit between INSERT INTO ... (cols)
+   and SELECT):
+   - learning/03-dq-learning/datasets/dq_dataset.sql (daily_sales INSERT, lines 195-200)
+   - learning/03-dq-learning/datasets/dq_dataset_clean.sql (dq_clean_daily_sales INSERT, lines 179-184)
+2. analyzed every file/folder/skill/agent for affected references:
+   - .opencode/skills/ + .opencode/agents/ + AGENTS.md: no references to the DQ datasets — no change
+   - filename-only references (paths unchanged, no content update needed):
+     - learning/03-dq-learning/README.md (SOURCE commands, sanity-check counts)
+     - learning/03-dq-learning/datasets/dq_dataset_schema.md (defect map)
+     - learning/03-dq-learning/07-accuracy/, 08-consistency/, 13-capstone/ (exercises + solutions load dq_dataset_clean.sql)
+   - other WITH RECURSIVE date_spine usages are pure SELECT CTEs (valid in MySQL) — no change:
+     - learning/03-dq-learning/09-timeliness/exercises.md
+     - learning/03-dq-learning/09-timeliness/02-batch-window-validation.md
+     - learning/03-dq-learning/solutions/solution_09_timeliness.sql
+   - expected data outcomes unchanged (daily_sales 184, dq_clean_daily_sales 184; spike/dip/NULL defects intact)
+3. verification: re-run dq_dataset.sql then dq_dataset_clean.sql against dq_learning; daily_sales count = 184

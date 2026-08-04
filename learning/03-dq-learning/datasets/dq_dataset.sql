@@ -192,12 +192,12 @@ INSERT INTO order_items VALUES
 --            NULL revenue 2026-06-05 RGN002, NULL items 2026-07-11 RGN001,
 --            distribution shift from 2026-07-21 (promotion baseline raised).
 -- =====================================================================
+INSERT INTO daily_sales (sale_date, region_id, total_orders, total_revenue, total_items)
 WITH RECURSIVE date_spine AS (
     SELECT CAST('2026-05-01' AS DATE) AS d
     UNION ALL
     SELECT DATE_ADD(d, INTERVAL 1 DAY) FROM date_spine WHERE d < '2026-07-31'
 )
-INSERT INTO daily_sales (sale_date, region_id, total_orders, total_revenue, total_items)
 SELECT
     d,
     r.region_id,
