@@ -1,6 +1,6 @@
 # sql-learning
 
-A personal, AI-assisted 3-month SQL learning environment — a structured 12-week / 84-day journey from beginner to intermediate/advanced SQL, with built-in progress tracking, practice databases, and agent-driven tooling.
+A personal, AI-assisted multi-track learning environment — an 84-day SQL Fundamentals journey (12 weeks), a Data Quality Engineer module (13 units, MySQL), and a Data Engineering track (26 weeks), with built-in progress tracking, practice databases, and agent-driven tooling.
 
 ## What This Is
 
@@ -18,7 +18,7 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 ```
 ├── AGENTS.md              # Agent routing and intent classification (planning vs execution)
 ├── README.md              # This file
-├── changes-log.txt        # Change log for directory reorganizations
+├── changes-log.txt        # Change log for all project changes
 │
 ├── script/                # SQL practice scripts
 │   └── 01-sql/            # SQL query logs (e.g. query-log.txt)
@@ -54,7 +54,8 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 │
 ├── .opencode/             # opencode configuration
 │   ├── agents/            # Agent definitions (openspec-agent, query-inspector)
-│   └── skills/            # Skills (e.g. learning-progress)
+│   └── skills/            # Skills
+│       └── learning-progress/  # SKILL.md + manifest.json baseline (SELF-CHECK/ADJUST)
 │
 └── openspec/              # OpenSpec methodology for spec-driven, plan-first changes
     ├── specs/             # Canonical capability specifications

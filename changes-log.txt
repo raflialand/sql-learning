@@ -166,3 +166,20 @@ change #10: add self-adjustment + ADR protocol to the learning-progress skill (5
 7. updated documentation to reflect the new mode:
    - README.md  (three trigger modes + SELF-CHECK/ADJUST row; directory map shows adr/learning-progress/)
 8. verification: all three manifest hashes match current files (v1.1.0, adrCount 1); ADR-001 valid per adr/AGENTS.md template; no stale "two modes" references
+
+---
+
+change #11: reconcile stale manifest baseline in the learning-progress skill (5-Aug-2026)
+
+1. fixed the manifest baseline that was committed stale:
+   - .opencode/skills/learning-progress/manifest.json  (v1.1.0 recorded SHA-256 hashes from pre-final drafts of SKILL.md/blueprint/spec, all three mismatched the committed files; recomputed hashes → v1.2.0, adrCount 2, lastChange 2026-08-05)
+2. recorded the reconciliation decision via the SELF-CHECK/ADJUST protocol:
+   - adr/learning-progress/ADR-002-reconcile-stale-manifest-baseline.md  (status accepted; decision = re-baseline manifest only, no definition file edits)
+3. added a DQ learning session note (Unit 01 exercises completed → DQ track 1/13):
+   - learning/00-notes/03-dq-progress/session-summary-05-august-2026.md  (exercises 1.1-1.6, self-assessment checkpoint, Unit 01 complete; progress 1 of 13 units)
+4. not affected (no definition changes): SKILL.md, agent-blueprints/01-learning-progress.md, openspec/specs/learning-progress/spec.md — files correct as committed, hashes only
+5. verification: re-ran DETECT — all three hashes match the manifest, no pending adjustment (ALL_MATCH=True)
+6. reference audit — checked every file/folder/skill/agent that could reference the changed artifacts; no active-file updates needed:
+   - manifest.json / ADR-002 / session-summary-05 referenced only generically (no version or adrCount hardcoded): SKILL.md, agent-blueprints/01-learning-progress.md, openspec/specs/learning-progress/spec.md, AGENTS.md, learning/00-notes/tracks.md (notes dir only), learning/03-dq-learning/README.md (no progress %), .opencode/agents/query-inspector.md + spec (boundary ref unaffected)
+   - updated already: changes-log.txt (#11), README.md (intro, changes-log line, skills map)
+   - left untouched (historical records, per project convention): changes-log #10 verification line (v1.1.0/adrCount 1 — records past state, #11 documents the correction), openspec/changes/archive/2026-08-05-add-self-adjustment-adr-protocol/tasks.md (archived immutable snapshot), session-summary-04-august-2026.md (historical "Unit 01 IN PROGRESS" note — skill invariant: never overwrite/delete summaries)

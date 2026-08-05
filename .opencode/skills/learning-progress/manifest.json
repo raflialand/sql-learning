@@ -1,10 +1,10 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "lastChange": "2026-08-05",
-  "adrCount": 1,
+  "adrCount": 2,
   "files": {
-    ".opencode/skills/learning-progress/SKILL.md": "54E8EEAA8E9AE7CAA797F43ACDD80BB0D00AAA027F38FFD006F54FEE18BEC1FA",
-    "agent-blueprints/01-learning-progress.md": "EAFE6E8A38A9E3801EC0F073F1E1662E856082DCA7CFC711A376D8914912CC0B",
-    "openspec/specs/learning-progress/spec.md": "8DAF2E0429B076DFC2CF4D0D1B6C905B5C6454D07D1066C5830B522846AB6473"
+    ".opencode/skills/learning-progress/SKILL.md": "F2E966C5C4A7D47D5EED085370320218597FAF5B503E7487B912DEEB263E1B08",
+    "agent-blueprints/01-learning-progress.md": "AAE28B01FFF2DDFE3AFDFD8BAE5D3BD64155007FCAD59D878A672BF91402C160",
+    "openspec/specs/learning-progress/spec.md": "665EF7A9ECA14872AC7BCAB230AA7A9230825A4456DB675FAA14C508B31AC368"
   }
 }
