@@ -38,3 +38,75 @@
 ---
 
 *Ready to continue learning!*
+
+---
+
+## Session 2: Unit 02 — Lesson 2.1 Business Context Comes First (PARTIAL)
+
+### Covered
+- Started reading `02-business-context/01-why-business-context-first.md` (Lesson 2.1).
+- **The trap of "checking everything":** beginner checks all columns NOT NULL / unique / valid → a mountain of findings, 90% nobody cares about; the 10% that would hurt the business go unnoticed. Context selects the checks.
+- **DQ is use-case relative:** same table, different use case → different priorities (e.g. `customers.email` → Validity + Completeness for marketing; `orders.total_amount` → Accuracy + Completeness for the CFO; `orders.status` → Validity + Timeliness for ops; `daily_sales` → Completeness + Consistency + Timeliness for exec dashboards).
+- **The 6-question business-first ritual (pre-SQL):**
+  1. WHO consumes the data?
+  2. WHAT decisions does it drive?
+  3. WHAT goes wrong if it's bad?
+  4. WHICH fields matter most?
+  5. WHAT does "good" mean?
+  6. HOW will we measure it? *(where SQL begins)*
+- **Worked example — `orders`:** 6 questions walked through → tiny focused rules: `total_amount` never NULL, `status` in (shipped|pending|cancelled), `order_date` not in the future.
+
+### Position
+- **Stopped at the "Context Also Sets Priorities" section** — same defect, different context → different severity (email NULL = High for a $1M campaign, Low for a static archive). Severity is a *business* call; the engineer measures.
+- Remaining in Lesson 2.1: the "English Translation" + "Key Takeaways" sections.
+
+### Status Notes
+- Unit 02 IN PROGRESS — Lesson 2.1 partially read (stopped mid-section). No exercises yet.
+
+---
+
+## Next Steps
+
+1. **Finish Lesson 2.1:** "Context Also Sets Priorities" → "Key Takeaways".
+2. Then Lessons 2.2–2.5: reading requirements, data consumers & use cases, prioritizing DQ dimensions, stakeholder questions checklist.
+3. Unit 02 exercises: `02-business-context/exercises.md` + self-assessment.
+
+---
+
+*Ready to continue learning!*
+
+---
+
+## Session 3: Unit 02 — Lesson 2.1 COMPLETE
+
+### Covered
+- Finished `02-business-context/01-why-business-context-first.md` from where Session 2 paused ("Context Also Sets Priorities" → "Key Takeaways").
+- **Context sets priorities:** same defect, different business context → different severity (email NULL = **High** for a $1M campaign vs **Low** for a static archive; 3% NULL order totals = **High** for auditable revenue; `'US'` vs `'USA'` country = **Low** when nothing uses it). Severity is a *business* call; the engineer provides the measurement.
+- **English Translation / Key Takeaways internalized:**
+  1. Check what matters, not everything — business context selects your checks.
+  2. The 6 questions (who / what breaks / which fields / what's good / how to measure) are the pre-SQL ritual.
+  3. Same table → different DQ priorities per use case.
+  4. Severity is a business call, not an engineering call — you provide the measurement.
+
+### Key Understandings (whole lesson)
+- The "checking everything" trap: mountain of findings, 90% irrelevant, the damaging 10% missed.
+- Use-case-relative quality: `customers.email` → Validity+Completeness (marketing); `orders.total_amount` → Accuracy+Completeness (CFO); `orders.status` → Validity+Timeliness (ops); `daily_sales` → Completeness+Consistency+Timeliness (exec dashboards).
+- The 6-question ritual; "HOW will we measure it?" is where SQL begins.
+- Worked `orders` example → tiny, consequence-tied rules (`total_amount` not NULL, `status` enum, `order_date` not future).
+
+### Status Notes
+- **Lesson 2.1 COMPLETE** (Unit 02 Business Context still IN PROGRESS — lessons 2.2–2.5 + exercises remain).
+
+---
+
+## Next Steps
+
+1. **Lesson 2.2:** `02-business-context/02-reading-business-requirements.md` — reading business requirements.
+2. Lesson 2.3: data consumers & use cases.
+3. Lesson 2.4: prioritizing DQ dimensions.
+4. Lesson 2.5: stakeholder questions checklist.
+5. Unit 02 exercises: `02-business-context/exercises.md` + self-assessment.
+
+---
+
+*Ready to continue learning!*
