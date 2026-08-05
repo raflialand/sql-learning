@@ -146,3 +146,41 @@
 ---
 
 *Ready to continue learning!*
+
+---
+
+## Session 5: Unit 02 — Lesson 2.3 COMPLETE
+
+### Covered
+- Read `02-business-context/03-data-consumers-and-use-cases.md` in full (Consumer Map, Severity Levels, Use Case → Specific Check, Downstream Impact Chain).
+
+### The Consumer Map
+- Every table has multiple consumers with **different, sometimes conflicting** priorities — e.g. `orders` → Finance (Accuracy, Completeness) vs Ops (Validity, Timeliness); `customers` → Marketing (Completeness, Validity) vs Finance (Uniqueness, Accuracy).
+- The rule catalog must cover **all** consumers, not the loudest one.
+- **Q&A — is the map handed to you?** No. It's an *output of your own analysis*, assembled from company fragments: BI report/dashboard inventory, pipeline DAGs / dbt lineage, data catalogs, stewardship docs, org chart + stakeholder interviews. Built early (Define step), then confirmed with 1–2 stakeholder conversations; it becomes living documentation feeding the rule catalog (Unit 11).
+- **Each consumer's jobdesc:** Marketing = campaign segmentation (Completeness+Validity of email); Finance = revenue reporting / LTV (Accuracy+Completeness, Uniqueness+Accuracy); Commerce = product catalog (Validity+Uniqueness); Ops = fulfillment status (Validity+Timeliness); Executives = KPI dashboard (Timeliness+Completeness); Logistics = shipping (Completeness+Consistency).
+
+### Data stakes (elaborated)
+- **Data stakes = consequence severity** — how much the consumer loses if the data is wrong.
+- Ladder: Regulatory/compliance (fines) > Executive (wrong strategy) > Operational (wrong action taken now) > Analytical/planning (misleading insight) > Nice-to-have (minor annoyance).
+- Stakes drive **two things** (Unit 11): threshold strictness (high stakes → 0 violations allowed) and alerting speed (high stakes → alert immediately, e.g. ops stuck order; low → weekly, log quietly).
+- Stakes are a **business call**, never an engineering one — your job is to *measure* the defect; the business *sets* the stakes.
+
+### Use Case → Specific Check & Downstream Chain
+- Same `customers` table → two checks: Marketing = `email IS NULL OR NOT REGEXP`; Finance = `GROUP BY email HAVING COUNT(*) > 1`.
+- Downstream chain: `data → transform → warehouse → report/model → DECISION` — defects flow, are **introduced** by bad transforms (bad join duplicates) and **amplified** (NULL → NULL in a metric). Check both the *source* and the *output* (e.g. `SELECT YEAR(order_date), COUNT(*), SUM(total_amount) FROM orders GROUP BY YEAR(order_date)`).
+
+### Status Notes
+- **Lesson 2.3 COMPLETE** (Unit 02 still IN PROGRESS — lessons 2.4, 2.5 + exercises remain).
+
+---
+
+## Next Steps
+
+1. **Lesson 2.4:** `02-business-context/04-prioritizing-dq-dimensions.md` — prioritizing DQ dimensions per domain.
+2. Lesson 2.5: `05-stakeholder-questions-checklist.md`.
+3. Unit 02 exercises: `02-business-context/exercises.md` + self-assessment.
+
+---
+
+*Ready to continue learning!*
