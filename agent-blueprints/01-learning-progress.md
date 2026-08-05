@@ -229,10 +229,41 @@ Both modes end with this block:
 
 ---
 
-## 7. Implementation Mapping
+## 7. Self-Adjustment and ADR Protocol
+
+The skill documents its own evolution. When its definition changes, it detects the drift, collects decision rationale from the user before executing, and records an ADR afterward.
+
+### Manifest baseline
+
+- File: `.opencode/skills/learning-progress/manifest.json` — JSON with `version`, `lastChange`, `adrCount`, and a `files` map of SHA-256 hashes.
+- Exactly three definition files are hashed: `.opencode/skills/learning-progress/SKILL.md`, `agent-blueprints/01-learning-progress.md`, `openspec/specs/learning-progress/spec.md`.
+- `learning/00-notes/tracks.md` is data, not definition — it is never hashed and registry edits never count as adjustments.
+
+### Detection
+
+On invocation or at planning time, the skill re-hashes the three definition files and diffs them against `manifest.json`. Any hash mismatch is reported as a **pending adjustment**. A stale manifest (hashes out of date) is an accuracy violation and must be fixed by recomputing the hashes.
+
+### 4-step protocol
+
+1. **DETECT** — diff the three manifest-tracked files vs `manifest.json`; report differences as a pending adjustment.
+2. **ELICIT** — before the adjustment plan executes, ask the user for ADR requirements: title/slug, status, context/problem, decision, consequences/risks.
+3. **EXECUTE** — implement the adjustment.
+4. **RECORD** — write `adr/learning-progress/ADR-{NNN}-{slug}.md` per the `adr/AGENTS.md` template (status accepted, Context / Decision / Consequences) from the elicited requirements plus what actually changed; then bump `manifest.json` (version bump, recomputed hashes, `adrCount` +1).
+
+### ADR lifecycle
+
+- Skill-scoped ADRs live in `adr/learning-progress/` and follow the `adr/AGENTS.md` template and lifecycle (draft → proposed → accepted → deprecated / superseded).
+- ADR numbering (`{NNN}`) is sequential within `adr/learning-progress/`.
+- ADRs are created after the change executes, so they record the decision as implemented.
+
+---
+
+## 8. Implementation Mapping
 
 | File | Role |
 |---|---|
 | `agent-blueprints/01-learning-progress.md` | This canonical plan |
 | `.opencode/skills/learning-progress/SKILL.md` | Thin skill file: frontmatter + triggers + pointer to this plan |
-| `learning/00-notes/tracks.md` | Track registry — single source of truth for track definitions |
+| `learning/00-notes/tracks.md` | Track registry — data, excluded from adjustment detection |
+| `.opencode/skills/learning-progress/manifest.json` | Adjustment baseline (version, lastChange, adrCount, SHA-256 files map) |
+| `adr/learning-progress/` | Skill-scoped ADRs produced by SELF-CHECK/ADJUST |

@@ -144,3 +144,25 @@ change #9: generalize sql-learning into multi-track learning-progress skill (5-A
    - openspec/specs/learning-progress/spec.md (new canonical capability spec, created at archive from the delta)
    - openspec/changes/archive/2026-08-05-generalize-learning-progress/ (proposal.md, design.md, tasks.md, delta specs for learning-progress + query-inspector)
 7. verification: registry resolves all three tracks (paths exist; SQL 11 summaries, DQ 1, DE 0); historical session-summary files and roadmaps untouched; old skill/blueprint paths removed
+
+---
+
+change #10: add self-adjustment + ADR protocol to the learning-progress skill (5-Aug-2026)
+
+1. created the manifest baseline:
+   - .opencode/skills/learning-progress/manifest.json  (version, lastChange, adrCount, SHA-256 hashes of SKILL.md, blueprint, canonical spec — the detection baseline; tracks.md excluded)
+2. added a third skill mode (SELF-CHECK/ADJUST):
+   - .opencode/skills/learning-progress/SKILL.md  (DETECT → ELICIT → EXECUTE → RECORD; manifest accuracy + tracks.md-exclusion invariants)
+3. documented the self-adjustment architecture:
+   - agent-blueprints/01-learning-progress.md  (new ## 7. Self-Adjustment and ADR Protocol; Implementation Mapping renumbered to ## 8 with manifest + adr rows)
+4. updated routing and ADR conventions:
+   - AGENTS.md  (planning intents targeting the skill elicit ADR requirements first, then delegate to @openspec-agent; directory map lists adr/learning-progress/)
+   - adr/AGENTS.md  (naming convention extended to adr/{skill-name}/)
+5. recorded the first decision record via the new protocol:
+   - adr/learning-progress/ADR-001-establish-self-adjustment-adr-protocol.md  (status accepted)
+6. updated the canonical spec (merged from delta at archive):
+   - openspec/specs/learning-progress/spec.md  (4 ADDED requirements: Self-Adjustment Detection, ADR Requirement Elicitation, ADR Creation After Execution, Manifest Accuracy; 1 MODIFIED: Execution Without Confirmation)
+   - openspec/changes/archive/2026-08-05-add-self-adjustment-adr-protocol/  (proposal.md, design.md, tasks.md, delta spec)
+7. updated documentation to reflect the new mode:
+   - README.md  (three trigger modes + SELF-CHECK/ADJUST row; directory map shows adr/learning-progress/)
+8. verification: all three manifest hashes match current files (v1.1.0, adrCount 1); ADR-001 valid per adr/AGENTS.md template; no stale "two modes" references

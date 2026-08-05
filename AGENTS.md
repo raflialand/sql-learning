@@ -20,7 +20,7 @@ Before acting on any user request, classify the intent into one of three categor
 
 ## Agent Routing
 
-When the intent is planning, the main agent SHALL delegate to `@openspec-agent`. When the intent is execution, the main agent SHALL delegate to the named agent or execute the task directly.
+When the intent is planning, the main agent SHALL delegate to `@openspec-agent`. When the intent is execution, the main agent SHALL delegate to the named agent or execute the task directly. When a planning intent targets the learning-progress skill, the main agent SHALL first run SELF-CHECK/ADJUST to elicit ADR requirements from the user (DETECT/ELICIT), then delegate to `@openspec-agent`.
 
 ### Planning agents
 
@@ -53,7 +53,8 @@ Domain agents are project-specific. Add agent definitions to `.opencode/agents/`
 │   └── skills/            # Skill definitions (e.g. learning-progress)
 │
 ├── adr/                   # Architecture Decision Records
-│   └── AGENTS.md          # ADR conventions and template
+│   ├── AGENTS.md          # ADR conventions and template
+│   └── learning-progress/  # Skill-scoped ADRs (SELF-CHECK/ADJUST)
 │
 ├── agent-blueprints/      # Canonical agent plans for execution agents
 ├── learning/              # Learning material and progress notes (track registry: learning/00-notes/tracks.md)

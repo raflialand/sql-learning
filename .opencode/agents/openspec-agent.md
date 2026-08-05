@@ -40,4 +40,5 @@ In scope:
 Out of scope:
 - Domain-specific execution tasks (SQL learning progress reporting, notes summarization, data analysis)
 - Writing code outside the approved change scope
+- Writing ADRs — skill-scoped decision records are produced by the `learning-progress` SELF-CHECK/ADJUST mode, not by this agent
 - Modifying OpenSpec methodology files (`openspec/AGENTS.md`, `openspec/specs/spec-format/`, `openspec/specs/archive-safety/`) without explicit approval

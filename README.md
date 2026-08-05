@@ -50,6 +50,7 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 │   ├── 02-query-inspector.txt # Query inspector agent plan
 │   └── demo-prompt/           # Sample prompts & hands-on training (CSE asset manager)
 ├── adr/                   # Architecture Decision Records (conventions in adr/AGENTS.md)
+│   └── learning-progress/  # Skill-scoped ADRs (SELF-CHECK/ADJUST)
 │
 ├── .opencode/             # opencode configuration
 │   ├── agents/            # Agent definitions (openspec-agent, query-inspector)
@@ -62,12 +63,13 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 
 ## How It Works
 
-The `learning-progress` skill (`.opencode/skills/learning-progress/SKILL.md`) executes on two trigger modes, optionally scoped to a track keyword (`progress <track>`, `summarize <track>`); bare triggers default to the most recently active track:
+The `learning-progress` skill (`.opencode/skills/learning-progress/SKILL.md`) executes on three trigger modes, optionally scoped to a track keyword (`progress <track>`, `summarize <track>`); bare triggers default to the most recently active track:
 
 | Mode | Triggers | Behavior |
 |------|----------|----------|
 | **REPORT** | "continue learning", "where am I", "progress", "progress <track>" | Read-only: shows current position, progress %, Mermaid pie chart, completed/in-progress/pending units, last session summary, and next topic |
 | **SUMMARIZE** | "summarize", "daily summary", "rangkuman", "ringkasan", "summarize <track>" | Saves/appends the session to the resolved track's notes dir (`session-summary-{day}-{month}-{year}.md`), then runs the same progress report |
+| **SELF-CHECK/ADJUST** | "adjust the skill", "self-check", detected manifest diff | Detects changes to the skill's own definition (diff of SKILL.md / blueprint / spec vs `manifest.json`), elicits ADR requirements before an adjustment executes, and writes `adr/learning-progress/ADR-{NNN}-{slug}.md` after execution |
 
 Beyond progress tracking, a `query-inspector` domain agent reviews learner-submitted SQL files under `script/01-sql/`, checks them for query-logic correctness and business-requirement alignment, and writes the full analysis to `docs/03-query-inspector/query-analysis.md` (dated variants when the file exists). It is an execution agent — it never creates OpenSpec change proposals.
 

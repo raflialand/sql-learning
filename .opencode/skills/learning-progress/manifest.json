@@ -1,0 +1,10 @@
+{
+  "version": "1.1.0",
+  "lastChange": "2026-08-05",
+  "adrCount": 1,
+  "files": {
+    ".opencode/skills/learning-progress/SKILL.md": "54E8EEAA8E9AE7CAA797F43ACDD80BB0D00AAA027F38FFD006F54FEE18BEC1FA",
+    "agent-blueprints/01-learning-progress.md": "EAFE6E8A38A9E3801EC0F073F1E1662E856082DCA7CFC711A376D8914912CC0B",
+    "openspec/specs/learning-progress/spec.md": "8DAF2E0429B076DFC2CF4D0D1B6C905B5C6454D07D1066C5830B522846AB6473"
+  }
+}
