@@ -184,3 +184,68 @@
 ---
 
 *Ready to continue learning!*
+
+---
+
+## Session 6: Unit 02 — Lesson 2.4 COMPLETE
+
+### Covered
+- Read `02-business-context/04-prioritizing-dq-dimensions.md` in full.
+
+### Dimension Priority by Business Domain (starting points, not rules)
+| Domain | What breaks first | Priority dimensions |
+|--------|-------------------|---------------------|
+| Finance | Wrong money numbers | Accuracy > Completeness > Uniqueness |
+| Operations / Supply Chain | Wrong action taken | Timeliness > Completeness > Validity |
+| Marketing / CRM | Wasted spend on bad targets | Validity > Completeness > Uniqueness |
+| Compliance / Legal | Fines for bad records | Completeness > Accuracy > Consistency |
+| Analytics / ML | Biased or broken models | Consistency > Completeness > Validity |
+
+### The 80/20 of DQ Checks
+- **20% of fields carry 80% of the risk** — Pareto applied to DQ. It's about *fields*, not a quota of dimensions.
+- Critical fields = money (`total_amount`, `unit_price`, `qty`, `total_price`), identity (`customer_id`, `sku`), action (`status`, `email`, `order_date`).
+- Strictest checks (multi-dimension, tight thresholds, immediate alerts) on the critical 20%; lighter checks elsewhere.
+- **No mandatory minimum of dimensions** — the use case decides. Most real use cases happen to touch 2–4 dimensions, but that's emergent, not a rule.
+- Business domains are **not memorized** — you memorize the method (6-question ritual, translation table, dimension→SQL mapping) and gather domain knowledge by asking; it accumulates as pattern recognition.
+
+### The Priority Matrix
+| Priority | Dimension | When it dominates |
+|----------|-----------|-------------------|
+| P1 | Accuracy | Money, measurement, master data |
+| P1 | Timeliness | Live operations, dashboards, SLAs |
+| P2 | Completeness | Regulatory, required fields, reporting |
+| P2 | Validity | Systems with strict input formats |
+| P3 | Uniqueness | Identity/master data, dedup, LTV |
+| P3 | Consistency | Multi-system pipelines, joins |
+
+> The matrix tells you *where to look first*, not what to ignore forever — severity is still a business call.
+
+### `orders` (finance) worked example
+1. Accuracy — `total_amount` = sum of items (Unit 07)
+2. Completeness — `total_amount` never NULL (Unit 04)
+3. Validity — `status` in allowed set (Unit 06)
+4. Timeliness — `order_date` not in future (Unit 09)
+5. Consistency — no orphan `customer_id` (Unit 08)
+
+The priority order matches the order these exact checks run in Units 07, 04, 06, 09, 08.
+
+### Key Understandings
+1. Match dimensions to domains (finance→accuracy, ops→timeliness, marketing→validity).
+2. Focus strict checks on the critical 20% of fields.
+3. Use the priority matrix (P1→P3) to sequence work.
+4. Priorities come from the use case — the business confirms, you measure.
+
+### Status Notes
+- **Lesson 2.4 COMPLETE** (Unit 02 still IN PROGRESS — Lesson 2.5 + exercises remain).
+
+---
+
+## Next Steps
+
+1. **Lesson 2.5:** `02-business-context/05-stakeholder-questions-checklist.md` — the stakeholder questions checklist (last lesson of Unit 02).
+2. Unit 02 exercises: `02-business-context/exercises.md` + self-assessment.
+3. Then **Unit 03 — Data Profiling** (first SQL-heavy unit: `COUNT`, `COUNT(DISTINCT)`, `MIN/MAX/AVG/STDDEV`, `GROUP BY`).
+
+---
+
+*Ready to continue learning!*
