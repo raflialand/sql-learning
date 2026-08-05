@@ -38,5 +38,5 @@ In scope:
 Out of scope:
 - Modifying learner files in `script/01-sql/`.
 - Executing queries against a database engine.
-- Modifying the `sql-learning` skill or the agent blueprint (`agent-blueprints/01-sql-learning.md`).
+- Modifying the `learning-progress` skill or the agent blueprint (`agent-blueprints/01-learning-progress.md`).
 - Creating OpenSpec change proposals (planning is the responsibility of `@openspec-agent`).

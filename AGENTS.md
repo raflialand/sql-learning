@@ -4,7 +4,7 @@ This file is the primary instruction surface for agents contributing to this pro
 
 ## Project Identity
 
-sql-learning is a 3-month, 12-week SQL learning environment. Its execution domain is driven by the `sql-learning` skill (`.opencode/skills/sql-learning/`) and the canonical agent plan (`agent-blueprints/01-sql-learning.md`). It also uses the OpenSpec methodology for spec-driven, plan-first changes to project capabilities.
+sql-learning is a multi-track learning environment (SQL Fundamentals, Data Quality Engineer, Data Engineering). Its execution domain is driven by the `learning-progress` skill (`.opencode/skills/learning-progress/`), the canonical agent plan (`agent-blueprints/01-learning-progress.md`), and the track registry (`learning/00-notes/tracks.md`). It also uses the OpenSpec methodology for spec-driven, plan-first changes to project capabilities.
 
 ## Intent Classification
 
@@ -34,7 +34,7 @@ When the intent is planning, the main agent SHALL delegate to `@openspec-agent`.
 | -------------------- | ------------------------------------------------------------- |
 | `query-inspector`    | Inspects learner-submitted SQL queries for query-logic correctness and business-requirement alignment; writes `query-analysis.md` to `docs/03-query-inspector/` |
 
-Domain agents are project-specific. Add agent definitions to `.opencode/agents/` and register them in this table. The `sql-learning` execution capability is defined in `.opencode/skills/sql-learning/` and `agent-blueprints/01-sql-learning.md`.
+Domain agents are project-specific. Add agent definitions to `.opencode/agents/` and register them in this table. The `learning-progress` execution capability is defined in `.opencode/skills/learning-progress/`, `agent-blueprints/01-learning-progress.md`, and the track registry `learning/00-notes/tracks.md`.
 
 ## Directory Write Rules
 
@@ -50,13 +50,13 @@ Domain agents are project-specific. Add agent definitions to `.opencode/agents/`
 ├── AGENTS.md              # This file — intent routing and agent registry
 ├── .opencode/             # Agent configuration directory
 │   ├── agents/            # Agent definitions for all agents
-│   └── skills/            # Skill definitions (e.g. sql-learning)
+│   └── skills/            # Skill definitions (e.g. learning-progress)
 │
 ├── adr/                   # Architecture Decision Records
 │   └── AGENTS.md          # ADR conventions and template
 │
 ├── agent-blueprints/      # Canonical agent plans for execution agents
-├── learning/              # Learning material and progress notes
+├── learning/              # Learning material and progress notes (track registry: learning/00-notes/tracks.md)
 ├── script/                # SQL practice scripts (e.g. 01-sql/query-log.txt)
 ├── data/                  # Data assets
 ├── docs/                  # Documentation (dedicated folders per topic)

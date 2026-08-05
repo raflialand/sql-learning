@@ -151,13 +151,13 @@ The query-inspector capability SHALL produce analyses that satisfy measurable cr
 - AND the capability SHALL NOT report a mismatch that does not exist
 
 ### Requirement: Cross-Capability Dependency
-The query-inspector capability SHALL operate within the sql-learning execution domain and SHALL be registered in the project's agent routing registry.
+The query-inspector capability SHALL operate within the SQL track of the learning-progress execution domain and SHALL be registered in the project's agent routing registry.
 
-#### Scenario: Dependency on the sql-learning domain
-- GIVEN the query-inspector capability serves the sql-learning execution domain
+#### Scenario: Dependency on the learning-progress domain
+- GIVEN the query-inspector capability serves the SQL track managed by the learning-progress capability
 - WHEN the capability is documented
-- THEN the spec SHALL reference the sql-learning skill and agent blueprint in `## Related Code`
-- AND the capability SHALL NOT modify the sql-learning skill or agent blueprint
+- THEN the spec SHALL reference the learning-progress skill and agent blueprint in `## Related Code`
+- AND the capability SHALL NOT modify the learning-progress skill or agent blueprint
 
 #### Scenario: Registry entry required
 - GIVEN the query-inspector agent is added to the project
@@ -176,15 +176,15 @@ The query-inspector capability SHALL operate within the sql-learning execution d
 ### Out of scope
 - Executing queries against a database engine.
 - Modifying learner files in `script/01-sql/`.
-- Modifying the `sql-learning` skill (`.opencode/skills/sql-learning/`) or the agent blueprint (`agent-blueprints/01-sql-learning.md`).
+- Modifying the `learning-progress` skill (`.opencode/skills/learning-progress/`) or the agent blueprint (`agent-blueprints/01-learning-progress.md`).
 - Creating OpenSpec change proposals (planning is the responsibility of `openspec-agent`).
 
 ## Related Code
 
 - `.opencode/agents/query-inspector.md` — the query-inspector agent definition
 - `AGENTS.md` — Domain agents table (agent routing registry)
-- `.opencode/skills/sql-learning/` — the sql-learning execution domain skill
-- `agent-blueprints/01-sql-learning.md` — the canonical agent plan
+- `.opencode/skills/learning-progress/` — the learning-progress execution domain skill
+- `agent-blueprints/01-learning-progress.md` — the canonical agent plan
 - `script/01-sql/` — learner query files (input location)
 - `docs/03-query-inspector/` — analysis report output location
 - `openspec/specs/service-capability-template/spec.md` — contract template used for this capability

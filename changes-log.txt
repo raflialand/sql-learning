@@ -121,3 +121,26 @@ change #8: reorganize @learning/00-notes/ (4-Aug-2026)
    - README.md (progress-reporting note path, SUMMARIZE table, directory map → shows 00-personal-discuss/ + 02-sql-progress/)
 4. not affected (no path references): AGENTS.md, openspec/, docs/, other learning modules
 5. note: changes-log historical entry for change #6 (line 85) left untouched — it records the past state
+
+---
+
+change #9: generalize sql-learning into multi-track learning-progress skill (5-Aug-2026)
+
+1. created the track registry (single source of truth for learning tracks):
+   - learning/00-notes/tracks.md  (rows: sql 84 Days, dq 13 Units, de 26 Weeks — each with roadmap path, notes dir, unit count, unit label)
+2. renamed the skill folder and generalized it:
+   - .opencode/skills/sql-learning/  → .opencode/skills/learning-progress/  (registry-driven; optional track keyword in trigger e.g. "progress dq"; bare triggers default to most recently active track; ambiguous → ask)
+3. renamed the agent blueprint and rewrote it generically:
+   - agent-blueprints/01-sql-learning.md  → agent-blueprints/01-learning-progress.md  (report "X of N units (Z%)" from registry; summary template without SQL-only Database field)
+4. created the Data Engineering notes directory:
+   - learning/00-notes/01-de-progress/  (empty, .gitkeep; DE session summaries go here)
+5. updated references to the renamed skill/blueprint:
+   - AGENTS.md (project identity → multi-track, execution capability note, directory map)
+   - README.md (skill name, track registry, notes dirs, progress rules, directory map)
+   - .opencode/agents/query-inspector.md (boundary reference → learning-progress)
+   - openspec/specs/query-inspector/spec.md (Related Code + out of scope → learning-progress; Cross-Capability Dependency requirement merged from delta)
+   - learning/03-dq-learning/README.md (re-framed: 13-unit registered track, no longer "not part of the 84-day tracker")
+6. added OpenSpec artifacts for the change, then archived them:
+   - openspec/specs/learning-progress/spec.md (new canonical capability spec, created at archive from the delta)
+   - openspec/changes/archive/2026-08-05-generalize-learning-progress/ (proposal.md, design.md, tasks.md, delta specs for learning-progress + query-inspector)
+7. verification: registry resolves all three tracks (paths exist; SQL 11 summaries, DQ 1, DE 0); historical session-summary files and roadmaps untouched; old skill/blueprint paths removed

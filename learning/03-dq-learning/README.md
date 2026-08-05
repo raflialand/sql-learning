@@ -149,4 +149,4 @@ Exercises come in three flavors (mirroring the `sql-mastery` conventions):
 
 ## Relationship to the 3-Month SQL Roadmap
 
-The `sql-learning` skill tracks the 12-week **SQLite** roadmap. This module is **MySQL-native, self-paced, and standalone** — it is not part of the 84-day tracker. Treat it as a focused specialization after you have solid SQL fundamentals.
+The `learning-progress` skill tracks this module as a **13-unit** track registered in `learning/00-notes/tracks.md`. The module is **MySQL-native and self-paced**; treat it as a focused specialization after you have solid SQL fundamentals.
