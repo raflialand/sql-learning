@@ -1,0 +1,46 @@
+-- Business brief: 
+Marketing wants to run a $50,000 email campaign to all active customers. Success depends on emails actually being delivered.
+
+-- Part A: Case Study — The Marketing Email Campaign
+Exercise 2.1 — The interview
+Using the stakeholder checklist (Lesson 2.5), write the 5-6 questions you would ask the marketing owner, and the likely answers for this scenario.
+Answer:
+1.  Bucket 1: Purpose & Consumers
+    What exactly decides this campaign's success — and does it depend on emails actually arriving?
+2.  Bucket 2: Field-level Semantics
+    What does a deliverable email look like — what counts as valid?
+3.  Bucket 2: Field-level Semantics
+    Must every active customer have an email to be in this send?
+4.  Bucket 3: Key/Duplicates
+    Is one customer = one email, or can a person legitimately appear twice?
+5.  Bucket 4: Freshness
+    How fresh does this customer list need to be for the campaign?
+6.  Bucket 5: Severity
+    What's the worst case if emails bounce - what do we lose?
+--
+1.  "Honestly, everything downstream of delivery. If the email doesn't arrive, we get zero opens, zero clicks, zero sales — the $50K is gone. So yes, the list has to be real and reachable. Success for me is delivered emails, not sent emails."
+--
+2.  "A real address: something with a name, an @, a domain, and a proper ending like .com. If it has spaces, no @, or is n/a or null — it's not a real person and it won't deliver."
+--
+3.  "Yes. Everyone we put on the campaign list must have an email. No email = they can't receive it = why are we mailing them? But — a customer can be active but have no email yet; those just get left out of the send and chased later."
+--
+4.  "One person should get one email. If the same email appears twice, they get spammed twice and we look broken — plus we pay twice for a list we thought had unique people. Duplicates are a no."
+--
+5.  "The list should reflect who's active now. A customer who churned last month shouldn't be in this campaign. So the customer data — especially the email and the active flag — needs to be reasonably current, say within the last 30 days."
+--
+6.  "The $50,000, mostly — wasted send cost plus damaged sender reputation (ISPs start blocking us if bounce rates spike). And we'd have no idea which customers actually got the campaign, so the whole report is fiction. High stakes — this is real budget."
+--
+Exercise 2.2 — The expectations sheet
+Dataset         : customers
+Critical fields : email
+Required        : email
+Key             : email
+Allowed values  : email matches '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'; and status/active flag ∈ {active, inactive} → campaign only sends to active
+Ranges          : last_activity >= CURRENT_DATE - INTERVAL 30 DAY  → defines "active enough"
+Cross-table     : -
+Cross-field     : -
+Freshness       : <= 30 days
+Severity        : HIGH
+--
+Exercise 2.3 — Rule → SQL
+

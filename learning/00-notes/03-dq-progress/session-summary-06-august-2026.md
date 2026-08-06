@@ -109,4 +109,42 @@ Four sub-questions → four "wrongness" flavors → four Units:
 
 ---
 
+## Session 6: Unit 02 Exercises — Part A (Marketing Email Campaign) STARTED
+
+### Concept ground-work
+- **Email campaign** = coordinated, automated batch send to a list, driving a specific action. Budgeted ($50K), targeted (active customers), measured (opens/clicks/purchases) — but **every downstream metric depends on delivery first**. The whole risk sits on `customers.email` (Marketing = Validity > Completeness > Uniqueness).
+- **Checklist is a toolkit, not a script** — you do NOT need all 5 buckets. Context selects the questions (Lesson 2.1). For an email campaign: 3 questions on Field-Level Semantics (email is the risk), 1 each on Purpose, Freshness, Severity. Weight questions to the use case.
+
+### Exercise 2.1 — The interview (6 questions + owner answers) COMPLETE
+1. **Purpose:** "What decides success — does it depend on emails arriving?" → Everything downstream of delivery; if it doesn't arrive → $50K gone.
+2. **Field semantics (valid):** "What does a deliverable email look like?" → name@domain.tld, no spaces, no null/n/a.
+3. **Field semantics (required):** "Must every active customer have an email?" → Yes; no email = excluded from send, chased later.
+4. **Key/duplicates:** "One customer = one email?" → Yes; duplicates = spam + double pay.
+5. **Freshness:** "How fresh must the list be?" → active now; within last 30 days.
+6. **Severity:** "Worst case if emails bounce?" → wasted $50K + sender reputation damage + report is fiction.
+
+### Exercise 2.2 — Expectations sheet (customers, marketing) COMPLETE → PASS
+- Critical fields: `email` · Required: `email` · Key: `email`
+- Allowed values: email regex `'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'`; active flag ∈ {active, inactive} → campaign sends to active only
+- Ranges: `last_activity >= CURRENT_DATE - INTERVAL 30 DAY` → defines "active enough"
+- Cross-table / Cross-field: `-` (justified — no joins needed for a send) · Freshness: ≤ 30 days · Severity: HIGH
+- **Feedback applied:** annotation added so the sheet is self-contained (defines `active`); nit — write severity *reason* ("wasted $50K + sender reputation") so it travels to the Unit 11 rule catalog.
+- **Key insight:** interview answers ARE the source data for the sheet — each answer maps to a row (owner's "must have an email" → Required; "one person one email" → Key; "30 days" → Freshness/Ranges).
+
+### Position
+- Part A IN PROGRESS — Exercises 2.1 ✅, 2.2 ✅; **2.3 (Rule → SQL) NOT STARTED**.
+
+---
+
+## Next Steps
+
+1. **Exercise 2.3 — Rule → SQL:** three queries against `customers` in `dq_learning` (non-NULL email; well-formed email via regex; no duplicate emails) — write + expected row counts (15 customers).
+2. **Exercises 2.4–2.6:** priority call (which of the 3 to fix first), Finance-vs-Marketing (LTV, duplicates by email, customer 3 vs 4), translate-the-query (NULL emails by state).
+3. **Part C (2.7–2.8):** ambiguity hunting ("make orders unique" — 3 interpretations) + the "so what?" test (keep/drop 5 rules).
+4. **Self-assessment checkpoint** → closes Unit 02 (progress → 2 of 13).
+5. Optional: Unit 01 Part B SQL (1.7–1.8) once the dirty dataset is loaded in MySQL 8.0.
+6. Then **Unit 03 — Data Profiling** (first SQL-heavy unit).
+
+---
+
 *Happy Learning!*
