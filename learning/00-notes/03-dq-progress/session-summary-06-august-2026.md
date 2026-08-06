@@ -181,4 +181,41 @@ Four sub-questions → four "wrongness" flavors → four Units:
 
 ---
 
+## Session 8: Exercise 2.4 — Priority Call COMPLETE
+
+### Completed
+- Final answer: **fix duplicates first** — the only issue of the three with a campaign-wide blast radius.
+
+### The refined business-impact reasoning
+- **Direct cost is small** (customers 1 & 2 double-sent = one contact emailed twice) — but duplicates is the only failure that can spread beyond its own rows.
+- **Spam-flag risk = $50K-wide blast radius:** sending the same person twice doubles the spam-complaint chance → ISP flags the sender → all 13 reachable customers' emails land in junk. Fixing duplicates protects the other 73% of the send, not just 1 contact.
+- **Report becomes fiction:** duplicates inflate opens/clicks/purchases → the next campaign budget gets decided on metrics that never happened (the owner's own stated severity).
+- **Contrast:** NULL/blank (2 rows) and malformed (2 rows) are real but contained — no recovery path for NULL, cheap source fix for typos; neither can hurt customers beyond their own rows.
+- **Insurance reframe (Lesson 1.4):** ~$500 of dedup effort protecting a $50K send = the cheapest insurance the campaign will ever see.
+
+### The owner pitch (study for later)
+- One-sentence summary: *"Duplicates are the only issue small in count but campaign-wide in damage — one spam flag sinks all 15 emails, and inflated metrics make the report fiction."*
+- Leading line: *"Duplicates are the only one of the three that can take down the whole campaign. NULL and malformed emails hurt 2 rows each; duplicates can silently kill the full $50K."*
+
+### Key learnings
+- Priority is a **business judgment call**, not right/wrong — the exercise forces the hard choice the module trains: business impact over ease.
+- "Fix everything" is the scope-slip trap (Lesson 2.3 "so what?" test), not a priority answer.
+- The strong answer names the failure with a **multiplier** (blast radius) and a **dollar hook** (Lesson 1.4).
+
+### Position
+- Part A (2.1–2.4) COMPLETE ✅ · Part B starts at **2.5**.
+
+---
+
+## Next Steps
+
+1. **Exercise 2.5 — Finance vs Marketing:** same `customers` table for LTV — which dimension dominates now, duplicate-by-email check, customer 3 vs 4 (same phone, different email).
+2. **2.6:** translate-the-query (NULL emails grouped by state).
+3. **Part C (2.7–2.8):** ambiguity hunting ("make orders unique" — 3 interpretations) + the "so what?" test.
+4. **Self-assessment checkpoint** → closes Unit 02 (progress → 2 of 13).
+5. Optional: Unit 01 Part B SQL (1.7–1.8) once the dirty dataset is loaded in MySQL 8.0.
+6. Then **Unit 03 — Data Profiling** (first SQL-heavy unit).
+
+---
+
 *Happy Learning!*

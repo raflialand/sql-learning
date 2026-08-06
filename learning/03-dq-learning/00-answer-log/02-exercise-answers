@@ -85,3 +85,8 @@ AND email IS NOT NULL
 Exercise 2.4 — Priority call
 If you could only fix one of the three issues above this week, which would it be and why? Base your answer on business impact, not ease.
 Answer:
+i think i will fixing email that having null value, blank email, duplicates, or violating the email format first, cuz the critical field is on the email. once there a null/blank/duplicate/format violation on email exists, we definietely lose money
+--
+--
+-- Part B: Different Consumers, Different Checks
+Exercise 2.5 — Finance vs Marketing
