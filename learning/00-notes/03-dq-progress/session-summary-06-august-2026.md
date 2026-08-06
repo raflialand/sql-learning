@@ -147,4 +147,38 @@ Four sub-questions → four "wrongness" flavors → four Units:
 
 ---
 
+## Session 7: Exercise 2.3 — Rule → SQL COMPLETE
+
+### Completed
+- Wrote the three rules as separate queries against `customers` in `dq_learning`:
+
+**Rule 1 (Completeness)** — `email IS NULL OR email = ''` → **2 rows** (customers 5 NULL, 14 fully-empty).
+- `OR email = ''` justified: empty string is semantically "missing" (sendability), even though the defect map has none, so count stays 2.
+
+**Rule 2 (Validity)** — `email NOT REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'` → **2 rows** (customer 6 `david.wilson@@example.com`, customer 7 `eve.brown@example` no TLD).
+
+**Rule 3 (Uniqueness)** — `GROUP BY email HAVING COUNT(*) > 1 AND email IS NOT NULL` → **1 group** (customers 1 & 2 exact duplicates, count 2).
+
+### Key learnings
+- **One query = one rule (rule catalog discipline):** each rule card maps to one dimension/one distinct defect; separate counts per dimension for reporting. Combined queries are fine for a quick sweep, not the catalog.
+- **NOT REGEXP on NULL returns NULL (not TRUE)** — so Rule 2 *cannot* catch NULL emails; this is why Completeness (missing) and Validity (malformed) separate cleanly with zero overlap. Behavior by SQL semantics, now understood.
+- **`AND email IS NOT NULL` in Rule 3 = the NULL policy (Lesson 2.2) applied:** without it, the two NULL rows would group as `COUNT(*)=2` → false positive. **NULLs are not duplicates.**
+- Combined "all unusable emails" query returns 4 rows (5, 6, 7, 14) but stays out of the catalog to preserve dimension attribution.
+
+### Position
+- Part A: Exercises 2.1 ✅, 2.2 ✅, **2.3 ✅ COMPLETE**. Next: **2.4 (priority call)**.
+
+---
+
+## Next Steps
+
+1. **Exercise 2.4 — Priority call:** if only ONE of the three email issues could be fixed this week, which and why (business impact, not ease).
+2. **Part B (2.5–2.6):** Finance-vs-Marketing (LTV, duplicates by email, customer 3 vs 4 same phone), translate-the-query (NULL emails grouped by state).
+3. **Part C (2.7–2.8):** ambiguity hunting ("make orders unique" — 3 interpretations) + the "so what?" test (keep/drop 5 rules).
+4. **Self-assessment checkpoint** → closes Unit 02 (progress → 2 of 13).
+5. Optional: Unit 01 Part B SQL (1.7–1.8) once the dirty dataset is loaded in MySQL 8.0.
+6. Then **Unit 03 — Data Profiling** (first SQL-heavy unit).
+
+---
+
 *Happy Learning!*

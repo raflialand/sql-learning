@@ -1,3 +1,5 @@
+-- [Business Context Exercises]
+
 -- Business brief: 
 Marketing wants to run a $50,000 email campaign to all active customers. Success depends on emails actually being delivered.
 
@@ -30,7 +32,9 @@ Answer:
 --
 6.  "The $50,000, mostly — wasted send cost plus damaged sender reputation (ISPs start blocking us if bounce rates spike). And we'd have no idea which customers actually got the campaign, so the whole report is fiction. High stakes — this is real budget."
 --
+--
 Exercise 2.2 — The expectations sheet
+Answer:
 Dataset         : customers
 Critical fields : email
 Required        : email
@@ -42,5 +46,42 @@ Cross-field     : -
 Freshness       : <= 30 days
 Severity        : HIGH
 --
+--
 Exercise 2.3 — Rule → SQL
-
+Translate these marketing expectations into SQL (against customers in dq_learning):
+1.  Every customer must have a non-NULL email.
+2.  Every email must be well-formed (contains @, a domain, and a TLD).
+3.  No two customers may share an email.
+Answer:
+-- Rule 1
+SELECT customer_id, 
+    first_name, 
+    last_name, 
+    email, 
+    is_active
+FROM customers
+WHERE email IS NULL
+OR email = '' 
+;
+-- Rule 2  
+SELECT customer_id,
+    first_name,
+    last_name,
+    email,
+    is_active
+FROM customers
+WHERE email NOT REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
+;
+-- Rule 3  
+SELECT email,
+    COUNT(*) AS `count`
+FROM customers
+GROUP BY email
+HAVING COUNT(*) > 1
+AND email IS NOT NULL
+;
+--
+--
+Exercise 2.4 — Priority call
+If you could only fix one of the three issues above this week, which would it be and why? Base your answer on business impact, not ease.
+Answer:
