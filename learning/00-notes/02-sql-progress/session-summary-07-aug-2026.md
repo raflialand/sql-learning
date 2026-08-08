@@ -2,7 +2,7 @@
 
 **Date:** 7 August 2026
 **Track:** SQL Fundamentals
-**Status:** Week 7 Day 1 COMPLETE (MIN/MAX practice exercises 1-5 done) - Week 7 in progress
+**Status:** Week 7 Day 2 — HAVING concepts learned, exercises pending
 
 ---
 
@@ -10,12 +10,20 @@
 
 Resumed from Week 6 (complete). Began Week 7 Aggregation module using `data/sql-learn.db`.
 
-### Day 1: MIN/MAX — Finding Extreme Values
+### Day 1: MIN/MAX — Finding Extreme Values ✅
 
 - Aggregate functions recap: `COUNT`, `SUM`, `AVG`, `MIN`, `MAX` squash N rows into 1.
 - `MIN`/`MAX` work on any comparable type: numbers, dates, and **text** (alphabetical).
 - Aggregates skip NULLs automatically.
 - **Key rule:** aggregate functions (`MAX`, `MIN`, ...) are ILLEGAL in `WHERE` — they run AFTER WHERE in execution order (FROM → WHERE → GROUP BY → SELECT → HAVING/ORDER BY).
+
+### Day 2: HAVING — Filtering Aggregated Data ✅ Concepts Learned
+
+- `HAVING` filters **groups** after `GROUP BY` — can use aggregates (`COUNT`, `SUM`, `AVG`)
+- `WHERE` filters **rows** before grouping — cannot use aggregates
+- Execution order: `FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY`
+- SQLite allows aliases in HAVING; standard SQL requires repeating the expression
+- Common pitfalls: alias in HAVING, column not in GROUP BY, mixing aggregate + non-aggregate
 
 ---
 
@@ -68,11 +76,72 @@ Resumed from Week 6 (complete). Began Week 7 Aggregation module using `data/sql-
 
 ## Next Steps
 
-1. **Week 7 Day 2: HAVING** — filtering aggregated data (WHERE vs HAVING).
-2. Day 3: Multiple Aggregations & COUNT(DISTINCT).
-3. Day 4: Aggregating across JOINs + date functions (strftime).
-4. Week 7 Mini Quiz (target > 80%).
-5. Optionally import `data/sql-learn-mysql.sql` into local MySQL and practice on it.
+1. ~~Week 7 Day 2: HAVING~~ ✅ Learned (concepts saved)
+2. **Week 7 Day 2: HAVING Practice** — 5 exercises on `data/sql-learn.db`
+3. Day 3: Multiple Aggregations & COUNT(DISTINCT).
+4. Day 4: Aggregating across JOINs + date functions (strftime).
+5. Week 7 Mini Quiz (target > 80%).
+6. Optionally import `data/sql-learn-mysql.sql` into local MySQL and practice on it.
+
+---
+
+*Happy Learning!*
+
+---
+
+## Week 7 Day 2: HAVING — Filtering Aggregated Data
+
+### What HAVING Does
+
+`WHERE` filters **rows** before grouping. `HAVING` filters **groups** after grouping. You cannot use aggregate functions like `COUNT()`, `SUM()`, `AVG()` inside `WHERE` — that's where `HAVING` comes in.
+
+```sql
+-- Filter groups after aggregation
+SELECT department_id, COUNT(*) AS headcount, AVG(salary) AS avg_salary
+FROM employees
+GROUP BY department_id
+HAVING COUNT(*) > 3;
+```
+
+### Execution Order (Critical to Memorize)
+
+```
+FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY
+```
+
+| Clause | What it sees | Can use aggregates? |
+|--------|-------------|-------------------|
+| WHERE | Raw rows | No |
+| GROUP BY | Groups forming | No |
+| HAVING | Completed groups | Yes |
+| SELECT | Final result | Yes (but aliases not in WHERE/HAVING) |
+
+### WHERE vs HAVING — When to Use Which
+
+| Situation | Use | Example |
+|-----------|-----|---------|
+| Filter individual rows | `WHERE` | Only employees in dept 3 |
+| Filter after grouping | `HAVING` | Only departments with >3 employees |
+| Both together | `WHERE` first, then `HAVING` | Dept 3 employees → groups with avg > 5000 |
+
+```sql
+-- WHERE + HAVING combo
+SELECT department_id, AVG(salary) AS avg_salary
+FROM employees
+WHERE hire_date > '2020-01-01'      -- filter rows FIRST
+GROUP BY department_id
+HAVING AVG(salary) > 5000;          -- filter groups SECOND
+```
+
+### Common Pitfalls
+
+1. **Alias in HAVING** — SQLite allows `HAVING avg_salary > 5000`, but standard SQL (MySQL, Postgres) requires repeating the expression: `HAVING AVG(salary) > 5000`.
+2. **Column must be in GROUP BY** — Every non-aggregate column in `SELECT` must appear in `GROUP BY` or SQL errors.
+3. **Can't mix aggregate + non-aggregate** — `HAVING MAX(salary) > 5000 AND department_id = 3` fails. Filter `department_id` in `WHERE` instead.
+
+### Why This Matters (Real-World Insight)
+
+Most business questions are "find groups that satisfy a condition" — top customers, underperforming departments, products ordered frequently. Without HAVING, you'd have to compute everything, export results, and filter externally. HAVING lets the database do it in one query.
 
 ---
 
