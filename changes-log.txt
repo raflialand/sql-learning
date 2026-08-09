@@ -121,3 +121,65 @@ change #8: reorganize @learning/00-notes/ (4-Aug-2026)
    - README.md (progress-reporting note path, SUMMARIZE table, directory map → shows 00-personal-discuss/ + 02-sql-progress/)
 4. not affected (no path references): AGENTS.md, openspec/, docs/, other learning modules
 5. note: changes-log historical entry for change #6 (line 85) left untouched — it records the past state
+
+---
+
+change #9: generalize sql-learning into multi-track learning-progress skill (5-Aug-2026)
+
+1. created the track registry (single source of truth for learning tracks):
+   - learning/00-notes/tracks.md  (rows: sql 84 Days, dq 13 Units, de 26 Weeks — each with roadmap path, notes dir, unit count, unit label)
+2. renamed the skill folder and generalized it:
+   - .opencode/skills/sql-learning/  → .opencode/skills/learning-progress/  (registry-driven; optional track keyword in trigger e.g. "progress dq"; bare triggers default to most recently active track; ambiguous → ask)
+3. renamed the agent blueprint and rewrote it generically:
+   - agent-blueprints/01-sql-learning.md  → agent-blueprints/01-learning-progress.md  (report "X of N units (Z%)" from registry; summary template without SQL-only Database field)
+4. created the Data Engineering notes directory:
+   - learning/00-notes/01-de-progress/  (empty, .gitkeep; DE session summaries go here)
+5. updated references to the renamed skill/blueprint:
+   - AGENTS.md (project identity → multi-track, execution capability note, directory map)
+   - README.md (skill name, track registry, notes dirs, progress rules, directory map)
+   - .opencode/agents/query-inspector.md (boundary reference → learning-progress)
+   - openspec/specs/query-inspector/spec.md (Related Code + out of scope → learning-progress; Cross-Capability Dependency requirement merged from delta)
+   - learning/03-dq-learning/README.md (re-framed: 13-unit registered track, no longer "not part of the 84-day tracker")
+6. added OpenSpec artifacts for the change, then archived them:
+   - openspec/specs/learning-progress/spec.md (new canonical capability spec, created at archive from the delta)
+   - openspec/changes/archive/2026-08-05-generalize-learning-progress/ (proposal.md, design.md, tasks.md, delta specs for learning-progress + query-inspector)
+7. verification: registry resolves all three tracks (paths exist; SQL 11 summaries, DQ 1, DE 0); historical session-summary files and roadmaps untouched; old skill/blueprint paths removed
+
+---
+
+change #10: add self-adjustment + ADR protocol to the learning-progress skill (5-Aug-2026)
+
+1. created the manifest baseline:
+   - .opencode/skills/learning-progress/manifest.json  (version, lastChange, adrCount, SHA-256 hashes of SKILL.md, blueprint, canonical spec — the detection baseline; tracks.md excluded)
+2. added a third skill mode (SELF-CHECK/ADJUST):
+   - .opencode/skills/learning-progress/SKILL.md  (DETECT → ELICIT → EXECUTE → RECORD; manifest accuracy + tracks.md-exclusion invariants)
+3. documented the self-adjustment architecture:
+   - agent-blueprints/01-learning-progress.md  (new ## 7. Self-Adjustment and ADR Protocol; Implementation Mapping renumbered to ## 8 with manifest + adr rows)
+4. updated routing and ADR conventions:
+   - AGENTS.md  (planning intents targeting the skill elicit ADR requirements first, then delegate to @openspec-agent; directory map lists adr/learning-progress/)
+   - adr/AGENTS.md  (naming convention extended to adr/{skill-name}/)
+5. recorded the first decision record via the new protocol:
+   - adr/learning-progress/ADR-001-establish-self-adjustment-adr-protocol.md  (status accepted)
+6. updated the canonical spec (merged from delta at archive):
+   - openspec/specs/learning-progress/spec.md  (4 ADDED requirements: Self-Adjustment Detection, ADR Requirement Elicitation, ADR Creation After Execution, Manifest Accuracy; 1 MODIFIED: Execution Without Confirmation)
+   - openspec/changes/archive/2026-08-05-add-self-adjustment-adr-protocol/  (proposal.md, design.md, tasks.md, delta spec)
+7. updated documentation to reflect the new mode:
+   - README.md  (three trigger modes + SELF-CHECK/ADJUST row; directory map shows adr/learning-progress/)
+8. verification: all three manifest hashes match current files (v1.1.0, adrCount 1); ADR-001 valid per adr/AGENTS.md template; no stale "two modes" references
+
+---
+
+change #11: reconcile stale manifest baseline in the learning-progress skill (5-Aug-2026)
+
+1. fixed the manifest baseline that was committed stale:
+   - .opencode/skills/learning-progress/manifest.json  (v1.1.0 recorded SHA-256 hashes from pre-final drafts of SKILL.md/blueprint/spec, all three mismatched the committed files; recomputed hashes → v1.2.0, adrCount 2, lastChange 2026-08-05)
+2. recorded the reconciliation decision via the SELF-CHECK/ADJUST protocol:
+   - adr/learning-progress/ADR-002-reconcile-stale-manifest-baseline.md  (status accepted; decision = re-baseline manifest only, no definition file edits)
+3. added a DQ learning session note (Unit 01 exercises completed → DQ track 1/13):
+   - learning/00-notes/03-dq-progress/session-summary-05-august-2026.md  (exercises 1.1-1.6, self-assessment checkpoint, Unit 01 complete; progress 1 of 13 units)
+4. not affected (no definition changes): SKILL.md, agent-blueprints/01-learning-progress.md, openspec/specs/learning-progress/spec.md — files correct as committed, hashes only
+5. verification: re-ran DETECT — all three hashes match the manifest, no pending adjustment (ALL_MATCH=True)
+6. reference audit — checked every file/folder/skill/agent that could reference the changed artifacts; no active-file updates needed:
+   - manifest.json / ADR-002 / session-summary-05 referenced only generically (no version or adrCount hardcoded): SKILL.md, agent-blueprints/01-learning-progress.md, openspec/specs/learning-progress/spec.md, AGENTS.md, learning/00-notes/tracks.md (notes dir only), learning/03-dq-learning/README.md (no progress %), .opencode/agents/query-inspector.md + spec (boundary ref unaffected)
+   - updated already: changes-log.txt (#11), README.md (intro, changes-log line, skills map)
+   - left untouched (historical records, per project convention): changes-log #10 verification line (v1.1.0/adrCount 1 — records past state, #11 documents the correction), openspec/changes/archive/2026-08-05-add-self-adjustment-adr-protocol/tasks.md (archived immutable snapshot), session-summary-04-august-2026.md (historical "Unit 01 IN PROGRESS" note — skill invariant: never overwrite/delete summaries)

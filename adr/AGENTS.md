@@ -2,16 +2,18 @@
 
 ## Purpose
 
-Define conventions for Architecture Decision Records (ADRs) in this repository.
+Define conventions for Architecture Decision Records (ADRs) in this repository. Skills that self-adjust (SELF-CHECK/ADJUST mode) write their decision records under `adr/{skill-name}/` (e.g. `adr/learning-progress/`).
 
 ## Naming Convention
 
 ```
 adr/{agent-name}/ADR-{NNN}-{slug}.md
+adr/{skill-name}/ADR-{NNN}-{slug}.md
 ```
 
 - `{agent-name}`: the name of the agent that created the ADR, matching its `.opencode/agents/` filename (e.g. `openspec-agent`)
-- `{NNN}`: zero-padded sequential number scoped to the agent directory (e.g. `001`, `012`). Each agent maintains its own sequence.
+- `{skill-name}`: the name of a skill that records adjustments to its own definition, matching its `.opencode/skills/` folder (e.g. `learning-progress`)
+- `{NNN}`: zero-padded sequential number scoped to the directory (e.g. `001`, `012`). Each agent or skill directory maintains its own sequence.
 - `{slug}`: lowercase kebab-case description (e.g. `adopt-postgres-for-persistence`)
 
 ## Template
