@@ -212,3 +212,14 @@ Built earlier today in the working session; finalized with track registration an
 7. updated documentation:
    - README.md  (intro, track list, practice DBs, deep-dive modules, directory map, Getting Started, Related Roadmaps)
 8. verification: all 60 solutions execute against their SQLite DBs (0 failures); order totals == line-item sums; paid bills have payments; generator re-run reproduces identical data and keeps all 60 passing
+
+---
+
+change #13: add ERD diagrams to sql-skill-push dataset READMEs (9-Aug-2026)
+
+1. added a full Mermaid erDiagram + relationship summary + join hints to each dataset README:
+   - datasets/01-beginner/README.md       (retail: customers-orders-order_items-products, 3 one-to-many links)
+   - datasets/02-intermediate/README.md   (ecommerce: 8 tables, 7 links incl. self-referencing categories.parent_cat_id)
+   - datasets/03-advanced/README.md       (telecom: 7 tables, 7 links incl. billing-payments settle path)
+2. style matches docs/01-erd-diagram/ERD-diagram.md (all columns in entity blocks, PK/FK markers, relationship table)
+3. verification: all three READMEs still reference their real schemas (column names/types match the generator's DDL)

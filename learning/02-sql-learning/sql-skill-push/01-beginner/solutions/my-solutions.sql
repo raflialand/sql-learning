@@ -1,0 +1,1 @@
+-- Q1: Which products are currently active? Show them from cheapest to most expensive.
