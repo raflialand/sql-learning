@@ -182,4 +182,33 @@ change #11: reconcile stale manifest baseline in the learning-progress skill (5-
 6. reference audit — checked every file/folder/skill/agent that could reference the changed artifacts; no active-file updates needed:
    - manifest.json / ADR-002 / session-summary-05 referenced only generically (no version or adrCount hardcoded): SKILL.md, agent-blueprints/01-learning-progress.md, openspec/specs/learning-progress/spec.md, AGENTS.md, learning/00-notes/tracks.md (notes dir only), learning/03-dq-learning/README.md (no progress %), .opencode/agents/query-inspector.md + spec (boundary ref unaffected)
    - updated already: changes-log.txt (#11), README.md (intro, changes-log line, skills map)
-   - left untouched (historical records, per project convention): changes-log #10 verification line (v1.1.0/adrCount 1 — records past state, #11 documents the correction), openspec/changes/archive/2026-08-05-add-self-adjustment-adr-protocol/tasks.md (archived immutable snapshot), session-summary-04-august-2026.md (historical "Unit 01 IN PROGRESS" note — skill invariant: never overwrite/delete summaries)
+    - left untouched (historical records, per project convention): changes-log #10 verification line (v1.1.0/adrCount 1 — records past state, #11 documents the correction), openspec/changes/archive/2026-08-05-add-self-adjustment-adr-protocol/tasks.md (archived immutable snapshot), session-summary-04-august-2026.md (historical "Unit 01 IN PROGRESS" note — skill invariant: never overwrite/delete summaries)
+
+---
+
+change #12: add SQL Skill Push challenge module + register track (9-Aug-2026)
+
+Built earlier today in the working session; finalized with track registration and docs update in this change.
+
+1. created the challenge module in @learning/:
+   - learning/02-sql-learning/sql-skill-push/  (practice-by-solving: 60 verified problems, no theory)
+2. added three business-profiled datasets (deterministic seeded generator), MySQL 8 + SQLite each:
+   - datasets/01-beginner/  retail     (Brew & Co. coffee shop, 4 tables, ~1,200 orders)
+   - datasets/02-intermediate/ ecommerce (MarketHub marketplace, 8 tables, ~2,800 orders)
+   - datasets/03-advanced/  telecom    (NovaTel carrier, 7 tables, ~4,500 subscribers)
+   - datasets/<level>/README.md = short business-context profile (schema, row counts, data quirks)
+3. added tools:
+   - _tools/generate_datasets.py  (seeded generator → MySQL .sql + SQLite .db, re-runnable)
+   - _tools/run_query.py          (verification helper: solution → markdown preview + row count)
+4. added 20 challenges + 20 verified solutions per level:
+   - 01-beginner/        (SELECT, WHERE, ORDER BY, GROUP BY, aggregates)
+   - 02-intermediate/    (JOINs, HAVING, subqueries, CTEs, CASE, basic windows)
+   - 03-advanced/        (window functions, correlated subqueries, recursive CTE, set ops, pivots, cohorts)
+   - each challenges.md embeds expected results (sample rows + total row count) captured by executing the solutions
+5. registered a new learning track:
+   - learning/00-notes/tracks.md  (row: sql-push, 60 Challenge units, roadmap = sql-skill-push/README.md, notes dir = 04-sql-push/)
+6. created progress notes directory:
+   - learning/00-notes/04-sql-push/  (README with session template + progress snapshot table)
+7. updated documentation:
+   - README.md  (intro, track list, practice DBs, deep-dive modules, directory map, Getting Started, Related Roadmaps)
+8. verification: all 60 solutions execute against their SQLite DBs (0 failures); order totals == line-item sums; paid bills have payments; generator re-run reproduces identical data and keeps all 60 passing
