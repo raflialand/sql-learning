@@ -95,3 +95,49 @@ SELECT payment_method,
 FROM orders
 GROUP BY payment_method;
 ORDER BY payment_method DESC;
+--
+-- Q16: Which customer has placed the most orders? Show the top 5 customers by order count.
+SELECT c.cust_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS `name`,
+    COUNT(o.order_id) AS order_count
+FROM customers c
+    LEFT JOIN orders o ON c.cust_id = o.customer_id
+GROUP BY c.cust_id
+ORDER BY order_count DESC
+LIMIT 5;
+--
+-- Q17: Which customers have spent more than $100 in total, and how much? Show the top 10.
+SELECT c.cust_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS `name`,
+    SUM(o.total_amount) AS total_spent
+FROM customers c
+    LEFT JOIN orders o ON c.cust_id = o.customer_id
+GROUP BY c.cust_id
+HAVING total_spent > 100
+ORDER BY total_spent DESC
+LIMIT 10;
+--
+-- Q18: How many orders were placed in each month of 2025?
+SELECT MONTH(order_date) AS order_month,
+    COUNT(*) AS total_orders
+FROM orders
+WHERE YEAR(order_date) = 2025
+GROUP BY MONTH(order_date)
+ORDER BY order_month ASC;
+--
+-- Q19: What is the average order value per month, and which month had the highest?
+SELECT YEAR(order_date) AS order_year,
+    MONTH(order_date) AS order_month,
+    AVG(total_amount) AS average_order_value
+FROM orders
+GROUP BY YEAR(order_date),
+    MONTH(order_date)
+ORDER BY YEAR(order_date),
+    average_order_value DESC;
+--
+-- Q20: Which customers have NEVER placed an order?
+SELECT c.cust_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS `name`
+FROM customers c
+    LEFT JOIN orders o ON c.cust_id = o.customer_id
+WHERE o.order_id IS NULL;
