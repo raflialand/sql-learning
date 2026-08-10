@@ -1,0 +1,2 @@
+-- [Intermediate SQL Skill Push]
+-- Q1: For each order, show the customer's full name and country.
