@@ -2,7 +2,7 @@
 -- Q1: Which products are currently active? Show them from cheapest to most expensive.
 SELECT *
 FROM products
-WHERE active = 1
+WHERE is_active = 1
 ORDER BY unit_price ASC;
 --
 -- Q2: What are the distinct product categories in the menu?
@@ -84,7 +84,7 @@ GROUP BY store_id;
 -- Q14: Which product categories bring in the most revenue? (revenue = qty × unit_price)
 SELECT p.category,
     SUM(oi.quantity * unit_price) AS total_revenue
-FROM order_items
+FROM order_items oi
     LEFT JOIN products p ON oi.product_id = p.prod_id
 GROUP BY p.category
 ORDER BY total_revenue DESC;
@@ -93,7 +93,7 @@ ORDER BY total_revenue DESC;
 SELECT payment_method,
     COUNT(*) AS payment_count
 FROM orders
-GROUP BY payment_method;
+GROUP BY payment_method
 ORDER BY payment_method DESC;
 --
 -- Q16: Which customer has placed the most orders? Show the top 5 customers by order count.
