@@ -32,3 +32,32 @@
 
 1. Fix Q1, Q3, Q14, Q15, Q18, Q19 in `my-solutions.sql` (SQLite-compatible) and re-run verification.
 2. Re-submit the corrected file to `@query-inspector` to confirm 20/20 PASS.
+
+---
+
+## Intermediate Q1–Q5 — Completed & Verified
+
+**Status:** Intermediate started — Q1–Q5 done and verified against expected results in `02-intermediate/challenges.md`.
+
+### Completed
+
+- Intermediate Q1–Q5 on `datasets/02-intermediate/ecommerce.db` (MarketHub marketplace), each compared against the expected result and reference solutions.
+
+### Key Takeaways
+
+1. Q1 — orders→customers join (`CONCAT(c.first_name, ' ', c.last_name)`, `LEFT JOIN c.cust_id = o.customer_id`) is valid; backtick identifiers and `CONCAT` are accepted by SQLite.
+2. Q2 — "not been paid yet" = **anti-join**: `orders LEFT JOIN payments WHERE p.payment_id IS NULL` → 517 rows. In this question "paid" means "has any payment row" — `Failed`/`Refunded` rows still count, so they are excluded. `status != 'Paid'` would wrongly return 935 (misses the 517 orders with no row and mislabels refunded as unpaid).
+3. Q3 — `LEFT JOIN` + `GROUP BY` keeps parent categories with zero products; join on `p.cat_id`, count `p.prod_id` (16 rows).
+4. Q4 — `ROUND(SUM(quantity*unit_price), 2)` removes floating-point artifacts (e.g. `1003865.0299999999` → `1003865.03`); `HAVING total_revenue > 500000` on the alias works (8 rows).
+5. Q5 — subquery in `HAVING`: `AVG(o.total_amount) > (SELECT AVG(total_amount) FROM orders)`; overall avg ≈ 2996.32, only Australia/USA/Canada pass (3 rows).
+
+### Mistakes / Notes
+
+- Q3: stray `;` mid-statement split the query (same class of bug as Beginner Q15); wrong join column `p.category_id` → `p.cat_id`.
+- Q4: typo `oi.poduct_id` → `oi.product_id`; missing `ROUND(..., 2)` leaked float artifacts in Fitness / Women's Clothing.
+- Q5: missing `ORDER BY avg_order_value DESC` (expected output is sorted high→low).
+
+### Next Steps
+
+1. Fix the 6 pending Beginner fixes (Q1, Q3, Q14, Q15, Q18, Q19) and re-verify to 20/20.
+2. Continue with Intermediate Q6–Q20.
