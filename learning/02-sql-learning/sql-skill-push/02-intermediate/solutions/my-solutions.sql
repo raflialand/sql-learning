@@ -67,3 +67,20 @@ FROM products p
 WHERE p.is_active = 0
     AND oi.order_id IS NOT NULL
 ORDER BY p.prod_id;
+--
+-- Q8: Total revenue and order count per month, with a running total of revenue over time.
+WITH monthly_revenue AS (
+    SELECT YEAR(order_date) AS year,
+        MONTH(order_date) AS month,
+        COUNT(*) AS order_count,
+        ROUND(SUM(total_amount), 2) AS revenue
+    FROM orders
+    GROUP BY YEAR(order_date),
+        MONTH(order_date)
+)
+SELECT *,
+    ROUND(SUM(revenue), 2) OVER(
+        ORDER BY year,
+            month
+    ) AS running_revenue
+FROM monthly_revenue;
