@@ -88,3 +88,34 @@
 
 1. Fix the 6 pending Beginner fixes (Q1, Q3, Q14, Q15, Q18, Q19) → 20/20.
 2. Continue Intermediate Q9–Q20 in **MySQL dialect** on the MySQL copy of the ecommerce dataset.
+
+---
+
+## Intermediate Q9–Q11 — Completed & Verified
+
+**Status:** Intermediate Q9–Q11 done and verified against expected results in `02-intermediate/challenges.md`.
+
+### Completed
+
+- Q9 — Top 2 orders per customer, `ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY total_amount DESC)` + `WHERE rn <= 2` (990 rows).
+- Q10 — Price vs category average, `AVG(unit_price) OVER (PARTITION BY cat_id)` + `ROUND(..., 2)` (111 rows).
+- Q11 — Revenue by order status via conditional aggregation (1 row).
+
+### Key Takeaways
+
+1. Q9 — ranking via `ROW_NUMBER()` in a CTE, filter `rn <= 2`. The outer `SELECT` must emit the **expected columns** — I first output `customer_name` instead of `rn`. Joining `customers LEFT JOIN orders` works here (every customer has ≥2 orders) but the reference ranks from `orders` alone; a customer with zero orders would leak a spurious `rn=1` NULL row.
+2. Q10 — "active product" is a **business filter**: without `WHERE is_active = 1` the query returns 120 rows, expected 111. Window `AVG` emits float artifacts (`488.86800000000005`) → always `ROUND(..., 2)`. Reference sorts `ORDER BY cat_id, unit_price DESC`.
+3. Q11 — conditional aggregation = **pivot**: four `SUM(CASE WHEN status = '...' THEN total_amount ELSE 0 END)` columns in one `SELECT`, no `GROUP BY`, single row. Status literal must match exactly — `'Complete'` (typo) silently returned `completed_rev = 0`; correct is `'Completed'`.
+
+### Mistakes / Notes
+
+- Q9: selected `customer_name` instead of `rn` → columns didn't match expected; fixed.
+- Q10: no `WHERE is_active = 1` (120 vs 111 rows); no `ROUND` (float artifacts); missing `FROM`/`WHERE` in an early draft → syntax error.
+- Q11: `status = 'Complete'` → 0 for `completed_rev`; corrected to `'Completed'`.
+
+### Next Steps
+
+1. Fix the 6 pending Beginner fixes (Q1, Q3, Q14, Q15, Q18, Q19) → 20/20.
+2. Continue Intermediate Q12–Q20 (Q12: order size labels via `CASE WHEN`).
+
+---

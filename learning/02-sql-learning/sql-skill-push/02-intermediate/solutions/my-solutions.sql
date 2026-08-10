@@ -84,3 +84,66 @@ SELECT *,
             month
     ) AS running_revenue
 FROM monthly_revenue;
+--
+-- Q9: Rank each order within its customer by amount (1 = largest). Show the top 2 orders per customer.
+WITH order_rank AS(
+    SELECT c.cust_id AS customer_id,
+        CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+        o.order_id AS order_id,
+        o.total_amount AS total_amount,
+        ROW_NUMBER() OVER(
+            PARTITION BY c.cust_id
+            ORDER BY o.total_amount DESC
+        ) AS rn
+    FROM customers c
+        LEFT JOIN orders o ON c.cust_id = o.customer_id
+)
+SELECT customer_id,
+    order_id,
+    total_amount,
+    rn
+FROM order_rank
+WHERE rn <= 2
+ORDER BY customer_id,
+    rn;
+--
+-- Q10: For each active product, show its price compared to the average price of its category.
+SELECT prod_id,
+    prod_name,
+    unit_price,
+    ROUND(AVG(unit_price) OVER(PARTITION BY cat_id), 2) AS cat_avg_price,
+    ROUND(
+        unit_price - AVG(unit_price) OVER(PARTITION BY cat_id),
+        2
+    ) AS diff_from_avg
+FROM products
+WHERE is_active = 1;
+--
+-- Q11: Revenue breakdown by order status using conditional aggregation.
+SELECT SUM(
+        CASE
+            WHEN status = 'Completed' THEN total_amount
+            ELSE 0
+        END
+    ) AS completed_rev,
+    SUM(
+        CASE
+            WHEN status = 'Shipped' THEN total_amount
+            ELSE 0
+        END
+    ) AS shipped_rev,
+    SUM(
+        CASE
+            WHEN status = 'Pending' THEN total_amount
+            ELSE 0
+        END
+    ) AS pending_rev,
+    SUM(
+        CASE
+            WHEN status = 'Cancelled' THEN total_amount
+            ELSE 0
+        END
+    ) AS cancelled_rev
+FROM orders;
+--
+-- Q12: Flag orders as "Large", "Medium", or "Small" based on their total amount.
