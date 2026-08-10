@@ -61,3 +61,30 @@
 
 1. Fix the 6 pending Beginner fixes (Q1, Q3, Q14, Q15, Q18, Q19) and re-verify to 20/20.
 2. Continue with Intermediate Q6–Q20.
+
+---
+
+## Intermediate Q6–Q8 — Completed & Verified
+
+**Status:** Intermediate Q6–Q8 done; Q8 dialect clarified — real workflow is MySQL, so study the MySQL dialect going forward.
+
+### Completed
+
+- Intermediate Q6–Q8 on `datasets/02-intermediate/ecommerce.db` (MarketHub), each verified against the expected result / reference solutions.
+
+### Key Takeaways
+
+1. Q6 — "customers with an order above the overall AOV" returns **unique customers** (453), not qualifying orders (1,257). Key: `DISTINCT` over *only* customer columns; keep `total_amount` in the `WHERE` filter and out of the `SELECT` (selecting it blocks dedup). "Avg spend per customer > AOV" is a different question (239 rows).
+2. Q7 — "still ordered" = the product has a line item: `LEFT JOIN order_items` + `oi.order_id IS NOT NULL` (equivalent to the hint's `EXISTS`). Add `categories` join for `cat_name`; `is_active = 0`; 9 products.
+3. Q8 — running total = `SUM(revenue) OVER (ORDER BY month)` applied to a **pre-aggregated CTE** (aggregate first, window second — they don't mix in one pass). The `OVER`'s `ORDER BY` defines an expanding window (first row → current row); it must order by the *full* `YYYY-MM` (or year+month), or the 2025/2026 Januarys collide and the accumulation order is wrong.
+4. Dialect — CTEs and window functions work in **both** MySQL 8+ and SQLite 3.25+; only the date functions differ: `YEAR()`/`MONTH()`/`DATE_FORMAT(order_date, '%Y-%m')` (MySQL) vs `strftime('%Y-%m', order_date)` (SQLite). Study the MySQL version since the real workflow is MySQL.
+
+### Mistakes / Notes
+
+- Q6: first attempts selected `order_id`/`total_amount` → 1,257 rows instead of 453 distinct customers.
+- Q8: `ORDER BY MONTH(order_date)` (month number only) mixes 2025-01 and 2026-01 → wrong running total; `OVER(MONTH(order_date))` was invalid; missing the plain `revenue` column.
+
+### Next Steps
+
+1. Fix the 6 pending Beginner fixes (Q1, Q3, Q14, Q15, Q18, Q19) → 20/20.
+2. Continue Intermediate Q9–Q20 in **MySQL dialect** on the MySQL copy of the ecommerce dataset.
