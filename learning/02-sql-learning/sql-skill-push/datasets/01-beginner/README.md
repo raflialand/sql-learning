@@ -15,6 +15,64 @@ This is a deliberately simple, single-business dataset: one store dimension (as 
 | `orders` | 1,200 | Customer purchases at a store | `order_id`, `order_date`, `customer_id`, `store_id`, `payment_method`, `total_amount` |
 | `order_items` | 3,647 | Line items per order | `item_id`, `order_id`, `product_id`, `quantity`, `unit_price` |
 
+## Entity Relationship Diagram (ERD)
+
+```mermaid
+erDiagram
+    customers ||--o{ orders : "places"
+    orders ||--o{ order_items : "contains"
+    products ||--o{ order_items : "sold as"
+
+    products {
+        varchar prod_id PK
+        varchar prod_name
+        varchar category
+        decimal unit_price
+        int is_active
+    }
+
+    customers {
+        varchar cust_id PK
+        varchar first_name
+        varchar last_name
+        varchar email
+        varchar city
+        date signup_date
+        int loyalty_points
+    }
+
+    orders {
+        int order_id PK
+        date order_date
+        varchar customer_id FK
+        varchar store_id
+        varchar payment_method
+        decimal total_amount
+    }
+
+    order_items {
+        int item_id PK
+        int order_id FK
+        varchar product_id FK
+        int quantity
+        decimal unit_price
+    }
+```
+
+### Relationship Summary
+
+| Relationship | Type | Description |
+|--------------|------|-------------|
+| `customers` → `orders` | One-to-Many | A customer can place many orders |
+| `orders` → `order_items` | One-to-Many | An order contains multiple line items |
+| `products` → `order_items` | One-to-Many | A product can appear in many line items |
+
+### Join Hints
+
+- `orders.customer_id` → `customers.cust_id` (who ordered what)
+- `order_items.order_id` → `orders.order_id` (items inside an order)
+- `order_items.product_id` → `products.prod_id` (product details for an item)
+
 ## Data notes (read before solving)
 
 - **Date range:** orders run from **2025-01-02** to **2026-01-30**; customers signed up 2022–2025.

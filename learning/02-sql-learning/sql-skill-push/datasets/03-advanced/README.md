@@ -16,6 +16,101 @@
 | `tickets` | 3,800 | Support tickets | `ticket_id`, `sub_id`, `created_date`, `resolved_date`, `category`, `status` |
 | `churn` | 427 | Subscribers who cancelled | `churn_id`, `sub_id`, `churn_date`, `reason` |
 
+## Entity Relationship Diagram (ERD)
+
+```mermaid
+erDiagram
+    plans ||--o{ subscribers : "subscribes to"
+    subscribers ||--o{ billing : "receives"
+    subscribers ||--o{ payments : "pays"
+    billing ||--o{ payments : "settled by"
+    subscribers ||--o{ usage_logs : "consumes"
+    subscribers ||--o{ tickets : "opens"
+    subscribers ||--o{ churn : "leaves via"
+
+    plans {
+        varchar plan_id PK
+        varchar plan_name
+        decimal monthly_fee
+        int data_gb
+        int voice_min
+    }
+
+    subscribers {
+        int sub_id PK
+        varchar first_name
+        varchar last_name
+        varchar phone
+        varchar plan_id FK
+        varchar region
+        date signup_date
+        varchar status
+    }
+
+    billing {
+        int bill_id PK
+        int sub_id FK
+        date bill_date
+        date period_start
+        date period_end
+        decimal amount
+        varchar status
+    }
+
+    payments {
+        int pay_id PK
+        int sub_id FK
+        int bill_id FK
+        date pay_date
+        decimal amount
+        varchar method
+    }
+
+    usage_logs {
+        int log_id PK
+        int sub_id FK
+        date log_date
+        int data_mb
+        int voice_min
+        int sms
+    }
+
+    tickets {
+        int ticket_id PK
+        int sub_id FK
+        date created_date
+        date resolved_date
+        varchar category
+        varchar status
+    }
+
+    churn {
+        int churn_id PK
+        int sub_id FK
+        date churn_date
+        varchar reason
+    }
+```
+
+### Relationship Summary
+
+| Relationship | Type | Description |
+|--------------|------|-------------|
+| `plans` → `subscribers` | One-to-Many | A plan is held by many subscribers |
+| `subscribers` → `billing` | One-to-Many | A subscriber receives monthly bills |
+| `subscribers` → `payments` | One-to-Many | A subscriber makes payments |
+| `billing` → `payments` | One-to-Many | A bill is settled by payments |
+| `subscribers` → `usage_logs` | One-to-Many | A subscriber has monthly usage logs |
+| `subscribers` → `tickets` | One-to-Many | A subscriber opens support tickets |
+| `subscribers` → `churn` | One-to-Many | A subscriber can have one churn record |
+
+### Join Hints
+
+- `subscribers.plan_id` → `plans.plan_id` (plan name/fee per subscriber)
+- `billing.sub_id` → `subscribers.sub_id` (bill → subscriber → plan for revenue-by-plan)
+- `payments.bill_id` → `billing.bill_id` and `payments.sub_id` → `subscribers.sub_id` (payment ↔ bill matching)
+- `tickets.sub_id` / `churn.sub_id` / `usage_logs.sub_id` → `subscribers.sub_id` (support, churn, usage analysis)
+
 ## Data notes (read before solving)
 
 - **Plans:** `Starter $20`, `Standard $35`, `Plus $50`, `Premium $70`, `Family $90`, `Unlimited Max $120`. Plan fee = monthly bill amount.

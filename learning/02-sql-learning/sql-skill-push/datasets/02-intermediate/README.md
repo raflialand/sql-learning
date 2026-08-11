@@ -19,6 +19,105 @@ This dataset is designed for **intermediate** practice: JOINs across 3–4 table
 | `payments` | 2,283 | Payment attempts per order | `payment_id`, `order_id`, `method`, `amount`, `status`, `paid_date` |
 | `shipments` | 1,864 | Courier shipments | `shipment_id`, `order_id`, `carrier`, `ship_date`, `delivery_date`, `address` |
 
+## Entity Relationship Diagram (ERD)
+
+```mermaid
+erDiagram
+    categories ||--o{ products : "categorizes"
+    vendors ||--o{ products : "sells"
+    customers ||--o{ orders : "places"
+    orders ||--o{ order_items : "contains"
+    products ||--o{ order_items : "sold as"
+    orders ||--o{ payments : "paid by"
+    orders ||--o{ shipments : "shipped via"
+
+    categories {
+        varchar cat_id PK
+        varchar cat_name
+        varchar parent_cat_id FK
+    }
+
+    vendors {
+        varchar vendor_id PK
+        varchar vendor_name
+        varchar country
+    }
+
+    products {
+        varchar prod_id PK
+        varchar prod_name
+        varchar cat_id FK
+        varchar vendor_id FK
+        decimal unit_price
+        decimal cost
+        int is_active
+    }
+
+    customers {
+        varchar cust_id PK
+        varchar first_name
+        varchar last_name
+        varchar email
+        varchar city
+        varchar country
+        date signup_date
+    }
+
+    orders {
+        int order_id PK
+        date order_date
+        varchar customer_id FK
+        varchar status
+        decimal total_amount
+    }
+
+    order_items {
+        int item_id PK
+        int order_id FK
+        varchar product_id FK
+        int quantity
+        decimal unit_price
+    }
+
+    payments {
+        int payment_id PK
+        int order_id FK
+        varchar method
+        decimal amount
+        varchar status
+        date paid_date
+    }
+
+    shipments {
+        int shipment_id PK
+        int order_id FK
+        varchar carrier
+        date ship_date
+        date delivery_date
+        varchar address
+    }
+```
+
+### Relationship Summary
+
+| Relationship | Type | Description |
+|--------------|------|-------------|
+| `categories` → `products` | One-to-Many | A category contains many products (products live in subcategories) |
+| `categories` → `categories` | Self-referencing | `parent_cat_id` links a subcategory to its top-level parent |
+| `vendors` → `products` | One-to-Many | A vendor sells many products |
+| `customers` → `orders` | One-to-Many | A customer places many orders |
+| `orders` → `order_items` | One-to-Many | An order contains multiple line items |
+| `products` → `order_items` | One-to-Many | A product can appear in many line items |
+| `orders` → `payments` | One-to-Many | An order can have payment attempts |
+| `orders` → `shipments` | One-to-Many | A shipped order can have shipments |
+
+### Join Hints
+
+- `orders.customer_id` → `customers.cust_id` (buyer details per order)
+- `order_items.order_id` → `orders.order_id`, `order_items.product_id` → `products.prod_id` (revenue per product)
+- `products.cat_id` → `categories.cat_id`, `products.vendor_id` → `vendors.vendor_id` (category/vendor rollups)
+- `payments.order_id` / `shipments.order_id` → `orders.order_id` (payment + fulfillment status)
+
 ## Data notes (read before solving)
 
 - **Order lifecycle:** `status` is one of `Completed` (1,388), `Shipped` (476), `Pending` (480), `Cancelled` (456). Cancelled orders have no payment/shipment.
