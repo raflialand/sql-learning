@@ -223,3 +223,4 @@ change #13: add ERD diagrams to sql-skill-push dataset READMEs (9-Aug-2026)
    - datasets/03-advanced/README.md       (telecom: 7 tables, 7 links incl. billing-payments settle path)
 2. style matches docs/01-erd-diagram/ERD-diagram.md (all columns in entity blocks, PK/FK markers, relationship table)
 3. verification: all three READMEs still reference their real schemas (column names/types match the generator's DDL)
+fds][\]
