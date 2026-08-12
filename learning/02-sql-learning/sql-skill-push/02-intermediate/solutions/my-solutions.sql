@@ -147,3 +147,178 @@ SELECT SUM(
 FROM orders;
 --
 -- Q12: Flag orders as "Large", "Medium", or "Small" based on their total amount.
+SELECT order_id, 
+    order_date, 
+    total_amount,
+    CASE
+        WHEN total_amount >= 4000 THEN 'Large'
+        WHEN total_amount >= 1500 THEN 'Medium'
+        ELSE 'Small'
+        END AS order_size
+FROM orders
+ORDER BY order_id;
+--
+-- Q13: How many orders fall into each order-size bucket?
+WITH order_bucket AS(
+    SELECT order_id, 
+    order_date, 
+    total_amount,
+    CASE
+        WHEN total_amount >= 4000 THEN 'Large'
+        WHEN total_amount >= 1500 THEN 'Medium'
+        ELSE 'Small'
+        END AS order_size
+    FROM orders
+)
+SELECT order_size,
+    COUNT(*) AS order_count,
+    ROUND(SUM(total_amount), 2) AS total_revenue
+FROM order_bucket
+GROUP BY order_size
+ORDER BY order_count DESC;
+--
+-- Q14: Which vendors have the highest average product price? Show the top 5.
+SELECT v.vendor_name, 
+    ROUND(AVG(p.unit_price), 2) AS avg_price,
+    COUNT(p.prod_id) AS product_count
+FROM vendors v
+    LEFT JOIN products p ON v.vendor_id = p.vendor_id
+WHERE p.is_active = 1
+GROUP BY v.vendor_name
+ORDER BY avg_price DESC
+LIMIT 5;
+--
+-- Q15: Which customers have made more than 3 orders? Show their total spend too.
+WITH order_count_table AS(
+    SELECT c.cust_id AS customer_id,
+        c.first_name,
+        c.last_name,
+        COUNT(o.order_id) AS order_count,
+        ROUND(SUM(o.total_amount), 2) AS total_spent
+    FROM customers c
+        LEFT JOIN orders o ON c.cust_id = o.customer_id
+    GROUP BY c.cust_id, 
+        c.first_name, 
+        c.last_name
+)
+SELECT *
+FROM order_count_table
+WHERE order_count > 3
+ORDER BY order_count DESC;
+--
+-- Q16: Find orders whose total is greater than the average total of their own customer's orders.
+WITH customer_stats AS (    
+    SELECT order_id,
+        customer_id,
+        total_amount,
+        ROUND(AVG(total_amount), 2) 
+            OVER(PARTITION BY customer_id) AS customer_avg
+    FROM orders
+)
+SELECT *
+FROM customer_stats
+WHERE total_amount > customer_avg;
+--
+-- Q17: Count orders and sum revenue per month for 2025.
+SELECT DATE_FORMAT(order_date, '%Y-%m') AS `month`,
+    COUNT(*) AS order_count,
+    ROUND(SUM(total_amount), 2) AS revenue
+FROM orders
+WHERE YEAR(order_date) = 2025
+GROUP BY `month`
+ORDER BY `month`;
+--
+-- Q18: Which shipments were delivered late (delivery more than 7 days after order) or not yet delivered?
+WITH delivery_status_table AS (
+    SELECT s.shipment_id,
+        s.order_id,
+        s.carrier,
+        s.ship_date,
+        s.delivery_date,
+        o.order_date,
+        CASE
+            WHEN s.delivery_date IS NULL THEN 'In transit'
+            WHEN DATEDIFF(s.delivery_date, o.order_date) > 7 THEN 'Late'
+            ELSE 'On time'
+        END AS delivery_status
+    FROM shipments s
+        LEFT JOIN orders o ON s.order_id = o.order_id
+)
+SELECT *
+FROM delivery_status_table
+WHERE delivery_status IN ('Late', 'In transit');
+--
+-- Q19: Which active products sell above their category's average sale price?
+WITH unit_avg_sale (prod_id, prod_name, cat_id, avg_sale_price) AS(
+    SELECT p.prod_id,
+        p.prod_name,
+        c.cat_id,
+        ROUND(AVG(oi.unit_price), 2) AS avg_sale_price
+    FROM products p
+        LEFT JOIN order_items oi ON p.prod_id = oi.product_id
+        LEFT JOIN categories c ON c.cat_id = p.cat_id
+    WHERE p.is_active = 1
+    GROUP BY p.prod_id, p.prod_name, c.cat_id
+), cat_avg_sale (cat_id, category_avg_sale) AS(
+    SELECT cat_id,
+        ROUND(AVG(avg_sale_price), 2)
+    FROM unit_avg_sale
+    GROUP BY cat_id
+)
+SELECT uas.prod_id, 
+    uas.prod_name, 
+    uas.avg_sale_price, 
+    cas.category_avg_sale
+FROM unit_avg_sale uas
+    LEFT JOIN cat_avg_sale cas ON uas.cat_id = cas.cat_id
+WHERE uas.avg_sale_price > cas.category_avg_sale;
+--
+-- Q20: Compare payment methods by success rate (paid vs failed vs refunded).
+SELECT method,
+    COUNT(*) AS total_payments,
+    ROUND(
+        SUM(
+            CASE
+                WHEN status = 'Paid' THEN 1
+                ELSE 0
+                END
+            ) * 100.0 / COUNT(*), 2
+    ) AS paid_pct,
+    ROUND(
+        SUM(
+            CASE
+                WHEN status = 'Failed' THEN 1
+                ELSE 0
+                END
+            ) * 100.0 / COUNT(*), 2
+    ) AS failed_pct,
+    ROUND(
+        SUM(
+            CASE
+                WHEN status = 'Refunded' THEN 1
+                ELSE 0
+                END
+            ) * 100.0 / COUNT(*), 2
+    ) AS refunded_pct
+FROM payments
+GROUP BY method;
+--
+-- cleaner version using CTE
+WITH payment_counts AS(
+    SELECT
+        method,
+        COUNT(*) AS total,
+        SUM(CASE WHEN status = 'Paid'       THEN 1 ELSE 0 END) AS paid,
+        SUM(CASE WHEN status = 'Failed'     THEN 1 ELSE 0 END) AS failed,
+        SUM(CASE WHEN status = 'Refunded'   THEN 1 ELSE 0 END) AS refunded
+    FROM payments
+    GROUP BY method
+)
+SELECT
+    method,
+    total AS total_payments,
+    ROUND(paid * 100.0 / total, 2)      AS paid_pct,
+    ROUND(failed * 100.0 / total, 2)    AS failed_pct,
+    ROUND(refunded * 100.0 / total, 2)  AS refunded_pct
+FROM payment_counts
+ORDER BY total_payments DESC;
