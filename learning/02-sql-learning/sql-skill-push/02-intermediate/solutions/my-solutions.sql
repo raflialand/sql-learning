@@ -227,3 +227,5 @@ FROM orders
 WHERE YEAR(order_date) = 2025
 GROUP BY `month`
 ORDER BY `month`;
+--
+-- Q18: Which shipments were delivered late (delivery more than 7 days after order) or not yet delivered?
