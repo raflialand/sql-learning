@@ -207,3 +207,23 @@ WHERE order_count > 3
 ORDER BY order_count DESC;
 --
 -- Q16: Find orders whose total is greater than the average total of their own customer's orders.
+WITH customer_stats AS (    
+    SELECT order_id,
+        customer_id,
+        total_amount,
+        ROUND(AVG(total_amount), 2) 
+            OVER(PARTITION BY customer_id) AS customer_avg
+    FROM orders
+)
+SELECT *
+FROM customer_stats
+WHERE total_amount > customer_avg;
+--
+-- Q17: Count orders and sum revenue per month for 2025.
+SELECT DATE_FORMAT(order_date, '%Y-%m') AS `month`,
+    COUNT(*) AS order_count,
+    ROUND(SUM(total_amount), 2) AS revenue
+FROM orders
+WHERE YEAR(order_date) = 2025
+GROUP BY `month`
+ORDER BY `month`;
