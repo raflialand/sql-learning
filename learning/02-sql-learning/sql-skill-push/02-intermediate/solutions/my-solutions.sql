@@ -168,7 +168,7 @@ WITH order_bucket AS(
         WHEN total_amount >= 1500 THEN 'Medium'
         ELSE 'Small'
         END AS order_size
-FROM orders
+    FROM orders
 )
 SELECT order_size,
     COUNT(*) AS order_count,
@@ -178,3 +178,32 @@ GROUP BY order_size
 ORDER BY order_count DESC;
 --
 -- Q14: Which vendors have the highest average product price? Show the top 5.
+SELECT v.vendor_name, 
+    ROUND(AVG(p.unit_price), 2) AS avg_price,
+    COUNT(p.prod_id) AS product_count
+FROM vendors v
+    LEFT JOIN products p ON v.vendor_id = p.vendor_id
+WHERE p.is_active = 1
+GROUP BY v.vendor_name
+ORDER BY avg_price DESC
+LIMIT 5;
+--
+-- Q15: Which customers have made more than 3 orders? Show their total spend too.
+WITH order_count_table AS(
+    SELECT c.cust_id AS customer_id,
+        c.first_name,
+        c.last_name,
+        COUNT(o.order_id) AS order_count,
+        ROUND(SUM(o.total_amount), 2) AS total_spent
+    FROM customers c
+        LEFT JOIN orders o ON c.cust_id = o.customer_id
+    GROUP BY c.cust_id, 
+        c.first_name, 
+        c.last_name
+)
+SELECT *
+FROM order_count_table
+WHERE order_count > 3
+ORDER BY order_count DESC;
+--
+-- Q16: Find orders whose total is greater than the average total of their own customer's orders.

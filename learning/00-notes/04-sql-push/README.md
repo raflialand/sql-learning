@@ -42,5 +42,5 @@ _Update this table as you go._
 | Level | Total | Completed | Notes |
 | --- | --- | --- | --- |
 | Beginner (01-beginner) | 20 | 14 | 6 fixes pending (Q1, Q3, Q14, Q15, Q18, Q19) |
-| Intermediate (02-intermediate) | 20 | 8 | Q1–Q8 done (10 Aug 2026) |
+| Intermediate (02-intermediate) | 20 | 13 | Q1–Q13 done (Q12–Q13 on 12 Aug 2026) |
 | Advanced (03-advanced) | 20 | 0 | |
