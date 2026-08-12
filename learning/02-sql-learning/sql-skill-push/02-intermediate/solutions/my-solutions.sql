@@ -157,3 +157,24 @@ SELECT order_id,
         END AS order_size
 FROM orders
 ORDER BY order_id;
+--
+-- Q13: How many orders fall into each order-size bucket?
+WITH order_bucket AS(
+    SELECT order_id, 
+    order_date, 
+    total_amount,
+    CASE
+        WHEN total_amount >= 4000 THEN 'Large'
+        WHEN total_amount >= 1500 THEN 'Medium'
+        ELSE 'Small'
+        END AS order_size
+FROM orders
+)
+SELECT order_size,
+    COUNT(*) AS order_count,
+    ROUND(SUM(total_amount), 2) AS total_revenue
+FROM order_bucket
+GROUP BY order_size
+ORDER BY order_count DESC;
+--
+-- Q14: Which vendors have the highest average product price? Show the top 5.
