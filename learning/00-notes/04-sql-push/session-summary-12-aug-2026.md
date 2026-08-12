@@ -136,4 +136,32 @@ ORDER BY order_count DESC;
 
 ---
 
+## Intermediate Q20 — Completed · Level Complete 🎉
+
+**Status:** Intermediate Q1–Q20 ALL done and verified. Level complete.
+
+### Completed
+
+- Q20 — Payment method success rates: conditional aggregation `SUM(CASE WHEN status=... THEN 1 ELSE 0 END) * 100.0 / COUNT(*)` per method + `ROUND(..., 2)`. PASS (4 rows: PayPal 60.04 / COD 58.85 / Bank Transfer 58.82 / Card 58.73 paid_pct).
+
+### Key Takeaways
+
+1. **Integer division trap:** `* 100 / COUNT(*)` truncates to integers (58, not 58.82) — both operands are integers. Use `* 100.0` to keep decimals. Multiply before dividing.
+2. **Conditional aggregation = COUNTIF:** `SUM(CASE WHEN ... THEN 1 ELSE 0 END)` counts rows matching a condition without a WHERE. Several of these per SELECT + `GROUP BY method` = per-method breakdown (pivot pattern, same as Q11).
+3. **String literals are case-sensitive:** `'failed'` ≠ `'Failed'` in MySQL — always match the exact data values.
+4. **SQL formatting standards:** dbt-style — uppercase keywords, one column per line, leading/trailing comma (pick one), 2/4-space indent, `CASE`/`WHEN`/`ELSE`/`END` on own lines, clause order SELECT→FROM→WHERE→GROUP BY→HAVING→ORDER BY→LIMIT. Flatten deep nesting with a CTE. Auto-format with sqlfluff/sqlfmt.
+
+### Mistakes / Notes
+
+- Q20: integer division `* 100` → 58/20/20 instead of 58.82/20.59/20.59; fixed with `* 100.0`.
+- Q20 refactor: forgot `END` in `SUM(CASE ... THEN 1 ELSE 0)` (syntax error); lowercase `'failed'`/`'refunded'` literals → 0 buckets (case-sensitive).
+- Q20 refactor: `ORDER BY total_payments DESC` sorts Card first; expected table lists PayPal first (order not specified by the request).
+
+### Next Steps
+
+1. Fix the 6 pending Beginner fixes (Q1, Q3, Q14, Q15, Q18, Q19) → 20/20.
+2. Start Advanced level (03-advanced, NovaTel telecom — window funcs, correlated subs, recursive CTE, set ops, pivots, cohorts).
+
+---
+
 *Happy Learning!*

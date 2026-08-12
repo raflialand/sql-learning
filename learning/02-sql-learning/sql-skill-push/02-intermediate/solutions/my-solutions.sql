@@ -272,3 +272,53 @@ SELECT uas.prod_id,
 FROM unit_avg_sale uas
     LEFT JOIN cat_avg_sale cas ON uas.cat_id = cas.cat_id
 WHERE uas.avg_sale_price > cas.category_avg_sale;
+--
+-- Q20: Compare payment methods by success rate (paid vs failed vs refunded).
+SELECT method,
+    COUNT(*) AS total_payments,
+    ROUND(
+        SUM(
+            CASE
+                WHEN status = 'Paid' THEN 1
+                ELSE 0
+                END
+            ) * 100.0 / COUNT(*), 2
+    ) AS paid_pct,
+    ROUND(
+        SUM(
+            CASE
+                WHEN status = 'Failed' THEN 1
+                ELSE 0
+                END
+            ) * 100.0 / COUNT(*), 2
+    ) AS failed_pct,
+    ROUND(
+        SUM(
+            CASE
+                WHEN status = 'Refunded' THEN 1
+                ELSE 0
+                END
+            ) * 100.0 / COUNT(*), 2
+    ) AS refunded_pct
+FROM payments
+GROUP BY method;
+--
+-- cleaner version using CTE
+WITH payment_counts AS(
+    SELECT
+        method,
+        COUNT(*) AS total,
+        SUM(CASE WHEN status = 'Paid'       THEN 1 ELSE 0 END) AS paid,
+        SUM(CASE WHEN status = 'Failed'     THEN 1 ELSE 0 END) AS failed,
+        SUM(CASE WHEN status = 'Refunded'   THEN 1 ELSE 0 END) AS refunded
+    FROM payments
+    GROUP BY method
+)
+SELECT
+    method,
+    total AS total_payments,
+    ROUND(paid * 100.0 / total, 2)      AS paid_pct,
+    ROUND(failed * 100.0 / total, 2)    AS failed_pct,
+    ROUND(refunded * 100.0 / total, 2)  AS refunded_pct
+FROM payment_counts
+ORDER BY total_payments DESC;
