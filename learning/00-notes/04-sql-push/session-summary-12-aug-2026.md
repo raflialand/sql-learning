@@ -107,4 +107,33 @@ ORDER BY order_count DESC;
 
 ---
 
+## Intermediate Q18–Q19 — Completed & Verified
+
+**Status:** Intermediate Q18–Q19 done and verified against expected results / reference solutions. Q20 still pending.
+
+### Completed
+
+- Q18 — Late or missing deliveries: `CASE` on `delivery_date` (NULL → 'In transit', `DATEDIFF > 7` → 'Late', else 'On time') + `WHERE delivery_status IN ('Late','In transit')`. PASS (1,787 rows = 1,692 Late + 95 In transit).
+- Q19 — Active products above their category's average sale price: two CTEs — per-product `AVG(oi.unit_price)`, then `AVG(avg_sale_price)` per category from the first CTE, joined on `cat_id`, filtered `avg_sale_price > category_avg_sale`. PASS (55 rows, 0 value diffs vs reference).
+
+### Key Takeaways
+
+1. Q18 — "late OR not delivered" means the outer filter must include **both** statuses: `WHERE delivery_status IN ('Late','In transit')`. First drafts filtered only 'Late' → lost the 95 In-transit rows. Prefer `delivery_date IS NULL` over `DATEDIFF(...) IS NULL` (clearer, no double computation).
+2. Q19 — **the second CTE reads from the first CTE** (`FROM unit_avg_sale`), not from base tables — that's what produces the "average of per-product averages" (category avg 489.76), not a line-item average. Join on `cat_id` (the actual key), not `prod_id`.
+3. Q19 — recurring active-product filter `WHERE p.is_active = 1`; per-product "average sale price" = `AVG(oi.unit_price)`, not `AVG(unit_price * quantity)` (revenue-weighted).
+
+### Mistakes / Notes
+
+- Q18: `s.carried` typo → `s.carrier`; outer filter only `'Late'` initially → missed In-transit.
+- Q19 (multiple drafts): `GROUP BY cat_id` while projecting `prod_id`; joined CTEs on `prod_id` instead of `cat_id`; `cat_avg_sale` recomputed from `order_items` instead of `unit_avg_sale`; stray `SELECT(`/`oi` reference errors; column name `category_avg_price` vs `category_avg_sale`; `p.ias_active` typo.
+- Strict-mode note: include `cat_id` in `GROUP BY` when selecting it (avoids `ONLY_FULL_GROUP_BY` errors).
+
+### Next Steps
+
+1. Answer Intermediate **Q20** (payment method success rates — conditional aggregation, 4 rows) → completes Intermediate.
+2. Fix the 6 pending Beginner fixes (Q1, Q3, Q14, Q15, Q18, Q19) → 20/20.
+3. Then Advanced level (telecom) or Beginner fixes first.
+
+---
+
 *Happy Learning!*

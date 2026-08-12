@@ -229,3 +229,46 @@ GROUP BY `month`
 ORDER BY `month`;
 --
 -- Q18: Which shipments were delivered late (delivery more than 7 days after order) or not yet delivered?
+WITH delivery_status_table AS (
+    SELECT s.shipment_id,
+        s.order_id,
+        s.carrier,
+        s.ship_date,
+        s.delivery_date,
+        o.order_date,
+        CASE
+            WHEN s.delivery_date IS NULL THEN 'In transit'
+            WHEN DATEDIFF(s.delivery_date, o.order_date) > 7 THEN 'Late'
+            ELSE 'On time'
+        END AS delivery_status
+    FROM shipments s
+        LEFT JOIN orders o ON s.order_id = o.order_id
+)
+SELECT *
+FROM delivery_status_table
+WHERE delivery_status IN ('Late', 'In transit');
+--
+-- Q19: Which active products sell above their category's average sale price?
+WITH unit_avg_sale (prod_id, prod_name, cat_id, avg_sale_price) AS(
+    SELECT p.prod_id,
+        p.prod_name,
+        c.cat_id,
+        ROUND(AVG(oi.unit_price), 2) AS avg_sale_price
+    FROM products p
+        LEFT JOIN order_items oi ON p.prod_id = oi.product_id
+        LEFT JOIN categories c ON c.cat_id = p.cat_id
+    WHERE p.is_active = 1
+    GROUP BY p.prod_id, p.prod_name, c.cat_id
+), cat_avg_sale (cat_id, category_avg_sale) AS(
+    SELECT cat_id,
+        ROUND(AVG(avg_sale_price), 2)
+    FROM unit_avg_sale
+    GROUP BY cat_id
+)
+SELECT uas.prod_id, 
+    uas.prod_name, 
+    uas.avg_sale_price, 
+    cas.category_avg_sale
+FROM unit_avg_sale uas
+    LEFT JOIN cat_avg_sale cas ON uas.cat_id = cas.cat_id
+WHERE uas.avg_sale_price > cas.category_avg_sale;
