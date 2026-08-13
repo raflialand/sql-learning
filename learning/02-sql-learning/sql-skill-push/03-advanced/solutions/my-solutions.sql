@@ -11,4 +11,21 @@ GROUP BY
     p.plan_name
 ORDER BY total_revenue DESC;
 --
--- Q2: 
+-- Q2: Show month-over-month revenue change using LAG.
+WITH revenue_and_prev_revenue AS(
+    SELECT
+        bill_date,
+        ROUND(SUM(amount), 2) AS revenue,
+        ROUND(LAG(SUM(amount), 1) OVER(ORDER BY bill_date), 2) AS prev_month_revenue
+    FROM billing
+    GROUP BY bill_date
+)
+SELECT
+    bill_date,
+    revenue,
+    prev_month_revenue,
+    revenue - prev_month_revenue AS change
+FROM revenue_and_prev_revenue;
+--
+-- Q3: Show revenue per billing month with a running (cumulative) total.
+
