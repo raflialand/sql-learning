@@ -72,3 +72,25 @@ GROUP BY s.sub_id
 ORDER BY usage_quartile, total_data_mb;
 --
 -- Q6: What is the median total data usage per region? (approx: the middle row when ordered)
+WITH ranked AS(
+    SELECT 
+        s.region,
+        SUM(ul.data_mb) AS total_data_mb,
+        ROW_NUMBER() OVER(PARTITION BY s.region ORDER BY SUM(ul.data_mb)) AS rn,
+        COUNT(*) OVER(PARTITION BY s.region) AS n
+    FROM subscribers s
+        JOIN usage_logs ul ON ul.sub_id = s.sub_id
+    GROUP BY
+        s.region,
+        s.sub_id
+)
+SELECT
+    region,
+    ROUND(AVG(total_data_mb), 0) AS median_data_mb
+FROM ranked
+WHERE rn IN (FLOOR((n + 1) / 2), FLOOR((n + 2) / 2))
+GROUP BY region
+ORDER BY median_data_mb DESC;
+--
+-- Q7: Compare each subscriber's total data usage against the average usage of their own plan (correlated subquery).
+

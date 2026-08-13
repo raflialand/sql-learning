@@ -90,4 +90,49 @@ FROM revenue_and_prev_revenue;
 
 ---
 
+## Advanced Q6 — Completed & Verified
+
+**Status:** Advanced Q6 done and verified against expected results.
+
+### Completed
+
+- Q6 — Median total data usage per region: CTE computing per-subscriber total usage (`SUM(data_mb)` per `sub_id`/`region`), then `ROW_NUMBER() OVER (PARTITION BY s.region ORDER BY SUM(ul.data_mb))` + `COUNT(*) OVER (PARTITION BY s.region)`, outer `WHERE rn IN (FLOOR((n + 1) / 2), FLOOR((n + 2) / 2))` + `AVG(total_data_mb)`. PASS (5 rows: Southwest 30548.00 → West 29636.00).
+
+### Examples practiced
+
+```sql
+WITH ranked AS(
+    SELECT s.region, SUM(ul.data_mb) AS total_data_mb,
+        ROW_NUMBER() OVER(PARTITION BY s.region ORDER BY SUM(ul.data_mb)) AS rn,
+        COUNT(*) OVER(PARTITION BY s.region) AS n
+    FROM subscribers s
+        JOIN usage_logs ul ON ul.sub_id = s.sub_id
+    GROUP BY s.region, s.sub_id
+)
+SELECT region, ROUND(AVG(total_data_mb), 0) AS median_data_mb
+FROM ranked
+WHERE rn IN (FLOOR((n + 1) / 2), FLOOR((n + 2) / 2))
+GROUP BY region
+ORDER BY median_data_mb DESC;
+```
+
+### Key Takeaways
+
+1. **No built-in `MEDIAN`** in SQLite/MySQL — compute it: rank rows within the group (`ROW_NUMBER`), count them (`COUNT(*) OVER`), keep only the middle row(s), `AVG` them.
+2. **Median position formula** — `FLOOR((n + 1) / 2)` and `FLOOR((n + 2) / 2)`: odd `n` → both collapse to the same single middle row; even `n` → the two middle rows, averaged = true median.
+3. **`FLOOR` is for MySQL portability** — SQLite `/` already integer-divides; MySQL `/` returns decimals (445.5) that match no integer `rn`. `FLOOR` (or `DIV`) makes it work on both.
+4. Aggregate first, window second — same pattern as Q3–Q5.
+
+### Mistakes / Notes
+
+- Q6 first draft: `s.region AS,` → `AS` with no alias = syntax error.
+- `(n + 1) / 2` without `FLOOR` would silently drop the lower middle row on even-count regions in MySQL (Northeast 890, Southeast 940, West 874).
+
+## Next Steps
+
+1. Continue Advanced **Q7** (above plan-average usage — correlated subquery recomputing the plan average per subscriber row).
+2. Fix the 6 pending Beginner fixes (Q1, Q3, Q14, Q15, Q18, Q19) → 20/20.
+
+---
+
 *Happy Learning!*

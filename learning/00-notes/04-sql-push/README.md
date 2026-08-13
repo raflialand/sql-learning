@@ -43,4 +43,4 @@ _Update this table as you go._
 | --- | --- | --- | --- |
 | Beginner (01-beginner) | 20 | 14 | 6 fixes pending (Q1, Q3, Q14, Q15, Q18, Q19) |
 | Intermediate (02-intermediate) | 20 | 20 | COMPLETE (Q1–Q20, 12 Aug 2026) |
-| Advanced (03-advanced) | 20 | 0 | |
+| Advanced (03-advanced) | 20 | 6 | Q1–Q6 complete (13 Aug 2026) |
