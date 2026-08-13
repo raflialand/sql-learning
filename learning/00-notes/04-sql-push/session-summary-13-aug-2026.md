@@ -57,4 +57,37 @@ FROM revenue_and_prev_revenue;
 
 ---
 
+## Advanced Q3–Q5 — Completed & Verified
+
+**Status:** Advanced Q3, Q4, Q5 done and verified against expected results.
+
+### Completed
+
+- Q3 — Running (cumulative) total of revenue per billing month: CTE aggregating `ROUND(SUM(amount), 2)` per `bill_date`, then `SUM(revenue) OVER (ORDER BY bill_date)`. PASS (2 rows: 203420.00 → 379290.00).
+- Q4 — Top 10 data users by total data usage: `RANK() OVER (ORDER BY SUM(data_mb) DESC)` in a CTE + `WHERE usage_rank <= 10` outside. PASS (10 rows: Deborah Rodriguez 59711 rank 1).
+- Q5 — Usage quartiles: `NTILE(4) OVER (ORDER BY SUM(data_mb))`. PASS (3,709 rows; buckets 928/927/927/927).
+
+### Key Takeaways
+
+1. **Running total = window `SUM` with an expanding frame** — `SUM(x) OVER (ORDER BY d)` sums "first row → current row" (default `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`); the `ORDER BY` inside `OVER` creates the accumulation. Without it, every row repeats the grand total.
+2. **Top-N-with-rank pattern:** aggregate → `RANK()` (or `NTILE`) in a CTE/subquery → filter the rank *outside*. Window aliases are invisible to `WHERE`, and clause order is SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY → LIMIT. `LIMIT 10` returns rows without a rank *number* and is fragile at ties.
+3. **`RANK()` vs `ROW_NUMBER()` vs `DENSE_RANK()`** — on ties: gaps (1,1,3) vs arbitrary (1,2) vs no gaps (1,1,2).
+4. **`NTILE(n)` = bucketize into n equal-count groups** — `ORDER BY` ascending → bucket 1 = smallest values, bucket n = largest. Statistician's quartile = value boundary; `NTILE` = equal count.
+5. **`PARTITION BY`** (preview for Q6) resets a window per group.
+
+### Mistakes / Notes
+
+- Q4 attempt 1: `ORDER BY ... LIMIT 10` only → rows correct but no `usage_rank` column (the rank number was the requirement).
+- Q4 attempt 3: `WHERE usage_rank <= 10` placed after `ORDER BY` → syntax error; window aliases can't be used in `WHERE` (subquery/CTE required).
+- Q4/Q5: `ROUND(..., 2)` on integer `SUM()` adds float display (`59711.0` vs `59711`); `data_mb` is integer, so plain `SUM()` is cleaner.
+- Q5: typo `NITILE` → `NTILE`; missing commas between SELECT columns; `OVER(SUM(...))` missing `ORDER BY` → invalid window.
+- Q5: `ORDER BY usage_quartile` alone left within-bucket order undefined → add `, total_data_mb`.
+
+## Next Steps
+
+1. Continue Advanced **Q6** (median usage per region — `ROW_NUMBER() OVER (PARTITION BY region ORDER BY total)`, pick the middle row).
+2. Fix the 6 pending Beginner fixes (Q1, Q3, Q14, Q15, Q18, Q19) → 20/20.
+
+---
+
 *Happy Learning!*
