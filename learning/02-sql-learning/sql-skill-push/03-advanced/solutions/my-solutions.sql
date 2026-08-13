@@ -10,3 +10,5 @@ GROUP BY
     p.plan_id, 
     p.plan_name
 ORDER BY total_revenue DESC;
+--
+-- Q2: 

@@ -223,4 +223,15 @@ change #13: add ERD diagrams to sql-skill-push dataset READMEs (9-Aug-2026)
    - datasets/03-advanced/README.md       (telecom: 7 tables, 7 links incl. billing-payments settle path)
 2. style matches docs/01-erd-diagram/ERD-diagram.md (all columns in entity blocks, PK/FK markers, relationship table)
 3. verification: all three READMEs still reference their real schemas (column names/types match the generator's DDL)
-fds][\]
+
+---
+
+change #14: add messy-to-insight notes module (13-Aug-2026)
+
+1. created a new folder in @learning/:
+   - learning/04-messy-to-insight/  (new notes module folder)
+   - learning/04-messy-to-insight/messy-to-insight.md  (video summary: "Turn Messy Data Into Actionable Insights" by Christine Jiang — structured thinking, insight extraction, practical demonstration, audience feedback, takeaways)
+2. NOT a registered learning track — no row added to learning/00-notes/tracks.md (reference/notes material only; tracks registry unchanged at 4 tracks)
+3. updated documentation:
+   - README.md (intro line, What This Is notes-module bullet, directory map → shows 04-messy-to-insight/)
+4. verification: folder contains the single note file; no skill/agent/blueprint references the module — no other updates needed
