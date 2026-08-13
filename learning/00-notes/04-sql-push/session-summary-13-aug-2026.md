@@ -135,4 +135,108 @@ ORDER BY median_data_mb DESC;
 
 ---
 
+## Advanced Q7 — Completed & Verified
+
+**Status:** Advanced Q7 done and verified against expected results.
+
+### Completed
+
+- Q7 — Above plan-average usage: two CTEs — per-subscriber total (`SUM(ul.data_mb)` per `sub_id`), then per-plan average of those totals (`AVG(total_data_mb) GROUP BY plan_name`), outer join computes `total_data_mb - plan_avg_usage`. PASS (3,709 rows: Joshua King Starter 38620/29684/8936 → Stephanie Green Plus 42288/30208/12080).
+
+### Examples practiced
+
+```sql
+WITH total_data AS(
+    SELECT s.sub_id, s.first_name, s.last_name, p.plan_name,
+        ROUND(SUM(ul.data_mb), 0) AS total_data_mb
+    FROM subscribers s
+        JOIN plans p       ON p.plan_id = s.plan_id
+        JOIN usage_logs ul ON ul.sub_id = s.sub_id
+    GROUP BY s.sub_id, s.first_name, s.last_name, p.plan_name
+), avg_data_plan AS(
+    SELECT plan_name, ROUND(AVG(total_data_mb), 0) AS plan_avg_usage
+    FROM total_data
+    GROUP BY plan_name
+)
+SELECT td.sub_id, td.first_name, td.last_name, td.plan_name,
+       td.total_data_mb, adp.plan_avg_usage,
+       td.total_data_mb - adp.plan_avg_usage AS diff_from_plan_avg
+FROM total_data td
+    JOIN avg_data_plan adp ON adp.plan_name = td.plan_name
+ORDER BY td.sub_id;
+```
+
+### Key Takeaways
+
+1. **`plan_avg_usage` = average of per-subscriber totals, not raw log rows.** The subquery must `GROUP BY sub_id` *before* `AVG`, else you average each usage-log row (subscribers with many logs skew the result).
+2. Question asked for a **correlated subquery**; the two-CTE version is logically equivalent and cleaner (same output). Reference re-computes the plan average per row via `WHERE s2.plan_id = s.plan_id`.
+3. `ROUND(..., 0)` on `total_data_mb` and `plan_avg_usage` to match expected whole values; `ORDER BY sub_id` for expected order.
+4. `INNER JOIN usage_logs` drops subscribers with no usage (3,709 ≠ 4,500) — matches expected.
+
+### Mistakes / Notes
+
+- Q7 first drafts: typos `tota_data_mb` / `tota_data` → `total_data_mb` / `total_data` (no such column / table).
+- `ROUND(AVG(...), 2)` → expected `0` decimals.
+
+## Advanced Q8 — Completed & Verified
+
+**Status:** Advanced Q8 done and verified against expected results.
+
+### Completed
+
+- Q8 — Tickets but never churned (set difference): `WHERE sub_id IN (SELECT sub_id FROM tickets) AND sub_id NOT IN (SELECT sub_id FROM churn)`. PASS (2,304 rows: Joshua King 555-517626 → John Taylor 555-661254).
+
+### Key Takeaways
+
+1. **"X but never Y" = anti-join** — Y belongs in `NOT IN` / `LEFT JOIN ... IS NULL` / `EXCEPT`, never an INNER JOIN.
+2. `IN` needs a subquery `(SELECT sub_id FROM tickets)`, not a bare column.
+
+### Mistakes / Notes
+
+- Q8 first attempt: `s.sub_id IN t.sub_id` → syntax error (`IN` with a column, not a subquery).
+- Q8 first attempt: `JOIN churn` INNER JOIN kept only churned subscribers, then `NOT IN churn` → 0 rows. Churn check must be an exclusion.
+
+## Advanced Q9 — Completed & Verified
+
+**Status:** Advanced Q9 done and verified against expected results.
+
+### Completed
+
+- Q9 — Next payment (gap spotting): `LEAD(pay_date) / LEAD(amount) OVER (PARTITION BY sub_id ORDER BY pay_date)`. PASS (6,588 rows: 2 → 2025-12-23 20 → 2026-01-16 20; NULL on last payment).
+
+### Key Takeaways
+
+1. **`LEAD` reads the next row** — same `PARTITION BY ... ORDER BY` on both date and amount calls. `NULL` on the last row = no next payment (the gap spotter).
+2. `payments` already has `sub_id` — no JOIN needed.
+3. `ORDER BY sub_id, pay_date` for expected grouping.
+
+### Mistakes / Notes
+
+- Q9 first attempt: `ORDER BY p.pay_date` sorted by date, expected table grouped by subscriber.
+- Q9 attempt with stray `;` after `FROM payments;` → terminated the statement, `ORDER BY` became invalid (same class as Beginner Q15).
+
+## Advanced Q10 — Completed & Verified
+
+**Status:** Advanced Q10 done and verified against expected results.
+
+### Completed
+
+- Q10 — Monthly ticket volume with 3-month moving average: CTE aggregating `COUNT(*)` per `YYYY-MM`, then `ROUND(AVG(ticket_count) OVER (ORDER BY month ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 2)`. PASS (8 rows: 2025-06 458/458.00 → 2026-01 481/481.33).
+
+### Key Takeaways
+
+1. **3-month moving average = window frame** `ROWS BETWEEN 2 PRECEDING AND CURRENT ROW` (current + 2 before). First months average what exists (458.00 = June alone; 454.50 = July+June) — expected table shows partial averages, frame handles it.
+2. Aggregate first (CTE), window second — same as Q3–Q5 pattern.
+
+### Mistakes / Notes
+
+- Q10: MySQL `DATE_FORMAT(created_date, '%Y-%m')` vs SQLite `strftime('%Y-%m', created_date)` on the verification DB (recurring dialect note).
+
+## Next Steps
+
+1. Continue Advanced **Q11** (continuous month series — `WITH RECURSIVE` seeded 2025-06 → 2026-01, `LEFT JOIN` counts to include zero-ticket months).
+2. Fix the 6 pending Beginner fixes (Q1, Q3, Q14, Q15, Q18, Q19) → 20/20.
+
+---
+
 *Happy Learning!*
