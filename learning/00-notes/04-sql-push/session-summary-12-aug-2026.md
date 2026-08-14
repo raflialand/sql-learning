@@ -164,4 +164,43 @@ ORDER BY order_count DESC;
 
 ---
 
+## Advanced Q1 — Completed & Verified
+
+**Status:** Advanced level (NovaTel telecom) started — Q1 done and verified against expected results.
+
+### Completed
+
+- Q1 — Revenue per plan across the two billing months: 3-table join `plans → subscribers → billing`, `ROUND(SUM(b.amount), 2)`, `GROUP BY plan_id, plan_name`, `ORDER BY total_revenue DESC`. PASS (6 rows: Plus 81750.00 → Unlimited Max 39360.00).
+
+### Examples practiced
+
+```sql
+SELECT
+   p.plan_name,
+   ROUND(SUM(b.amount), 2) AS total_revenue
+FROM plans p
+    JOIN subscribers s ON s.plan_id = p.plan_id
+    JOIN billing b ON b.sub_id = s.sub_id
+GROUP BY
+    p.plan_id,
+    p.plan_name
+ORDER BY total_revenue DESC;
+```
+
+### Key Takeaways
+
+1. Revenue-by-plan is a 3-table join chain `plans → subscribers → billing`; `GROUP BY plan_id, plan_name` keeps strict-mode portability.
+2. `ORDER BY total_revenue DESC` makes output match the expected table order.
+
+### Mistakes / Notes
+
+- `ROUNF(SUM(...))` typo → `ROUND` (was a syntax error).
+
+### Next Steps
+
+1. Fix the 6 pending Beginner fixes (Q1, Q3, Q14, Q15, Q18, Q19) → 20/20.
+2. Continue Advanced Q2 (month-over-month revenue change with `LAG`).
+
+---
+
 *Happy Learning!*

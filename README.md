@@ -1,6 +1,6 @@
 # sql-learning
 
-A personal, AI-assisted multi-track learning environment — an 84-day SQL Fundamentals journey (12 weeks), a Data Quality Engineer module (13 units, MySQL), a Data Engineering track (26 weeks), and a SQL Skill Push challenge module (60 verified problems across beginner/intermediate/advanced), with built-in progress tracking, practice databases, and agent-driven tooling.
+A personal, AI-assisted multi-track learning environment — an 84-day SQL Fundamentals journey (12 weeks), a Data Quality Engineer module (13 units, MySQL), a Data Engineering track (26 weeks), a SQL Skill Push challenge module (60 verified problems across beginner/intermediate/advanced), and a messy-to-insight notes module (turning raw data into actionable insights), with built-in progress tracking, practice databases, and agent-driven tooling.
 
 ## What This Is
 
@@ -11,6 +11,7 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 - **Practice databases** (SQLite) used for exercises: library management, e-commerce, a `sales-records` dataset for the SQL Mastery modules, plus three profiled datasets (coffee shop, e-commerce, telecom) in `learning/02-sql-learning/sql-skill-push/datasets/` shipped as MySQL + SQLite.
 - **Deep-dive modules** under `learning/02-sql-learning/`: `sql-mastery/` (currently: window functions) with lessons, exercises, datasets, and solutions, and `sql-skill-push/` — a challenge-based practice module (60 verified problems with expected results) across three difficulty levels.
 - **An execution agent** (`query-inspector`) that reviews learner-submitted SQL from `script/01-sql/` for query-logic correctness and business-requirement alignment, writing analysis reports to `docs/03-query-inspector/`.
+- **A notes module** (`learning/04-messy-to-insight/`) capturing video summaries — currently a note on turning messy data into actionable insights like a senior data analyst.
 - **Four registered learning tracks** in `learning/00-notes/tracks.md`: SQL Fundamentals (84 units), SQL Skill Push (60 challenges), Data Quality Engineer (13 units, MySQL-based against a purpose-built "dirty" dataset), and Data Engineering (26 weeks).
 
 ## Directory Map
@@ -36,7 +37,8 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 │   │   ├── sql-roadmaps/   # 3-month roadmap + per-week deep dives (Weeks 1–7)
 │   │   ├── sql-mastery/    # Module-based learning path (window functions, etc.)
 │   │   └── sql-skill-push/ # Challenge module: 60 verified problems + datasets + solutions
-│   └── 03-dq-learning/     # MySQL-based Data Quality Engineer module
+│   ├── 03-dq-learning/     # MySQL-based Data Quality Engineer module
+│   └── 04-messy-to-insight/ # Notes module: messy data → actionable insights
 │
 ├── data/                  # Practice SQLite databases & schema files
 │   ├── library-db.sql/.db     # Library management system
