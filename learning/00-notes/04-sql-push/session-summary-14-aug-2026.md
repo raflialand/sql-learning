@@ -147,4 +147,63 @@ ORDER BY total DESC;
 
 ---
 
+## Advanced Q16 — Completed & Verified (anti-join)
+
+**Status:** Advanced Q16 solved and verified. Anti-join — the module's set-difference family continued from Q8/Q14.
+
+### Completed
+- Q16 — Billed but never paid: `JOIN billing` (the "billed" filter) + `NOT EXISTS (SELECT 1 FROM payments p WHERE p.sub_id = s.sub_id)` (the "never paid" exclusion), `COUNT(b.bill_id) AS bills_issued`, `GROUP BY` subscriber cols. PASS (**216 rows**: David Flores 79 → …).
+
+### Key Takeaways
+1. **Anti-join = rows with no match in another table = set difference (A − B).** The three equivalent forms: `NOT EXISTS` (safest — handles NULLs, stops at first match, usually fastest), `NOT IN` (breaks if the subquery returns a NULL — only safe on NOT NULL columns), `LEFT JOIN ... IS NULL` (visual, but duplicates need `DISTINCT`).
+2. **Q16 chains two requirements:** `JOIN billing` is an inner-join *filter*; `NOT EXISTS` is the anti-join *exclusion*. Both needed.
+3. `bills_issued` counts **bills** (`b.bill_id`), not payments — these subscribers have zero payments by definition.
+
+### Mistakes / Notes
+- Draft: `COUNT(p.pay_id)` — `p` undefined in outer scope (and semantically 0); `p.sub_id` referenced while `FROM payments` had no alias (same class as Beginner Q14); column `bill_issued` vs expected `bills_issued`.
+- Also wrote the `NOT IN` variant — valid here since `payments.sub_id` is non-NULL.
+
+---
+
+## Advanced Q17 — Completed & Verified (window ratio via CTE chain)
+
+**Status:** Advanced Q17 solved and verified.
+
+### Completed
+- Q17 — Share of region data usage: two-CTE chain — `sub_data_logs` (per-sub `SUM(ul.data_mb)`), then `region_logs` (`SUM(sub_data)` per region from the first CTE), outer `JOIN` computes `ROUND(sub_data * 100.0 / region_data, 2)`, `ORDER BY pct_of_region DESC`. PASS (**3,709 rows**: 1298 West 58862/21002724 → 0.28).
+
+### Key Takeaways
+1. **Second CTE reads from the first CTE** (`SUM(sub_data) FROM sub_data_logs`), not base tables — the whole "per-region total" flows through the chain.
+2. `* 100.0` keeps the division real (3rd recurrence of the integer-division trap).
+3. `ROUND(..., 2)` for clean percentages; `ORDER BY ... DESC` to match expected high→low.
+
+### Mistakes / Notes
+- Stray `;` after the first CTE terminated the statement (same class as Beginner Q15); `JOIN region logs` missing underscore → syntax error; missing `ROUND`; `ORDER BY` missing `DESC`.
+
+---
+
+## Advanced Q18 — Completed & Verified (over plan allowance)
+
+**Status:** Advanced Q18 solved and verified.
+
+### Completed
+- Q18 — Over plan allowance: `subscribers → plans → usage_logs`, `SUM(ul.data_mb)`, `ROUND(SUM/1024.0, 2) AS total_data_gb`, `GROUP BY` non-aggregates, `HAVING SUM(ul.data_mb) > plan_data_gb * 1024.0`, `ORDER BY total_data_gb DESC`. PASS (**2,177 rows**: Deborah Rodriguez 1575 → 59711 MB / 58.31 GB).
+
+### Key Takeaways
+1. **`HAVING` filters after aggregation** — `WHERE` can't see `SUM()`. New clause in the toolchain.
+2. **Units must match on both sides of a comparison** — data is MB, plan is GB → convert with `* 1024`. 1 GB = 1024 MB (also `/ 1024.0`, not `/ 1000`).
+3. Aliases in `GROUP BY`/`HAVING` work in MySQL/SQLite; reference repeats the real column for strict-mode portability.
+
+### Mistakes / Notes
+- Draft: no `GROUP BY` (single-row/error); no `HAVING` (returned all 3,709); `/1000` → 59.71 instead of 58.31; `HAVING SUM > plan_data_gb` compared MB vs GB directly.
+
+---
+
+## Next Steps
+
+1. Continue Advanced **Q19** (ticket resolution days — datediff/CASE on `tickets`).
+2. Fix the 6 pending Beginner fixes (Q1, Q3, Q14, Q15, Q18, Q19) → 20/20.
+
+---
+
 *Happy Learning!*

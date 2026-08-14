@@ -237,4 +237,91 @@ SELECT
 FROM payments
 GROUP BY sub_id
 ORDER BY sub_id;
-
+--
+-- Q16: Which subscribers received a bill but never made any payment? 
+SELECT 
+    s.sub_id,
+    s.first_name,
+    s.last_name,
+    s.phone,
+    s.region,
+    COUNT(b.bill_id) AS bills_issued
+FROM subscribers s
+    JOIN billing b ON b.sub_id = s.sub_id
+WHERE NOT EXISTS(SELECT pay_id FROM payments p WHERE p.sub_id = s.sub_id)
+GROUP BY
+    s.sub_id,
+    s.first_name,
+    s.last_name,
+    s.phone,
+    s.region
+ORDER BY s.sub_id;
+-- alternative using NOT IN
+SELECT 
+    s.sub_id,
+    s.first_name,
+    s.last_name,
+    s.phone,
+    s.region,
+    COUNT(b.bill_id) AS bills_issued
+FROM subscribers s
+    JOIN billing b ON b.sub_id = s.sub_id
+WHERE s.sub_id NOT IN (SELECT sub_id FROM payments)
+GROUP BY
+    s.sub_id,
+    s.first_name,
+    s.last_name,
+    s.phone,
+    s.region
+ORDER BY s.sub_id;
+--
+-- Q17: What is each subscriber's data usage as a share of their region's total?
+WITH sub_data_logs AS(
+    SELECT
+        s.sub_id,
+        s.region,
+        SUM(ul.data_mb) AS sub_data
+    FROM subscribers s
+        JOIN usage_logs ul ON ul.sub_id = s.sub_id
+    GROUP BY
+        s.sub_id,
+        s.region
+), region_logs AS(
+    SELECT
+        region,
+        SUM(sub_data) AS region_data
+    FROM sub_data_logs
+    GROUP BY region
+)
+SELECT
+    sdl.sub_id,
+    sdl.region,
+    sdl.sub_data,
+    rl.region_data,
+    ROUND(sdl.sub_data * 100.0 / rl.region_data, 2) AS pct_of_region
+FROM sub_data_logs sdl
+    JOIN region_logs rl ON rl.region = sdl.region
+ORDER BY pct_of_region DESC;
+--
+-- Q18: Which subscribers exceeded their plan's data allowance?
+SELECT
+    s.sub_id, 
+    s.first_name,
+    s.last_name,
+    pl.plan_name, 
+    pl.data_gb AS plan_data_gb,
+    SUM(ul.data_mb) AS total_data_mb,
+    ROUND(SUM(ul.data_mb) / 1024.0, 2) AS total_data_gb
+FROM subscribers s
+    JOIN plans pl       ON pl.plan_id = s.plan_id
+    JOIN usage_logs ul  ON ul.sub_id = s.sub_id
+GROUP BY
+    s.sub_id, 
+    s.first_name,
+    s.last_name,
+    pl.plan_name, 
+    plan_data_gb
+HAVING SUM(ul.data_mb) > plan_data_gb * 1024.0
+ORDER BY total_data_gb DESC;
+--
+-- Q19: How many days does each resolved ticket take to handle?
