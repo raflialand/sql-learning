@@ -235,3 +235,18 @@ change #14: add messy-to-insight notes module (13-Aug-2026)
 3. updated documentation:
    - README.md (intro line, What This Is notes-module bullet, directory map → shows 04-messy-to-insight/)
 4. verification: folder contains the single note file; no skill/agent/blueprint references the module — no other updates needed
+
+---
+
+change #15: rename notes module to data-to-insight (14-Aug-2026)
+
+1. renamed the notes module folder + file:
+   - learning/04-messy-to-insight/messy-to-insight.md  →  learning/04-data-to-insight/data-to-insight.md
+   (folder number stays 04 — rename of the same module, not a new one)
+2. updated the note content to a new video analysis report:
+   - data-to-insight.md  ("Think Like a Senior Data Analyst: Data to Insight in 15 Minutes" by Christine Jiang, published 12-Aug-2026 — 4-step analytical framework: Northstar metrics/dimensions, break ambiguous questions into 4 buckets, investigate the "why" with technical tools, surface insights and recommendations; plus the Running Log pro-tip)
+3. NOT a registered learning track — no row added to learning/00-notes/tracks.md (reference/notes material only; tracks registry unchanged at 4 tracks)
+4. updated documentation:
+   - README.md (intro line, What This Is notes-module bullet, directory map → shows 04-data-to-insight/)
+5. not affected (no other references): no skill/agent/blueprint references the module
+6. note: historical entry for change #14 left untouched — it records the past state
