@@ -250,3 +250,40 @@ change #15: rename notes module to data-to-insight (14-Aug-2026)
    - README.md (intro line, What This Is notes-module bullet, directory map → shows 04-data-to-insight/)
 5. not affected (no other references): no skill/agent/blueprint references the module
 6. note: historical entry for change #14 left untouched — it records the past state
+---
+change #16: add Data-to-Insight Case Studies module + register analyst track (14-Aug-2026)
+
+1. created the new learning module in @learning/:
+   - learning/02-sql-learning/sql-analyst-lab/  (open-ended analytical case studies; the next level beyond sql-skill-push)
+2. added 3 case studies, each = ONE open-ended main question + the 4-step framework
+   from learning/04-data-to-insight/data-to-insight.md (scope ~3 metrics + ~3 dimensions →
+   break into 4 buckets → one SQL query per sub-question → strong insights):
+   - 01-brew-and-co/  (Brew & Co. coffee shop on retail.db — highest scaffolding, ~6 model queries)
+   - 02-markethub/    (MarketHub marketplace on ecommerce.db — medium scaffolding, ~8 model queries incl. MoM + YoY)
+   - 03-novatel/      (NovaTel telecom on telecom.db — minimal scaffolding, ~8 model queries, MoM only, NO YoY stated as a dataset limitation)
+   - each case: case.md + expected/{01-scope.md,02-questions.md,03-queries.sql,03-results.md,04-insight.md} + work/
+3. dataset reuse (no copies, no regeneration, read-only by relative path):
+   - reuses the 3 verified sql-skill-push SQLite .db files and the _tools/run_query.py helper
+   - sql-skill-push subtree verified byte-identical (git status clean)
+4. registered a new learning track:
+   - learning/00-notes/tracks.md  (row: analyst, Data-to-Insight Case Studies, 3 Case units)
+5. created progress notes directory:
+   - learning/00-notes/05-analyst-lab/  (README with session template + 3-Case progress snapshot table)
+6. updated documentation:
+   - README.md  (intro, What This Is module + 5-track list, directory map, Getting Started, Related Roadmaps)
+7. verification: all 3 expected/03-queries.sql re-executed against the reused .db files —
+   22 queries total (6/8/8), 0 failures, outputs match 03-results.md; sql-skill-push untouched
+
+---
+
+change #17: add SQL Analyst Lab development discussion note (14-Aug-2026)
+
+1. added a personal discussion note to @learning/00-notes/00-personal-discuss/:
+   - sql-analyst-lab-development-discussion.md  (records the full build discussion for the sql-analyst-lab module: context/idea — multiple answers for one main question, design decisions, OpenSpec formalization + execution flow, adjustments made when handed to @openspec-agent, quality comparison vs sql-skill-push, and 4 improvement ideas kept for a future session)
+2. NOT a learning-track note — lives only in 00-personal-discuss/ (00 = special, not time-based; not counted toward any track's progress)
+3. updated documentation:
+   - changes-log.txt (#17 this entry)
+   - README.md — no change needed: directory map already lists 00-personal-discuss/ generically
+4. verification: note follows the existing personal-discuss convention (date/topic header, markdown); no skill/agent/blueprint references the note — no other updates needed
+
+

@@ -1,18 +1,18 @@
 # sql-learning
 
-A personal, AI-assisted multi-track learning environment — an 84-day SQL Fundamentals journey (12 weeks), a Data Quality Engineer module (13 units, MySQL), a Data Engineering track (26 weeks), a SQL Skill Push challenge module (60 verified problems across beginner/intermediate/advanced), and a data-to-insight notes module (turning messy data into actionable insights), with built-in progress tracking, practice databases, and agent-driven tooling.
+A personal, AI-assisted multi-track learning environment — an 84-day SQL Fundamentals journey (12 weeks), a Data Quality Engineer module (13 units, MySQL), a Data Engineering track (26 weeks), a SQL Skill Push challenge module (60 verified problems across beginner/intermediate/advanced), a SQL Analyst Lab case-studies module (3 open-ended data-to-insight cases), and a data-to-insight notes module (turning messy data into actionable insights), with built-in progress tracking, practice databases, and agent-driven tooling.
 
 ## What This Is
 
 This directory is a living learning workspace where daily SQL sessions are taught through conversation and tracked automatically by an opencode skill (`learning-progress`). It combines:
 
 - A **canonical roadmap** (`learning/02-sql-learning/sql-roadmaps/sql-learning-roadmap-3months.md`) breaking 3 months into 12 weeks × 7 days with topics, exercises, quizzes, and milestones.
-- **Automatic progress reporting** — the `learning-progress` skill tracks every registered learning track (SQL Fundamentals, SQL Skill Push, Data Quality Engineer, Data Engineering) via `learning/00-notes/tracks.md`; each session saves a structured note in that track's notes dir (`session-summary-*.md`), and the skill computes completed units as a percentage of the track's registry total, with a Mermaid progress chart.
+- **Automatic progress reporting** — the `learning-progress` skill tracks every registered learning track (SQL Fundamentals, SQL Skill Push, Data Quality Engineer, Data Engineering, Data-to-Insight Case Studies) via `learning/00-notes/tracks.md`; each session saves a structured note in that track's notes dir (`session-summary-*.md`), and the skill computes completed units as a percentage of the track's registry total, with a Mermaid progress chart.
 - **Practice databases** (SQLite) used for exercises: library management, e-commerce, a `sales-records` dataset for the SQL Mastery modules, plus three profiled datasets (coffee shop, e-commerce, telecom) in `learning/02-sql-learning/sql-skill-push/datasets/` shipped as MySQL + SQLite.
-- **Deep-dive modules** under `learning/02-sql-learning/`: `sql-mastery/` (currently: window functions) with lessons, exercises, datasets, and solutions, and `sql-skill-push/` — a challenge-based practice module (60 verified problems with expected results) across three difficulty levels.
+- **Deep-dive modules** under `learning/02-sql-learning/`: `sql-mastery/` (currently: window functions) with lessons, exercises, datasets, and solutions, `sql-skill-push/` — a challenge-based practice module (60 verified problems with expected results) across three difficulty levels, and `sql-analyst-lab/` — an open-ended case-studies module (3 data-to-insight cases: Brew & Co., MarketHub, NovaTel) that applies the 4-step analytical framework to the shared datasets.
 - **An execution agent** (`query-inspector`) that reviews learner-submitted SQL from `script/01-sql/` for query-logic correctness and business-requirement alignment, writing analysis reports to `docs/03-query-inspector/`.
 - **A notes module** (`learning/04-data-to-insight/`) capturing video analysis reports — currently "Think Like a Senior Data Analyst: Data to Insight in 15 Minutes" (Christine Jiang) with a 4-step analytical framework for turning messy data into actionable insights.
-- **Four registered learning tracks** in `learning/00-notes/tracks.md`: SQL Fundamentals (84 units), SQL Skill Push (60 challenges), Data Quality Engineer (13 units, MySQL-based against a purpose-built "dirty" dataset), and Data Engineering (26 weeks).
+- **Five registered learning tracks** in `learning/00-notes/tracks.md`: SQL Fundamentals (84 units), SQL Skill Push (60 challenges), Data Quality Engineer (13 units, MySQL-based against a purpose-built "dirty" dataset), Data Engineering (26 weeks), and Data-to-Insight Case Studies (3 cases).
 
 ## Directory Map
 
@@ -31,12 +31,14 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 │   │   ├── 01-de-progress/ # Data Engineering session summaries
 │   │   ├── 02-sql-progress/# SQL session summaries (progress truth)
 │   │   ├── 03-dq-progress/ # Data Quality session summaries
-│   │   └── 04-sql-push/    # SQL Skill Push session summaries
+│   │   ├── 04-sql-push/    # SQL Skill Push session summaries
+│   │   └── 05-analyst-lab/ # SQL Analyst Lab session summaries
 │   ├── 01-de-learning/     # 6-month data engineering roadmap
-│   ├── 02-sql-learning/    # SQL roadmaps + SQL Mastery + Skill Push modules
+│   ├── 02-sql-learning/    # SQL roadmaps + SQL Mastery + Skill Push + Analyst Lab modules
 │   │   ├── sql-roadmaps/   # 3-month roadmap + per-week deep dives (Weeks 1–7)
 │   │   ├── sql-mastery/    # Module-based learning path (window functions, etc.)
-│   │   └── sql-skill-push/ # Challenge module: 60 verified problems + datasets + solutions
+│   │   ├── sql-skill-push/ # Challenge module: 60 verified problems + datasets + solutions
+│   │   └── sql-analyst-lab/# Case-studies module: 3 open-ended data-to-insight cases
 │   ├── 03-dq-learning/     # MySQL-based Data Quality Engineer module
 │   └── 04-data-to-insight/  # Notes module: data → actionable insights
 │
@@ -103,6 +105,7 @@ Three capstone projects punctuate the journey: a personal budget tracker (end of
 4. **Save your progress** — say "summarize" (or "rangkuman") to persist the session as a structured note and see the updated progress report.
 5. **Get query feedback** — put your SQL in `script/01-sql/` and run `@query-inspector` to have it checked for correctness and business alignment.
 6. **Push your SQL skills** — solve the verified challenges in `learning/02-sql-learning/sql-skill-push/` (60 problems across beginner/intermediate/advanced, each with an expected result).
+7. **Think like an analyst** — work the open-ended case studies in `learning/02-sql-learning/sql-analyst-lab/` (3 cases that apply the 4-step data-to-insight framework: scope metrics/dimensions → break the question into sub-questions → query → strong insights).
 
 ## Prerequisites
 
@@ -115,3 +118,4 @@ Three capstone projects punctuate the journey: a personal budget tracker (end of
 - `learning/01-de-learning/data-engineering-roadmap-6months.md` — broader data engineering path
 - `learning/03-dq-learning/README.md` — Data Quality Engineer module (MySQL-based, standalone)
 - `learning/02-sql-learning/sql-skill-push/README.md` — SQL Skill Push challenge module (60 verified problems)
+- `learning/02-sql-learning/sql-analyst-lab/README.md` — SQL Analyst Lab case-studies module (3 open-ended data-to-insight cases)
