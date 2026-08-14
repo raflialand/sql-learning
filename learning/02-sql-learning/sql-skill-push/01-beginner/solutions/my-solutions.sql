@@ -14,7 +14,7 @@ SELECT CONCAT(first_name, ' ', last_name) AS `name`,
     city,
     signup_date
 FROM customers
-WHERE YEAR(signup_date) = 2025
+WHERE signup_date BETWEEN '2025-01-01' AND '2025-12-31'
 ORDER BY signup_date ASC;
 --
 -- Q4: How many orders were placed at store BRW001 (Manhattan)?
@@ -83,7 +83,7 @@ GROUP BY store_id;
 --
 -- Q14: Which product categories bring in the most revenue? (revenue = qty × unit_price)
 SELECT p.category,
-    SUM(oi.quantity * unit_price) AS total_revenue
+    SUM(oi.quantity * oi.unit_price) AS total_revenue
 FROM order_items oi
     LEFT JOIN products p ON oi.product_id = p.prod_id
 GROUP BY p.category
@@ -118,22 +118,19 @@ ORDER BY total_spent DESC
 LIMIT 10;
 --
 -- Q18: How many orders were placed in each month of 2025?
-SELECT MONTH(order_date) AS order_month,
-    COUNT(*) AS total_orders
+SELECT strftime('%Y-%m', order_date) AS month,
+    COUNT(*) AS order_count
 FROM orders
-WHERE YEAR(order_date) = 2025
-GROUP BY MONTH(order_date)
-ORDER BY order_month ASC;
+WHERE order_date BETWEEN '2025-01-01' AND '2025-12-31'
+GROUP BY strftime('%Y-%m', order_date)
+ORDER BY month ASC;
 --
 -- Q19: What is the average order value per month, and which month had the highest?
-SELECT YEAR(order_date) AS order_year,
-    MONTH(order_date) AS order_month,
-    AVG(total_amount) AS average_order_value
+SELECT strftime('%Y-%m', order_date) AS month,
+    ROUND(AVG(total_amount), 2) AS avg_order_value
 FROM orders
-GROUP BY YEAR(order_date),
-    MONTH(order_date)
-ORDER BY YEAR(order_date),
-    average_order_value DESC;
+GROUP BY strftime('%Y-%m', order_date)
+ORDER BY avg_order_value DESC;
 --
 -- Q20: Which customers have NEVER placed an order?
 SELECT c.cust_id,

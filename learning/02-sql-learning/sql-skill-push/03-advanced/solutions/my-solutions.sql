@@ -325,3 +325,31 @@ HAVING SUM(ul.data_mb) > plan_data_gb * 1024.0
 ORDER BY total_data_gb DESC;
 --
 -- Q19: How many days does each resolved ticket take to handle?
+SELECT
+    ticket_id,
+    sub_id,
+    category,
+    created_date,
+    resolved_date,
+    CAST(DATEDIFF(resolved_date, created_date) AS DECIMAL (10,2)) AS handling_days
+FROM tickets
+WHERE resolved_date IS NOT NULL
+ORDER BY handling_days DESC;
+--
+-- Q20: For each signup quarter, how many subscribers are still active, and what % of the cohort is that?
+WITH cohort AS(
+    SELECT
+        sub_id,
+        CONCAT(YEAR(signup_date), '-Q', QUARTER(signup_date)) AS cohort
+    FROM subscribers
+)
+SELECT
+    c.cohort, 
+    COUNT(*) AS total_subs, 
+    SUM(CASE WHEN s.status = 'Active' THEN 1 ELSE 0 END) AS still_active,
+    ROUND(SUM(CASE WHEN s.status = 'Active' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS active_pct
+FROM cohort c
+    JOIN subscribers s ON s.sub_id = c.sub_id
+GROUP BY c.cohort
+ORDER BY c.cohort;
+

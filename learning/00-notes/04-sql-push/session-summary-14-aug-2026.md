@@ -206,4 +206,81 @@ ORDER BY total DESC;
 
 ---
 
+## Advanced Q19 — Completed & Verified
+
+**Status:** Advanced Q19 solved and verified (date diff on `tickets`). Second session of the day.
+
+### Completed
+
+- Q19 — Ticket handling time (days per resolved ticket): `DATEDIFF(resolved_date, created_date)` (MySQL), `WHERE resolved_date IS NOT NULL`, `CAST(... AS DECIMAL(10,2))` to match the `62.00` format, `ORDER BY handling_days DESC`. PASS (2,651 rows: 215 → 62.00 …).
+
+### Key Takeaways
+
+1. **Gap between two dates** = `DATEDIFF(resolved_date, created_date)` (MySQL, end − start, integer) / `julianday(resolved_date) - julianday(created_date)` (SQLite, includes fractional). The question is exactly the resolved_date − created_date gap.
+2. **Filter first:** `tickets` has 3,800 rows but only 2,651 resolved — without `WHERE resolved_date IS NOT NULL` you return 3,800 rows with NULL handling_days. "Each resolved ticket" = the filter.
+3. **`DECIMAL(10,2)`** = 10 total digits, 2 after the decimal → fixed-point exact arithmetic, displays `62.00` (not float). Converts `DATEDIFF`'s integer `62` into the expected format.
+4. **ORDER BY matters for verification:** expected sample lists 62.00 first → order by `handling_days DESC`, not `ticket_id`.
+5. **Argument order:** `DATEDIFF(date1, date2)` = date1 − date2, so resolved first, created second.
+
+### Mistakes / Notes
+
+- Draft 1: missing `WHERE resolved_date IS NOT NULL` → 3,800 rows vs expected 2,651.
+- Draft 1: `ORDER BY ticket_id` → sample order wrong (expected high→low by days).
+- Draft 1: bare `DATEDIFF` → integer `62`, not `62.00`.
+- `DECIMAL (10,2)` with a space before `(` works but is non-standard — write `DECIMAL(10,2)`.
+
+---
+
+## Advanced Q20 — Completed & Verified · Advanced Level Complete 🎉
+
+**Status:** Advanced Q20 solved and verified. Advanced Q1–Q20 ALL done → Advanced level complete.
+
+### Completed
+
+- Q20 — Signup cohort retention: cohort label `CONCAT(YEAR(signup_date), '-Q', QUARTER(signup_date))`, `GROUP BY cohort`, `COUNT(*)` total vs `SUM(CASE WHEN status='Active' THEN 1 ELSE 0 END)` still_active, `ROUND(... * 100.0 / COUNT(*), 2)` active_pct. PASS (19 rows: 2021-Q1 247/197/79.76 → 2023-Q2 250/220/88.00).
+
+### Key Takeaways
+
+1. **Cohort** = a group sharing a defining event in the same period (signup quarter). **Retention** = % of that cohort still active today (`still_active / total_subs`). Comparing raw numbers across cohorts is unfair (older cohorts had more time to churn) — percentages level the field.
+2. **MySQL quarter label is easy:** `QUARTER(date)` returns 1–4, `YEAR(date)` the year → `CONCAT(YEAR(signup_date), '-Q', QUARTER(signup_date))` = `2021-Q1`. SQLite has no `QUARTER()`, so the reference builds it via `strftime('%Y-Q' || ((month+2)/3))` — same output, both 19 rows.
+3. Conditional aggregation (`SUM(CASE WHEN status = 'Active' THEN 1 ELSE 0 END)`) for "count where condition" — same pivot pattern as Q13 / Intermediate Q20.
+4. `* 100.0` avoids integer division (4th recurrence of the trap).
+5. **CTE column vs CTE name** can share the name (`cohort`) legally — different namespaces.
+
+### Mistakes / Notes
+
+- Draft 1: `COUNT(*) AS total)subs` — `)` typo → must be `total_subs`.
+- Draft 1 was otherwise correct (label, conditional agg, 100.0, GROUP BY/ORDER BY cohort).
+
+---
+
+## Beginner Fixes — Completed & Verified (20/20)
+
+**Status:** Beginner Q1–Q20 ALL pass. Fixed the remaining 4 queries in `my-solutions.sql` and re-verified against `retail.db`.
+
+### Completed
+
+- Q3 — `YEAR(signup_date)` → `WHERE signup_date BETWEEN '2025-01-01' AND '2025-12-31'` (portable, no dialect function).
+- Q14 — `unit_price` → `oi.unit_price` (resolves the ambiguity between `order_items.unit_price` and `products.unit_price`).
+- Q18 — `MONTH()/YEAR()` → `strftime('%Y-%m', order_date)` + `BETWEEN` for 2025.
+- Q19 — `YEAR()/MONTH()` → `strftime('%Y-%m', order_date)`; `ORDER BY avg_order_value DESC` (global sort guarantees the global highest month surfaces first).
+- Q1 (`is_active`) and Q15 (stray `;`) were already fixed in the file; confirmed passing.
+
+### Key Takeaways
+
+1. The only remaining Beginner failures were the MySQL-only `YEAR()`/`MONTH()` date functions (Q3/Q18/Q19) plus the ambiguous unqualified column (Q14) — all localized, mechanical fixes.
+2. `strftime('%Y-%m', date)` (SQLite) / `DATE_FORMAT(date, '%Y-%m')` (MySQL) — recurring dialect note.
+3. Qualify columns with the table alias when a JOIN shares column names.
+
+## Session Stats (14 Aug 2026)
+
+- Completed: **Advanced Q11–Q20** (10 challenges) + **Beginner fixes Q1/Q3/Q14/Q15/Q18/Q19** → **Beginner 20/20**
+- Intermediate: 20/20 complete · Advanced: 20/20 complete · Beginner: 20/20 complete → **module complete 60/60** 🎉
+
+## Next Steps
+
+1. Full module recap / next module planning (60/60 done).
+
+---
+
 *Happy Learning!*
