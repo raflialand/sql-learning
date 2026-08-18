@@ -36,3 +36,45 @@
 ## Next Steps
 
 1. Step 2: decompose the main question ("How is sales performance, and where should we focus next month?") into sub-questions mapped to the 4 buckets (Overall Trends · Growth Rates · Performance Measurement · KPI Reporting).
+
+---
+
+# Summary: SQL Analyst Lab Session (continued — Step 2 decomposition)
+
+**Date:** 18 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 2 in progress; Buckets 1 & 2 locked
+
+---
+
+## Completed
+
+- Case 01 (Brew & Co.) Step 2: decomposed the main question into sub-questions for 2 of 4 buckets.
+- **Bucket 1 — Overall Trends (locked):**
+  1. Revenue trend by Month (chain-wide) → Revenue · Month
+  2. Revenue split by Category → Revenue · Category
+  3. Revenue split by Store → Revenue · Store
+  - AOV-by-month trend deliberately dropped (deferred to Bucket 2 — level trend is redundant with Revenue trend).
+- **Bucket 2 — Growth Rates (locked):**
+  1. Q2a (headline): Which store is growing/shrinking Revenue MoM — where should next month's focus go? → Revenue · Store × Month, MoM % change
+  2. Q2b (diagnosis, conditional on a flagged store): Did the change come from order volume or basket size? → AOV vs Order count · Store × Month, MoM % change
+
+## Key Takeaways
+
+1. Sub-questions are built ONLY from the Step 1 pool (Revenue / Order count / AOV × Store / Category / Month) — one metric sliced by one dimension (sometimes two); no new metrics/dimensions sneak in per bucket.
+2. The only thing new in the Growth Rates bucket is the lens: the metric becomes % change (MoM), not the level.
+3. Two filters for picking metric×dimension combos: (1) does *change* answer the business question? (2) is it the headline (Revenue) or the diagnosis (Count/AOV)?
+4. "Flag a store" = anomaly detection: a store whose MoM change deviates from the chain's normal pattern becomes the focus target; Q2b fires only for that store (dig one dimension deeper = root cause = strong insight).
+5. Avoid the "all metrics × all dimensions" trap — Q1/Q2 draft (Order count MoM + Revenue MoM, same dims) was redundant and collapsed into one headline + one diagnostic.
+
+## Mistakes / Notes
+
+- Drafted Order-count MoM and Revenue MoM with identical dimensions — caught as duplicate; merged into a single headline (Revenue) + single driver (AOV/Count).
+- "Month over month" phrasing was mislabeled as a Trends question at first — it belongs to Growth Rates (% change), not level trends.
+- Asked whether AOV-by-month trend is necessary → answer: optional as a level trend; its payoff is the Bucket 2 growth diagnosis.
+
+## Next Steps
+
+1. Bucket 3 — Performance Measurement: segment comparisons head-to-head at the same point in time (no time axis, no % change) — e.g. Store vs Store on Revenue/AOV, Category vs Category; user drafts sub-questions (not yet drafted).
+2. Bucket 4 — KPI Reporting: the "why" behind a number (e.g. underperforming-product bottom decile), digging one dimension deeper.
+3. Lock full `work/02-questions.md`, then Step 3 SQL queries.
