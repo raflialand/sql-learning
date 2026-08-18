@@ -41,6 +41,6 @@ _Update this table as you go._
 
 | Case | Total | Completed | Notes |
 | --- | --- | --- | --- |
-| 01 Brew & Co. | 1 | 0 | — |
+| 01 Brew & Co. | 1 | 0 | Step 1 scope done |
 | 02 MarketHub | 1 | 0 | — |
 | 03 NovaTel | 1 | 0 | — |

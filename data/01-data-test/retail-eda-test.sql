@@ -1,4 +1,10 @@
 -- [EDA test of retail dataset]
+-- [customers table]
+
+SELECT *
+FROM customers;
+
+--
 
 SELECT
 	cust_id AS customer_id,
@@ -10,6 +16,7 @@ SELECT
 FROM customers;
 
 --
+-- [order_items table]
 
 SELECT *
 FROM order_items;
@@ -25,6 +32,7 @@ ORDER BY total_sold DESC
 LIMIT 10;
 
 --
+-- [orders table]
 
 SELECT *
 FROM orders;
@@ -39,6 +47,16 @@ GROUP BY TO_CHAR(order_date, 'YYYY-MM')
 ORDER BY TO_CHAR(order_date, 'YYYY-MM');
 
 --
+
+SELECT
+	store_id,
+	ROUND(SUM(total_amount), 2) AS revenue
+FROM orders
+GROUP BY store_id
+ORDER BY revenue DESC;
+
+--
+-- [products table]
 
 SELECT *
 FROM products;
