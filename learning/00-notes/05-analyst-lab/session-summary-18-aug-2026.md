@@ -78,3 +78,45 @@
 1. Bucket 3 — Performance Measurement: segment comparisons head-to-head at the same point in time (no time axis, no % change) — e.g. Store vs Store on Revenue/AOV, Category vs Category; user drafts sub-questions (not yet drafted).
 2. Bucket 4 — KPI Reporting: the "why" behind a number (e.g. underperforming-product bottom decile), digging one dimension deeper.
 3. Lock full `work/02-questions.md`, then Step 3 SQL queries.
+
+---
+
+# Summary: SQL Analyst Lab Session (continued — Buckets 3 & 4 locked)
+
+**Date:** 18 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 2 complete; all 4 buckets locked in `work/02-questions.md`
+
+---
+
+## Completed
+
+- **Bucket 3 — Performance Measurement (locked):**
+  1. AOV by Store — efficiency contest, best vs worst in one question
+  2. AOV by Category — stronger basket
+  3. Order count by Category — volume/traffic driver
+- **Bucket 4 — KPI Reporting (locked):**
+  1. Q4a: bottom-decile Revenue products (~3 of 31) + zero-sales flag
+  2. Q4b: price position (cheap/mid/expensive) — drill-down on `unit_price`
+  3. Q4c: active vs inactive — drill-down on `is_active`
+  4. Q4d: bought alone vs as add-ons in bigger orders — basket context
+- **Wrote `work/02-questions.md`** — main question + 12 sub-questions across 4 buckets, each with metric × dimension and a "why it answers" note.
+
+## Key Takeaways
+
+1. Bucket 3 is a *contest* (head-to-head snapshot, no time axis, no % change); ranking raw Revenue ≈ Bucket 1's level split — the new lens is efficiency (AOV), not size.
+2. Explained with a lemonade-stand analogy: 100 cups × $1 vs 30 cups × $3 — Revenue says Stand A wins, AOV says Stand B is the better performer.
+3. Bucket 4 = the "why" behind a flagged number, digging one dimension deeper; you anchored on the bottom-decile product and drilled into price/status/basket.
+4. "Highest store" vs "lowest store" is ONE ranking question, not two — best & worst come from a single ranked result.
+5. Circular-trap caught: "lowest quantity sold" is redundant with bottom-decile revenue (already = low sales); "never purchased" kept as a real anomaly check (dataset has 2 inactive products).
+
+## Mistakes / Notes
+
+- Drafted "which store has lowest AOV but highest order count" → redirected: that's a Bucket 3 store contest duplicating Q3a, not a Bucket 4 "why" drill.
+- Q3 initial draft (Revenue split by Store / Category) duplicated Bucket 1 verbatim → rebuilt around AOV / Order count to add the performance lens.
+
+## Next Steps
+
+1. Step 3: write SQL queries for the 12 sub-questions against `retail.db` (via `python ../sql-skill-push/_tools/run_query.py`), verify against `expected/03-results.md`.
+2. Step 4: surface insights + recommendations (trend + fluctuation + anomaly + root cause + recommendation).
+3. Compare `work/` vs `expected/` (01-scope, 02-questions, 03-queries, 03-results, 04-insight).
