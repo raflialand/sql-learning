@@ -120,3 +120,43 @@
 1. Step 3: write SQL queries for the 12 sub-questions against `retail.db` (via `python ../sql-skill-push/_tools/run_query.py`), verify against `expected/03-results.md`.
 2. Step 4: surface insights + recommendations (trend + fluctuation + anomaly + root cause + recommendation).
 3. Compare `work/` vs `expected/` (01-scope, 02-questions, 03-queries, 03-results, 04-insight).
+
+---
+
+# Summary: SQL Analyst Lab Session (continued — Step 3 prep + window functions)
+
+**Date:** 18 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 3 prep; no queries written yet
+
+---
+
+## Completed
+
+- Clarified Step 3 scope: 12 locked sub-questions, but the model answer (`expected/03-queries.sql`) bundles them into 6 queries (e.g. Q1 outputs revenue + order count + AOV in one statement). Keeping the extra KPI drill-downs (Q4b price band, Q4c active flag, Q4d basket context) would mean ~9 queries.
+- Walked through the Step 3 loop: one sub-question → one query → run → verify `(N rows)` count against `expected/03-results.md` → collect into `work/03-queries.sql`.
+- Key tool constraint: `run_query.py` executes **one SQL statement per file** (whole file passed to `cur.execute`), so one query per file — that's why the model file says "split and run each block above a blank line."
+- Learned the MoM % change window function: `LAG()` + `OVER (ORDER BY month)`.
+- Translated the model Q4 query from SQLite to PostgreSQL.
+
+## Key Takeaways
+
+1. `LAG(col) OVER (ORDER BY x)` — each row "sees" the previous row; `(cur − prev) / prev × 100` = MoM % change. The `ORDER BY` inside `OVER` defines the previous row; the outer query's ORDER BY does NOT affect the window.
+2. First row's MoM % is `NULL` (no previous period) — expected, not a bug.
+3. SQLite vs Postgres: `LAG() OVER` is standard SQL, identical in both. Only the date formatter differs — `strftime('%Y-%m', ...)` (SQLite) → `TO_CHAR(order_date, 'YYYY-MM')` or `DATE_TRUNC('month', order_date)` (Postgres).
+4. Chain-wide trend = Q1a revenue · month; store/category splits are level questions; MoM belongs to the Growth Rates bucket (% change lens).
+
+## Mistakes / Notes
+
+- None this session — approach discussion only; queries not yet written.
+
+## Next Steps
+
+1. Write and run Step 3 queries (SQLite helper first), verify against `expected/03-results.md`.
+2. Optionally re-run the MoM query in Postgres for practice (TO_CHAR + LAG).
+3. Step 4 insights + recommendations.
+4. Compare `work/` vs `expected/`.
+
+---
+
+*Happy Learning!*
