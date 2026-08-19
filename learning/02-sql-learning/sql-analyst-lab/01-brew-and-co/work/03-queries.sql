@@ -53,36 +53,44 @@ SELECT
 	month,
 	store_id,
 	ROUND(revenue, 2) AS revenue,
-	ROUND((revenue - LAG(revenue) OVER(ORDER BY month)) / LAG(revenue) OVER(ORDER BY month) * 100, 2) AS mom_growth_change
+	ROUND((revenue - LAG(revenue) OVER(PARTITION BY store_id ORDER BY month)) / LAG(revenue) OVER(PARTITION BY store_id ORDER BY month) * 100, 2) AS mom_growth_change
 FROM monthly
 ORDER BY month, store_id;
 --
 -- Q2b.	For the flagged store: did the change come from order volume or basket size? | AOV vs Order count · Store × Month, MoM % change
-SELECT
-	store_id,
-	COUNT(*) AS order_count
-FROM orders
-GROUP BY store_id
-ORDER BY order_count DESC;
---
-WITH category_quantity AS(
+WITH monthly_order_count AS(
 	SELECT 
-		o.store_id,
-		p.category,
-		SUM(oi.quantity) AS total_quantity
-	FROM orders o
-		JOIN order_items oi ON oi.order_id = o.order_id
-		JOIN products p ON p.prod_id = oi.product_id
+		TO_CHAR(order_date, 'YYYY-MM') AS month,
+		store_id,
+		COUNT(*) AS order_count
+	FROM orders
+	WHERE store_id = 'BRW003'
 	GROUP BY
-		o.store_id,
-		p.category
-	ORDER BY
-		o.store_id,
-	total_quantity DESC
+		month,
+		store_id
+	ORDER BY month
 )
-SELECT *
-FROM category_quantity
-WHERE category = 'Merchandise';
+SELECT *,
+	ROUND((order_count - LAG(order_count) OVER(PARTITION BY store_id ORDER BY month)) * 100.0 / LAG(order_count) OVER(PARTITION BY store_id ORDER BY month), 2) AS count_mom_pct
+FROM monthly_order_count;
+--
+WITH monthly_revenue AS(	
+	SELECT 
+		TO_CHAR(order_date, 'YYYY-MM') AS month,
+		store_id,
+		COUNT(*) AS order_count,
+		ROUND(SUM(total_amount),2) AS revenue,
+		ROUND(SUM(total_amount) / COUNT(*), 2) AS avg_order_value
+	FROM orders
+	WHERE store_id = 'BRW003'
+	GROUP BY
+		month,
+		store_id
+	ORDER BY month
+)
+SELECT *,
+	ROUND((avg_order_value - LAG(avg_order_value) OVER(PARTITION BY store_id ORDER BY month)) / LAG(avg_order_value) OVER(PARTITION BY store_id ORDER BY month) * 100.0, 2) AS aov_diff_pct
+FROM monthly_revenue;
 --
 -- [Bucket 3: Performance Measurement (snapshot head-to-head)]
 -- Q3a. Which store earns the most per order (efficiency contest, best vs worst)? | AOV · Store
@@ -96,7 +104,9 @@ GROUP BY store_id
 ORDER BY avg_order_value DESC;
 --
 -- Q3b. Which category has the stronger basket? | AOV · Category
-SELECT * FROM products;
+SELECT * 
+FROM products;
+--
 SELECT
 	p.category,
 	ROUND(SUM(oi.unit_price * oi.quantity), 2) AS category_revenue
