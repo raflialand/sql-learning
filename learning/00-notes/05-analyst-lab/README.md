@@ -41,6 +41,6 @@ _Update this table as you go._
 
 | Case | Total | Completed | Notes |
 | --- | --- | --- | --- |
-| 01 Brew & Co. | 1 | 0 | Step 1 done; Step 2 Buckets 1–2 locked, 3–4 pending |
+| 01 Brew & Co. | 1 | 0 | Steps 1–2 done; Step 3 queries drafted (Postgres) + reviewed, fix plan pending (see 19-aug summary) |
 | 02 MarketHub | 1 | 0 | — |
 | 03 NovaTel | 1 | 0 | — |
