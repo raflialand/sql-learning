@@ -41,7 +41,7 @@ _Update this table as you go._
 
 | Case | Total | Completed | Notes |
 | --- | --- | --- | --- |
-| 01 Brew & Co. | 1 | 0 | Steps 1–2 done; Step 3: Q2a/Q3b/Q3c verified; Q1b is_active filter bug found; Q4a pending (see 20-aug summary) |
+| 01 Brew & Co. | 1 | 0 | Steps 1–2 done; Step 3: Q1c/Q2a/Q2b/Q3a/Q3b/Q3c/Q4a/Q4b verified; Q1b filter + Q4c/Q4d + cleanup pending (see 20-aug summary) |
 | 02 MarketHub | 1 | 0 | — |
 | 03 NovaTel | 1 | 0 | — |
 
@@ -51,6 +51,8 @@ _Append new mistakes here after each session (newest on top). The detailed table
 
 | # | Date | Mistake | Root cause | Lesson / Fix |
 | --- | --- | --- | --- | --- |
+| 20 | 20-Aug | Q4b hardcoded `IN ('PRD001','PRD006','PRD015')` | Repeat of #10 — typed the derived set | `underperform` CTE = Q4a flagged set; outer JOIN |
+| 19 | 20-Aug | Q4b windows over filtered rows | `WHERE` runs before windows → avg 3.10 vs true 5.25 | Compute windows on the full table, filter after (**windows before WHERE**) |
 | 18 | 20-Aug | Assumed `is_active=1` filter harmless | Trusted earlier review, not the data | Verify filter impact on the DB; PRD030/031 DO have sales (236 rows / 215 orders) |
 | 17 | 20-Aug | Q3b denominator = `SUM(quantity)` | Definition slip | AOV = revenue ÷ `COUNT(DISTINCT order_id)`, never ÷ items |
 | 16 | 19-Aug | `* 100.0` after `/` → all `0.00` | Integer division runs first | `* 100.0` **before** `/` for integers, or cast to numeric |

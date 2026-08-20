@@ -44,4 +44,86 @@
 
 ---
 
+# Summary: SQL Analyst Lab Session (continued — Q4b price-band deep-dive)
+
+**Date:** 20 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 3: Q4b finalized & verified (all 3 underperformers = Cheap); Q4c/Q4d next
+
+---
+
+## Completed
+
+- **Learned `COALESCE`:** returns the first non-NULL argument; `COALESCE(SUM(oi.unit_price * oi.quantity), 0)` turns a no-sales `NULL` into a real `0` so zero-sales products can be flagged.
+- **Learned `NTILE(n)`:** window function that splits a sorted set into n equal-sized buckets (1..n). `NTILE(3) OVER(PARTITION BY category ORDER BY unit_price)` = per-category price tertile.
+- **Locked the cheap/mid/expensive definition:** **tertile within the product's own category** (NTILE(3) partitioned by category). Rejected whole-menu comparison (menu avg $9.54 is distorted by Merchandise avg $19.39) and category mean (skewed by outliers).
+- **Caught the window-after-WHERE trap in Q4b:** `AVG(...) OVER(PARTITION BY category)` written in the same query as the flagged-set filter returned Beverage avg = 3.10 instead of the true 5.25 — the WHERE reduced the partition to 2 rows before the window computed.
+- **Fixed Q4b** with the two-CTE pattern: `price_bands` (windows over ALL products) + `underperform` (Q4a flagged set) joined at the end. **Verified output:**
+
+| prod_id | product | category | price | avg_category | band |
+| --- | --- | --- | --- | --- | --- |
+| PRD001 | Espresso | Beverage | 2.95 | 5.25 | Cheap |
+| PRD015 | Chocolate Chip Cookie | Food | 2.50 | 5.81 | Cheap |
+| PRD006 | Americano | Beverage | 3.25 | 5.25 | Cheap |
+
+- **Insight forming:** all three flagged products are **cheap within their category** → underperformance is **price-driven** (low-price staples selling fine but generating little revenue), not demand-driven — matches the model's expected finding.
+
+## Key Takeaways
+
+1. **COALESCE(x, 0) = "if NULL, return 0".** Needed because LEFT JOIN + no sales rows = `SUM` is NULL, not 0.
+2. **NTILE(3) = position-based thirds**, not value-based. Even group sizes regardless of price gaps; `PARTITION BY category` restarts the thirds per category.
+3. **Definition locked before SQL:** cheap/mid/expensive = per-category tertile. The answer *changes* with the reference (Americano is Mid vs whole-menu, Cheap vs own category) — pin it down first.
+4. **Window functions run AFTER WHERE.** Filtering first makes `AVG/NTILE OVER(...)` compute over the surviving rows only. Compute windows on the full table, restrict afterwards.
+5. **Two-CTE pattern for Bucket 4:** CTE 1 = the flagged set (from Q4a revenue), CTE 2 = the classification over the whole menu; join at the end. No hardcoded IDs.
+6. **Correction to my own earlier claim:** Americano is **Cheap**, not Mid — my earlier table was computed with the same filtered-window bug. The full-set computation settles it.
+
+## Mistakes / Notes
+
+- **#19 — Q4b windows over filtered rows:** `AVG(unit_price) OVER(PARTITION BY category)` computed after `WHERE prod_id IN (...)` gave Beverage avg 3.10 (vs true 5.25) and misclassified Americano. Fix below.
+- **#20 — hardcoded `IN ('PRD001','PRD006','PRD015')`** in the first Q4b draft (repeat of #10). Fix: `underperform` CTE derived from Q4a.
+
+## ⚠️ Mistake Track & Solutions (dedicated section)
+
+| # | Date | Mistake | Root cause | Solution (verified) |
+| --- | --- | --- | --- | --- |
+| 20 | 20-Aug | Q4b hardcoded `IN ('PRD001','PRD006','PRD015')` | Repeat of #10 — typed the derived set | `underperform` CTE = Q4a flagged set (`ORDER BY revenue ASC LIMIT 3`); outer `JOIN underperform` |
+| 19 | 20-Aug | Q4b windows computed over the filtered rows | `WHERE prod_id IN (...)` runs before window functions, so `AVG/NTILE OVER(PARTITION BY category)` saw only 2–3 rows → avg 3.10 instead of 5.25 | Compute windows over the full `products` table in a `price_bands` CTE, then filter/join in the outer query. **Rule: windows before WHERE.** |
+| 18 | 20-Aug | Assumed `is_active=1` filter harmless | Trusted earlier review, not the data | Verify filter impact on the DB; PRD030/031 DO have sales (215 orders) |
+| 17 | 20-Aug | Q3b denominator = `SUM(quantity)` | Definition slip | AOV = revenue ÷ `COUNT(DISTINCT order_id)`, never ÷ items |
+
+**Corrected Q4b pattern (the solution that stays):**
+
+```sql
+WITH price_bands AS (
+	SELECT prod_id, prod_name, category, unit_price,
+		ROUND(AVG(unit_price) OVER(PARTITION BY category), 2) AS avg_category_price,
+		CASE NTILE(3) OVER(PARTITION BY category ORDER BY unit_price)
+			WHEN 1 THEN 'Cheap' WHEN 2 THEN 'Mid' ELSE 'Expensive' END AS price_band
+	FROM products
+),
+underperform AS (
+	SELECT p.prod_id, p.prod_name,
+		ROUND(COALESCE(SUM(oi.unit_price * oi.quantity), 0), 2) AS revenue
+	FROM products p
+		LEFT JOIN order_items oi ON oi.product_id = p.prod_id
+	GROUP BY p.prod_id, p.prod_name
+	ORDER BY revenue ASC
+	LIMIT 3
+)
+SELECT pb.prod_id, pb.prod_name, pb.category, pb.unit_price,
+       pb.avg_category_price, pb.price_band
+FROM price_bands pb
+JOIN underperform up ON up.prod_id = pb.prod_id;
+```
+
+## Next Steps
+
+1. Q4c: same two-CTE pattern → `is_active` band for the flagged set (windows over full table first).
+2. Q4d: same pattern + `item_per_order` CTE (`COUNT(DISTINCT product_id)` per order) + `COUNT(DISTINCT order_id)`; keep the flagged-set join.
+3. Q1b: remove `WHERE p.is_active = 1` (Beverage must return to 861 / $14,747.60).
+4. Cleanup: remove stray BRW001-only query after Q1a; split file into one statement per block.
+5. Verify in Postgres against `expected/03-results.md`; then Step 4 insights + recommendations; compare `work/` vs `expected/`.
+
+---
+
 *Happy Learning!*

@@ -26,7 +26,6 @@ SELECT
 	ROUND(SUM(oi.quantity * oi.unit_price), 2) AS category_revenue
 FROM products p
 	JOIN order_items oi ON oi.product_id = p.prod_id
-WHERE p.is_active = 1
 GROUP BY p.category
 ORDER BY category_revenue DESC;
 --
@@ -129,41 +128,55 @@ ORDER BY order_count DESC;
 --
 -- [Bucket 4: KPI Reporting (the "why")]
 -- Q4a. Which products underperform? | 	Product Revenue, bottom-decile (~3 of 31); flag zero-sales products
-SELECT *
-FROM order_items;
---
 SELECT
 	p.prod_id,
-	p.prod_name AS product_name,
-	p.category,
-	p.unit_price,
-	ROUND(SUM(oi.unit_price * oi.quantity), 2) AS revenue,
-	COUNT(oi.order_id) AS order_count
+	p.prod_name,
+	ROUND(COALESCE(SUM(oi.unit_price * oi.quantity), 0), 2) AS revenue
 FROM products p
-	JOIN order_items oi ON oi.product_id = p.prod_id
+	LEFT JOIN order_items oi ON oi.product_id = p.prod_id
 GROUP BY
 	p.prod_id,
-	p.prod_name, 
-	p.category, 
-	p.unit_price
-ORDER BY revenue
+	p.prod_name
+ORDER BY revenue ASC
 LIMIT 3;
 --
 -- Q4b. Are the underperformers cheap, mid, or expensive relative to the menu? | Revenue · unit_price band
-WITH price_comparison AS(
-	SELECT 
-		prod_id AS product_id,
-		prod_name AS product_name,
+WITH price_bands AS(
+	SELECT
+		prod_id,
+		prod_name,
 		category,
 		unit_price,
 		ROUND(AVG(unit_price) OVER(PARTITION BY category), 2) AS avg_category_price,
-		ROUND(AVG(unit_price) OVER(), 2) AS avg_all_price
+		CASE NTILE(3) OVER(PARTITION BY category ORDER BY unit_price)
+			WHEN 1 THEN 'Cheap'
+			WHEN 2 THEN 'Mid'
+			ELSE 'Expensive'
+			END AS price_band
 	FROM products
-	ORDER BY prod_id
+),
+underperform AS(
+	SELECT
+		p.prod_id,
+		p.prod_name,
+		ROUND(COALESCE(SUM(oi.unit_price * oi.quantity), 0), 2) AS revenue
+	FROM products p
+		LEFT JOIN order_items oi ON oi.product_id = p.prod_id
+	GROUP BY
+		p.prod_id,
+		p.prod_name
+	ORDER BY revenue ASC
+	LIMIT 3
 )
-SELECT *
-FROM price_comparison
-WHERE product_id IN ('PRD001', 'PRD006', 'PRD015');
+SELECT
+	pb.prod_id,
+	pb.prod_name,
+	pb.category,
+	pb.unit_price,
+	pb.avg_category_price,
+	pb.price_band
+FROM price_bands pb
+	JOIN underperform up ON up.prod_id = pb.prod_id;
 --
 -- Q4c. Are the underperformers active or inactive products? | Revenue · is_active
 SELECT
