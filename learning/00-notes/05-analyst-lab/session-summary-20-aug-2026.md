@@ -126,4 +126,54 @@ JOIN underperform up ON up.prod_id = pb.prod_id;
 
 ---
 
+# Summary: SQL Analyst Lab Session (continued — Q4c & Q4d finalized; all 12 queries verified)
+
+**Date:** 20 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 3: **all 12 sub-questions now match** their queries in `work/03-queries.sql` (verified read-only against `retail.db`)
+
+---
+
+## Completed
+
+- **Q4c (is_active band) finalized:** two-CTE pattern (`underperform` set + `LEFT JOIN products` for `is_active`). Verified: Espresso/Americano/Cookie all **Active** → inactivity is NOT the reason for underperformance.
+- **Q4d (basket context) finalized:** `underperform` + `item_per_order` CTEs, joins at order-item level, `COUNT(DISTINCT order_id)` for order count, and the alone/add-on classification. Verified:
+  | product | orders | alone | add-on |
+  | --- | --- | --- | --- |
+  | Americano | 94 | 11 | 83 |
+  | Espresso | 100 | 2 | 98 |
+  | Cookie | 123 | 4 | 119 |
+  Insight: these cheap staples mostly ride along **inside bigger baskets** (98/100 Espresso, 119/123 Cookie) → consistent with the "cheap add-on staple" story from Q4b.
+- **Q1b** already cleaned up by the user earlier (the `is_active=1` filter is gone from the file).
+
+## Key Takeaways
+
+1. **`SUM(CASE...)` counts lines; `COUNT(DISTINCT CASE ... THEN order_id END)` counts orders.** When an order can list the same product twice, line-counting inflates the total (Espresso add-on: 102 vs true 98). Basket-classification must count unique carts, not receipt lines.
+2. **`item_per_order` is essential, not redundant** — it stamps each order as alone (`product_in_order=1`) vs mixed (`>1`); the CASE just reads that stamp.
+3. **`COUNT(SUM(...))` is illegal** (aggregate nesting) and conceptually meaningless — it's one of two distinct forms, never both.
+4. **Consistent Bucket 4 pattern across Q4a–d:** define the flagged set from revenue (`underperform`), classify on the full table (or order context), then join — no hardcoded product IDs anywhere.
+
+## Mistakes / Notes
+
+- **#21 — Q4d `SUM(CASE WHEN ...)` counted lines, not orders:** alone+add_on summed to 98/104/127 but true orders are 94/100/123 (~4 duplicate lines per product). Fix: `COUNT(DISTINCT CASE WHEN ... THEN oi.order_id END)`.
+- Q4c/Q4d initial drafts repeated the hardcoded-set mistake (pattern #10 / #20) — resolved with the derived `underperform` CTE.
+
+## ⚠️ Mistake Track & Solutions (dedicated section)
+
+| # | Date | Mistake | Root cause | Solution (verified) |
+| --- | --- | --- | --- | --- |
+| 21 | 20-Aug | Q4d `SUM(CASE...)` counted receipt **lines**, not orders | Same product can appear on 2 lines in one order → double-count | `COUNT(DISTINCT CASE WHEN ipo.product_in_order = 1 THEN oi.order_id END)` |
+| 20 | 20-Aug | Q4b hardcoded `IN ('PRD001','PRD006','PRD015')` | Repeat of #10 — typed the derived set | `underperform` CTE = Q4a flagged set; outer JOIN |
+| 19 | 20-Aug | Q4b windows computed over the filtered rows | `WHERE` runs before windows → avg 3.10 vs true 5.25 | Compute windows on the full table, filter after (**windows before WHERE**) |
+| 18 | 20-Aug | Assumed `is_active=1` filter harmless | Trusted earlier review, not the data | Verify filter impact on the DB; PRD030/031 DO have sales (236 rows / 215 orders) |
+| 17 | 20-Aug | Q3b denominator = `SUM(quantity)` | Definition slip | AOV = revenue ÷ `COUNT(DISTINCT order_id)`, never ÷ items |
+
+## Next Steps
+
+1. Cleanup (leave in file for next session): remove stray BRW001-only query after Q1a; fix "Overal" typo; split Q2b into one statement per block for the SQLite helper.
+2. Verify all 12 queries in Postgres against `expected/03-results.md` (dialect already `TO_CHAR`).
+3. Step 4: surface insights + recommendations (trend + fluctuation + anomaly + root cause + recommendation) → `04-insight.md`; compare `work/` vs `expected/`.
+
+---
+
 *Happy Learning!*

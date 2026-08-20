@@ -179,37 +179,62 @@ FROM price_bands pb
 	JOIN underperform up ON up.prod_id = pb.prod_id;
 --
 -- Q4c. Are the underperformers active or inactive products? | Revenue · is_active
+WITH underperform AS(
+	SELECT
+		p.prod_id,
+		p.prod_name,
+		ROUND(COALESCE(SUM(oi.unit_price * oi.quantity), 0), 2) AS revenue
+	FROM products p
+		LEFT JOIN order_items oi ON oi.product_id = p.prod_id
+	GROUP BY
+		p.prod_id,
+		p.prod_name
+	ORDER BY revenue ASC
+	LIMIT 3
+)
 SELECT
-	prod_id AS product_id,
-	prod_name AS product_name,
+	up.prod_id AS product_id,
+	up.prod_name AS product_name,
 	CASE
-		WHEN is_active = 1 THEN 'Active'
-		WHEN is_active = 0 THEN 'Not Active'
+		WHEN p.is_active = 1 THEN 'Active'
+		WHEN p.is_active = 0 THEN 'Not Active'
 		ELSE NULL
 		END AS product_status
-FROM products
-WHERE prod_id IN ('PRD001', 'PRD006', 'PRD015');
+FROM underperform up
+	LEFT JOIN products p ON p.prod_id = up.prod_id;
 --
 -- Q4d. Are the underperformers bought alone or as add-ons inside bigger orders? | Revenue · basket context
-WITH item_per_order AS(
+WITH
+	underperform AS(
+	SELECT
+		p.prod_id,
+		p.prod_name,
+		ROUND(COALESCE(SUM(oi.unit_price * oi.quantity), 0), 2) AS revenue
+	FROM products p
+		LEFT JOIN order_items oi ON oi.product_id = p.prod_id
+	GROUP BY
+		p.prod_id,
+		p.prod_name
+	ORDER BY revenue ASC
+	LIMIT 3
+),
+	item_per_order AS(
 	SELECT 
 		order_id,
 		COUNT(DISTINCT product_id) AS product_in_order
 	FROM order_items
 	GROUP BY order_id
 )
-SELECT 
-	oi.product_id,
-	p.prod_name AS product_name,
-	COUNT(*) AS total_orders,
-	SUM(CASE WHEN ipo.product_in_order = 1 THEN 1 ELSE 0 END) AS bought_alone,
-	SUM(CASE WHEN ipo.product_in_order > 1 THEN 1 ELSE 0 END) AS add_on
-FROM item_per_order ipo
-	JOIN order_items oi ON oi.order_id = ipo.order_id
-	JOIN products p ON p.prod_id = oi.product_id
-WHERE oi.product_id IN ('PRD001', 'PRD015', 'PRD006')
-GROUP BY 
-	oi.product_id, 
-	p.prod_name
-ORDER BY total_orders ASC;
---
+SELECT
+	up.prod_id,
+	up.prod_name,
+	COUNT(DISTINCT oi.order_id) AS order_count,
+	COUNT(DISTINCT CASE WHEN ipo.product_in_order = 1 THEN oi.order_id END) AS bought_alone,
+	COUNT(DISTINCT CASE WHEN ipo.product_in_order > 1 THEN oi.order_id END) AS add_on
+FROM order_items oi
+	JOIN item_per_order ipo ON ipo.order_id = oi.order_id
+	JOIN underperform up ON up.prod_id = oi.product_id
+GROUP BY
+	up.prod_id,
+	up.prod_name
+ORDER BY order_count ASC;
