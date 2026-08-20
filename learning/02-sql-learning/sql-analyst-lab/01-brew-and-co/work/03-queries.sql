@@ -1,5 +1,5 @@
 -- [Case 01 Step 3 — write one SQL query per sub-question]
--- [Bucket 1: Overal Trends (level)]
+-- [Bucket 1: Overall Trends (level)]
 -- Q1a. What is the chain-wide Revenue trend over time? | Revenue · Month
 SELECT
 	TO_CHAR(order_date, 'YYYY-MM') AS date,
@@ -13,7 +13,6 @@ SELECT
 	store_id,
 	ROUND(SUM(total_amount), 2) AS revenue
 FROM orders
-WHERE store_id = 'BRW001'
 GROUP BY 
 	TO_CHAR(order_date, 'YYYY-MM'),
 	store_id

@@ -246,4 +246,36 @@ For each of the 12 sub-questions, write one **factual line** (metric shows X whe
 
 ---
 
+# Summary: SQL Analyst Lab Session (continued — cleanup confirmed; Step 4 plan locked)
+
+**Date:** 20 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 3 cleanup complete; Step 4 (04-insight) plan ready, draft pending
+
+---
+
+## Completed
+
+- **Cleaned `work/03-queries.sql`** (verified in-file):
+  - Stray BRW001-only query removed (Q1a now = chain-wide + by-store month breakdown only).
+  - "Overal" typo fixed.
+  - **Q2b already split into 2 blocks** (`monthly_order_count` + `monthly_revenue`, `--` separator at line 74).
+  - One statement per block throughout (Q1a–Q4d) — SQLite helper-ready.
+- Q1b `is_active=1` filter confirmed gone.
+- **Step 4 insight-building plan re-confirmed** (from earlier 20-aug guide): Steps A–E — Running Log → 5-component classification → strong insight paragraph → recommendations with numbers → self-check.
+
+## Key Takeaways
+
+1. Pre-flight cleanup for Step 4 is fully done — next session can go straight into drafting `work/04-insight.md`.
+2. Remaining non-blocking task: Postgres verify of the 12 queries vs `expected/03-results.md` (mechanical sanity check; logic already approved against SQLite).
+
+## Next Steps
+
+1. Step 4 — draft `work/04-insight.md`: Step A Running Log (one factual line per query, verified reference table), Step B 5-component classification, Step C strong insight paragraph (Trend → Fluctuation → Anomaly → Root cause → Recommendation), Step D 2–4 numbered recommendations (compute BRW002 opportunity yourself, don't copy $2,200), Step E self-check (5 components present, claims traceable, flag PRD030/031 discrepancy).
+2. Compare `work/04-insight.md` vs `expected/04-insight.md`; reconcile seasonal-items discrepancy.
+3. Optional: Postgres verify of the 12 queries vs `expected/03-results.md`.
+4. Close Case 01 → update progress snapshot table → next case.
+
+---
+
 *Happy Learning!*
