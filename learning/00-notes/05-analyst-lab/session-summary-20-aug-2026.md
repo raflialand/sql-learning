@@ -176,4 +176,74 @@ JOIN underperform up ON up.prod_id = pb.prod_id;
 
 ---
 
+# Summary: SQL Analyst Lab Session (continued — Step 4 prep: framework alignment + insight-building guide)
+
+**Date:** 20 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 3 all 12 queries verified; Step 4 (04-insight) drafted next using the guide below
+
+---
+
+## Discussion: framework alignment (data-to-insight.md vs our work)
+
+- The guide (`learning/04-data-to-insight/data-to-insight.md`) describes a **two-level decomposition**: big business question → 4 bucket-level questions (one per lens) → sub-questions per bucket. Our `02-questions.md` is the **one-level version**: 1 main question → 12 sub-questions grouped by bucket (buckets = labels/lenses, not explicit questions).
+- **Verdict: functionally identical.** Our sub-questions each answer one lens and are built only from the Step 1 pool; the `Locked summary` table already names each lens (level / % change / contest / why).
+- **Decision: continue as-is.** Bucket-level headers are optional polish, addable as a 5-min retro-fit. The insight is a cross-bucket synthesis that does NOT depend on them. Only real risk = a flat Running Log feeling unwieldy; solved by grouping findings under the 5 insight components instead.
+- The model's `04-insight.md` running log also presents one big question → flat sub-question list, confirming the one-level presentation is acceptable.
+- **Postgres verification** is a mechanical sanity check (file executes + matches `expected/03-results.md`), NOT a logic re-review — all 12 query logics already approved/verified against SQLite data. Deferred, non-blocking.
+
+---
+
+## ⚠️ Step 4 — Insight-Building Guide (dedicated section, to apply when drafting `work/04-insight.md`)
+
+### Step A — Build the Running Log (facts first, no interpretation)
+For each of the 12 sub-questions, write one **factual line** (metric shows X when sliced by Y) traceable to exactly one query result. Verified reference values for cross-checking:
+
+| # | Finding (write own) | Verified reference |
+| --- | --- | --- |
+| Q1a | … | Revenue rose $4,000 (Jan) → $6,360 peak (Aug), fell to $4,519 (Oct), Q4 recovers |
+| Q1b | … | Merchandise $42,145 (60%), Beverage $14,748, Food $13,342 |
+| Q1c | … | BRW001 $24,189 ≈ BRW003 $24,082 ≫ BRW002 $21,963 (≈9% gap) |
+| Q2a | … | +22% Feb, +15% Aug, **−17% May, −17% Sep**; BRW003 = biggest $ loss |
+| Q2b | … | BRW003: May count −37.5% vs AOV −22.8% → **volume-driven** |
+| Q3a | … | AOV flat across stores (~$59 / $59 / $57) |
+| Q3b | … | AOV: Merchandise $57.18 ≫ Food $18.08 > Beverage $17.13 |
+| Q3c | … | Orders: Beverage 861 > Food 738 > Merchandise 737 |
+| Q4a | … | Espresso $598.85, Cookie $622.50, Americano $624.00; **no zero-sales product** |
+| Q4b | … | All 3 **Cheap** in their category (avg 5.25 / 5.81) |
+| Q4c | … | All 3 **Active** |
+| Q4d | … | Espresso 2-alone/98-add-on (100); Americano 11/83 (94); Cookie 4/119 (123) |
+
+### Step B — Classify facts into the 5 insight components
+| Component | Pull from | What the data says |
+| --- | --- | --- |
+| Trend | Q1a | Up 59% Jan→Aug, down 29% into Oct, Q4 recovery |
+| Fluctuation | Q2a | Feb +22% / Aug +15% spikes; May & Sep −17% dips — repeatable seasonality |
+| Anomaly 1 | Q1c + Q3a | BRW002 trails ~9% **but AOV flat** → gap is orders, not baskets |
+| Anomaly 2 | Q2b | BRW003 collapses are **volume-driven** (orders fall, AOV holds) |
+| Anomaly 3 | Q4a–d | Underperformers = cheap, active, add-on staples → price-driven, not demand-driven |
+| Root cause | cross-bucket | AOV flat everywhere → **all revenue movement is volume**; Merchandise (60%) decides good vs bad months |
+| Recommendation | all | Replicate Aug merchandise window; fix BRW002 volume; protect cheap staples; plan around May/Sep dips |
+
+### Step C — Write the strong insight (one paragraph, this order)
+**Trend → Fluctuation → Anomaly → Root cause → Recommendation.** Weak version to avoid: *"Merchandise has the highest revenue. Stores are doing okay."* Model's strong example = the bar (see `expected/04-insight.md`, but DON'T read it until the draft is done).
+
+### Step D — Recommendations (2–4, each specific + a number)
+1. Replicate the August merchandise window (~$1.4k over July) before the Sep dip.
+2. Fix BRW002 volume first — **compute the opportunity yourself**: (avg store orders − BRW002 orders) × AOV. Do NOT copy the model's "$2,200" blindly; verify it.
+3. Protect the cheap staples — Espresso/Cookie/Americano are traffic heroes (98/100 & 119/123 as add-ons); keep stocked despite thin per-unit revenue.
+4. Plan for the seasonal dips — May & Sep recur; run retention offers before the drop.
+
+### Step E — Self-check before comparing to model
+- All 5 components present and highlighted? 
+- Every claim traceable to a Step A query result?
+- **Flag data-vs-model discrepancy:** our runs show Pumpkin Latte ($1,210) and Holiday Blend ($3,904) DID sell — the model claims they "sold nothing." The insight follows **our** data.
+
+### Workflow
+1. Draft `work/04-insight.md` (Running Log + insight + recommendations) myself first.
+2. Coach against the weak-vs-strong standard (no peeking at `expected/04-insight.md`).
+3. Then compare + reconcile the seasonal-items discrepancy.
+
+---
+
 *Happy Learning!*

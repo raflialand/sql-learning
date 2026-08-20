@@ -41,7 +41,7 @@ _Update this table as you go._
 
 | Case | Total | Completed | Notes |
 | --- | --- | --- | --- |
-| 01 Brew & Co. | 1 | 0 | Steps 1–2 done; Step 3: **all 12 queries verified** vs data; cleanup + Postgres verify + Step 4 pending (see 20-aug summary) |
+| 01 Brew & Co. | 1 | 0 | Steps 1–2 done; Step 3: **all 12 queries verified** vs data; Step 4 guide saved (insight-building) — draft 04-insight next; cleanup + Postgres verify pending (see 20-aug summary) |
 | 02 MarketHub | 1 | 0 | — |
 | 03 NovaTel | 1 | 0 | — |
 
