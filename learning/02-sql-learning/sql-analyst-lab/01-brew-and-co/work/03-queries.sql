@@ -104,28 +104,24 @@ GROUP BY store_id
 ORDER BY avg_order_value DESC;
 --
 -- Q3b. Which category has the stronger basket? | AOV · Category
-SELECT * 
-FROM products;
---
-SELECT
-	p.category,
-	ROUND(SUM(oi.unit_price * oi.quantity), 2) AS category_revenue
-FROM products p
-	JOIN order_items oi ON oi.product_id = p.prod_id
-WHERE p.is_active = 1
-GROUP BY p.category
-ORDER BY category_revenue DESC;
+WITH cat_revenue AS(
+	SELECT
+		p.category,
+		ROUND(SUM(oi.unit_price * oi.quantity), 2) AS category_revenue,
+		COUNT(DISTINCT oi.order_id) AS order_count
+	FROM products p
+		JOIN order_items oi ON oi.product_id = p.prod_id
+	GROUP BY p.category
+)
+SELECT *,
+	ROUND(category_revenue / order_count, 2) AS aov_per_category
+FROM cat_revenue
+ORDER BY aov_per_category DESC;
 --
 -- Q3c. Which category drives the volume (traffic/quantity side)? | Order count · Category
-SELECT *
-FROM order_items;
---
-SELECT *
-FROM products;
---
 SELECT
 	p.category,
-	COUNT(oi.order_id) AS order_count
+	COUNT(DISTINCT oi.order_id) AS order_count
 FROM products p
 	JOIN order_items oi ON oi.product_id = p.prod_id
 GROUP BY p.category
