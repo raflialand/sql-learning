@@ -21,6 +21,10 @@ FROM revenue_trend;
 --
 -- Q1b. How is Revenue split across menu categories? | Revenue · Category
 SELECT
+	ROUND(SUM(total_amount), 2) AS overall_revenue
+FROM orders;
+--
+SELECT
 	p.category,
 	ROUND(SUM(oi.quantity * oi.unit_price), 2) AS category_revenue
 FROM products p
@@ -53,7 +57,10 @@ SELECT
 	ROUND(revenue, 2) AS revenue,
 	ROUND((revenue - LAG(revenue) OVER(PARTITION BY store_id ORDER BY month)) / LAG(revenue) OVER(PARTITION BY store_id ORDER BY month) * 100, 2) AS mom_growth_change
 FROM monthly
-ORDER BY month, store_id;
+WHERE store_id = 'BRW003'	--change store_id to check the other store
+ORDER BY
+	month, 
+	store_id;
 --
 -- Q2b.	For the flagged store: did the change come from order volume or basket size? | AOV vs Order count · Store × Month, MoM % change
 WITH monthly_order_count AS(
