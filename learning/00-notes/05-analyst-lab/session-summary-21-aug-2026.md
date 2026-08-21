@@ -95,4 +95,53 @@ Construction steps: compute the change → attach a $ so it has weight → compa
 
 ---
 
+# Summary: SQL Analyst Lab Session (continued — Bucket 3 Running Log drafted & reviewed)
+
+**Date:** 21 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 4, Step A: Running Log **Buckets 1–3 drafted**; Bucket 4 (Q4a–d) pending; Steps B–E pending
+
+---
+
+## Completed
+
+- **Bucket 2 corrected lines applied** to `work/04-insight.txt` (Q2a/Q2b now carry the verified per-store numbers).
+- **Drafted Bucket 3** in `work/04-insight.txt` (Q3a AOV by Store, Q3b AOV by Category, Q3c Order count by Category) and had it reviewed.
+- **All Bucket 3 numbers verified against `retail.db`** (recomputed AOV from raw `orders`):
+  - Q3a — BRW001 $24,189.20/407 = **$59.43**, BRW002 $21,963.25/384 = **$57.20**, BRW003 $24,081.65/409 = **$58.88** ✓
+  - Q3b — Merchandise $57.18 ≫ Food $18.08 > Beverage $17.13 ✓ (matches verified reference)
+  - Q3c — Beverage 861 > Food 738 > Merchandise 737 ✓
+- **Coach feedback locked (narrative misses to fix next session):**
+  1. Q3a's real finding = **AOV is effectively flat** (spread < $2.25) — the contest is a tie; "BRW001 highest" buries it. This flatness powers **Anomaly 1** (BRW002 revenue gap is *orders*, not baskets).
+  2. Q3b+Q3c cross-bucket tension: **Merchandise = highest basket / fewest orders** (737) → wins via basket; **Beverage = highest orders / lowest basket** → wins via traffic. Categories use **opposite levers** → Step B root-cause fodder.
+  3. Typos: "Merchendise" → "Merchandise" (×3), "volume-drive" → "volume driver", "average of order" → "average order value".
+
+## Suggested Bucket 3 fact lines (apply next session)
+
+```
+Q3a: "AOV effectively flat across stores — BRW001 $59.43 ≈ BRW003 $58.88 >
+      BRW002 $57.20 (spread < $2.25); no store wins on basket efficiency."
+Q3b: "Basket strength: Merchandise $57.18 ≫ Food $18.08 > Beverage $17.13 —
+      Merchandise baskets are ~3× the other categories."
+Q3c: "Volume: Beverage 861 orders > Food 738 > Merchandise 737 — Beverage wins on
+      traffic, Merchandise wins on basket despite fewest orders."
+```
+
+## Key Takeaways
+
+1. **Flat AOV is a finding, not a non-result** — when a contest ends in a tie, the tie *is* the insight (baskets are equal → revenue differences = volume).
+2. **Cross-bucket synthesis starts in Step A** — Q3b + Q3c side by side show opposite levers (Merchandise basket / Beverage traffic); capture the pairing now, classify in Step B.
+3. "≫" = "much greater than" — used for the ~3× Merchandise basket gap.
+
+## Next Steps
+
+1. **Bucket 4 (Q4a–d)** — bottom-decile products: revenue + zero-sales flag, price band (cheap/mid/expensive), active/inactive, basket context (alone vs add-on). Reference values in the 20-aug guide table.
+2. Apply the corrected Bucket 3 lines + typos to `work/04-insight.txt`.
+3. **Step B** — classify facts into the 5 components (Trend / Fluctuation / Anomaly / Root cause / Recommendation).
+4. **Step C** — strong insight paragraph (Trend → Fluctuation → Anomaly → Root cause → Recommendation); **Step D** — 2–4 recommendations (compute BRW002 opportunity yourself, don't copy $2,200); **Step E** — self-check.
+5. Compare `work/04-insight.md` vs `expected/04-insight.md`; reconcile seasonal-items discrepancy.
+6. Close Case 01 → update progress snapshot → Case 02.
+
+---
+
 *Happy Learning!*

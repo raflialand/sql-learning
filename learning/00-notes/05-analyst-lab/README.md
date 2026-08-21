@@ -41,7 +41,7 @@ _Update this table as you go._
 
 | Case | Total | Completed | Notes |
 | --- | --- | --- | --- |
-| 01 Brew & Co. | 1 | 0 | Steps 1–3 done (all 12 queries verified + cleanup complete); Step 4 in progress — Running Log Buckets 1–2 drafted (see 21-aug summary; Q2a verified per-store: May −51.7%, Sep −39.2%), Buckets 3–4 + Step B–E pending; Postgres verify optional |
+| 01 Brew & Co. | 1 | 0 | Steps 1–3 done (all 12 queries verified + cleanup complete); Step 4 in progress — Running Log Buckets 1–3 drafted (see 21-aug summary; Q2a verified per-store: May −51.7%, Sep −39.2%), Bucket 4 + Step B–E pending; Postgres verify optional |
 | 02 MarketHub | 1 | 0 | — |
 | 03 NovaTel | 1 | 0 | — |
 

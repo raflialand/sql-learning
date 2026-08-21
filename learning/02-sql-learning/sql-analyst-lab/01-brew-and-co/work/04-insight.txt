@@ -6,17 +6,18 @@ A.  RUNNING LOG
     "What is the chain-wide Revenue trend over time?" | Revenue · Month
     Findings:
     Overall, revenue increased from $4,000 in January 2025 to $6,360 in August 2025, but declined to $4,519 in October 2025.
-
+    --
     Q1b:
     "How is Revenue split across menu categories?" | Revenue · Category
     Findings:
     Merchandise $42,145 (60%) ≫ Beverage $14,748 (21%) > Food $13,342 (19%).
-
+    --
     Q1c:
     "How is Revenue split across the 3 stores?" | Revenue · Store
     Findings:
     Store ID: BRW002, trails the other two stores by ~9% ($21,963 vs ~$24,190)
     BRW002: $21,963.25, BRW001: $24,189.20, BRW003: $24,081.65
+    --
     --
     --
     Bucket 2 — Growth Rates (% change)
@@ -25,7 +26,7 @@ A.  RUNNING LOG
     Findings:
     BRW003 = largest recurring $ loss (−$2,848.75/yr); worst month May 2025,
     revenue −51.7% MoM (−$1,129.30); Sep −39.2%, Oct −27.3% — May & Sep dips recur.
-
+    --
     Q2b:
     "For the flagged store: did the change come from order volume or basket size?" | AOV vs Order count · Store × Month, MoM % change
     Findings:
@@ -33,19 +34,26 @@ A.  RUNNING LOG
     Count fell more than AOV both times → volume-driven (traffic), basket held up.
     --
     --
+    --
     Bucket 3 — Performance Measurement (snapshot head-to-head)
     Q3a:
     "Which store earns the most per order (efficiency contest, best vs worst)?" | AOV · Store
     Findings:
-
+    AOV effectively flat across stores — 
+    BRW001 $59.43 ≈ BRW003 $58.88 > BRW002 $57.20 (spread < $2.25); no store wins on basket efficiency.
+    --
     Q3b:
     "Which category has the stronger basket?" | AOV · Category
     Findings:
-
+    Basket strength: Merchandise $57.18 ≫ Food $18.08 > Beverage $17.13
+    Merchandise baskets are ~3× the other categories.
+    --
     Q3c:
     "Which category drives the volume (traffic/quantity side)?" | Order count · Category
     Findings:
-
+    Volume: Beverage 861 orders > Food 738 > Merchandise 737
+    Beverage wins on traffic, Merchandise wins on basket despite fewest orders.
+    --
     --
     --
     Bucket 4 — KPI Reporting (the "why")
