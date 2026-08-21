@@ -12,11 +12,11 @@
 - **Q3c (Order count · Category) corrected:** `COUNT(oi.order_id)` → `COUNT(DISTINCT oi.order_id)` (double-count fix).
 - **Verified both against `retail.db`** (read-only) and they reproduce the model's expected Q3 exactly:
 
-| category | order_count | revenue | AOV |
-| --- | --- | --- | --- |
-| Merchandise | 737 | 42,145.00 | 57.18 |
-| Food | 738 | 13,341.50 | 18.08 |
-| Beverage | 861 | 14,747.60 | 17.13 |
+| category    | order_count | revenue   | AOV   |
+| ----------- | ----------- | --------- | ----- |
+| Merchandise | 737         | 42,145.00 | 57.18 |
+| Food        | 738         | 13,341.50 | 18.08 |
+| Beverage    | 861         | 14,747.60 | 17.13 |
 
 - Confirmed Q2a already carries `PARTITION BY store_id` in `work/03-queries.sql`.
 - Wrote the corrected Q3b/Q3c into `work/03-queries.sql` (self-applied).
@@ -60,11 +60,11 @@
 - **Caught the window-after-WHERE trap in Q4b:** `AVG(...) OVER(PARTITION BY category)` written in the same query as the flagged-set filter returned Beverage avg = 3.10 instead of the true 5.25 — the WHERE reduced the partition to 2 rows before the window computed.
 - **Fixed Q4b** with the two-CTE pattern: `price_bands` (windows over ALL products) + `underperform` (Q4a flagged set) joined at the end. **Verified output:**
 
-| prod_id | product | category | price | avg_category | band |
-| --- | --- | --- | --- | --- | --- |
-| PRD001 | Espresso | Beverage | 2.95 | 5.25 | Cheap |
-| PRD015 | Chocolate Chip Cookie | Food | 2.50 | 5.81 | Cheap |
-| PRD006 | Americano | Beverage | 3.25 | 5.25 | Cheap |
+| prod_id | product               | category | price | avg_category | band  |
+| ------- | --------------------- | -------- | ----- | ------------ | ----- |
+| PRD001  | Espresso              | Beverage | 2.95  | 5.25         | Cheap |
+| PRD015  | Chocolate Chip Cookie | Food     | 2.50  | 5.81         | Cheap |
+| PRD006  | Americano             | Beverage | 3.25  | 5.25         | Cheap |
 
 - **Insight forming:** all three flagged products are **cheap within their category** → underperformance is **price-driven** (low-price staples selling fine but generating little revenue), not demand-driven — matches the model's expected finding.
 
@@ -84,12 +84,12 @@
 
 ## ⚠️ Mistake Track & Solutions (dedicated section)
 
-| # | Date | Mistake | Root cause | Solution (verified) |
-| --- | --- | --- | --- | --- |
-| 20 | 20-Aug | Q4b hardcoded `IN ('PRD001','PRD006','PRD015')` | Repeat of #10 — typed the derived set | `underperform` CTE = Q4a flagged set (`ORDER BY revenue ASC LIMIT 3`); outer `JOIN underperform` |
-| 19 | 20-Aug | Q4b windows computed over the filtered rows | `WHERE prod_id IN (...)` runs before window functions, so `AVG/NTILE OVER(PARTITION BY category)` saw only 2–3 rows → avg 3.10 instead of 5.25 | Compute windows over the full `products` table in a `price_bands` CTE, then filter/join in the outer query. **Rule: windows before WHERE.** |
-| 18 | 20-Aug | Assumed `is_active=1` filter harmless | Trusted earlier review, not the data | Verify filter impact on the DB; PRD030/031 DO have sales (215 orders) |
-| 17 | 20-Aug | Q3b denominator = `SUM(quantity)` | Definition slip | AOV = revenue ÷ `COUNT(DISTINCT order_id)`, never ÷ items |
+| #  | Date   | Mistake                                          | Root cause                                                                                                                                           | Solution (verified)                                                                                                                                  |
+| -- | ------ | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 20 | 20-Aug | Q4b hardcoded`IN ('PRD001','PRD006','PRD015')` | Repeat of#10 — typed the derived set                                                                                                                | `underperform` CTE = Q4a flagged set (`ORDER BY revenue ASC LIMIT 3`); outer `JOIN underperform`                                               |
+| 19 | 20-Aug | Q4b windows computed over the filtered rows      | `WHERE prod_id IN (...)` runs before window functions, so `AVG/NTILE OVER(PARTITION BY category)` saw only 2–3 rows → avg 3.10 instead of 5.25 | Compute windows over the full`products` table in a `price_bands` CTE, then filter/join in the outer query. **Rule: windows before WHERE.** |
+| 18 | 20-Aug | Assumed`is_active=1` filter harmless           | Trusted earlier review, not the data                                                                                                                 | Verify filter impact on the DB; PRD030/031 DO have sales (215 orders)                                                                                |
+| 17 | 20-Aug | Q3b denominator =`SUM(quantity)`               | Definition slip                                                                                                                                      | AOV = revenue ÷`COUNT(DISTINCT order_id)`, never ÷ items                                                                                         |
 
 **Corrected Q4b pattern (the solution that stays):**
 
@@ -137,13 +137,12 @@ JOIN underperform up ON up.prod_id = pb.prod_id;
 ## Completed
 
 - **Q4c (is_active band) finalized:** two-CTE pattern (`underperform` set + `LEFT JOIN products` for `is_active`). Verified: Espresso/Americano/Cookie all **Active** → inactivity is NOT the reason for underperformance.
-- **Q4d (basket context) finalized:** `underperform` + `item_per_order` CTEs, joins at order-item level, `COUNT(DISTINCT order_id)` for order count, and the alone/add-on classification. Verified:
-  | product | orders | alone | add-on |
-  | --- | --- | --- | --- |
-  | Americano | 94 | 11 | 83 |
-  | Espresso | 100 | 2 | 98 |
-  | Cookie | 123 | 4 | 119 |
-  Insight: these cheap staples mostly ride along **inside bigger baskets** (98/100 Espresso, 119/123 Cookie) → consistent with the "cheap add-on staple" story from Q4b.
+- **Q4d (basket context) finalized:** `underperform` + `item_per_order` CTEs, joins at order-item level, `COUNT(DISTINCT order_id)` for order count, and the alone/add-on classification. Verified:| product                                                                                                                                                                      | orders | alone | add-on |
+  | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ----- | ------ |
+  | Americano                                                                                                                                                                    | 94     | 11    | 83     |
+  | Espresso                                                                                                                                                                     | 100    | 2     | 98     |
+  | Cookie                                                                                                                                                                       | 123    | 4     | 119    |
+  | Insight: these cheap staples mostly ride along**inside bigger baskets** (98/100 Espresso, 119/123 Cookie) → consistent with the "cheap add-on staple" story from Q4b. |        |       |        |
 - **Q1b** already cleaned up by the user earlier (the `is_active=1` filter is gone from the file).
 
 ## Key Takeaways
@@ -160,13 +159,13 @@ JOIN underperform up ON up.prod_id = pb.prod_id;
 
 ## ⚠️ Mistake Track & Solutions (dedicated section)
 
-| # | Date | Mistake | Root cause | Solution (verified) |
-| --- | --- | --- | --- | --- |
-| 21 | 20-Aug | Q4d `SUM(CASE...)` counted receipt **lines**, not orders | Same product can appear on 2 lines in one order → double-count | `COUNT(DISTINCT CASE WHEN ipo.product_in_order = 1 THEN oi.order_id END)` |
-| 20 | 20-Aug | Q4b hardcoded `IN ('PRD001','PRD006','PRD015')` | Repeat of #10 — typed the derived set | `underperform` CTE = Q4a flagged set; outer JOIN |
-| 19 | 20-Aug | Q4b windows computed over the filtered rows | `WHERE` runs before windows → avg 3.10 vs true 5.25 | Compute windows on the full table, filter after (**windows before WHERE**) |
-| 18 | 20-Aug | Assumed `is_active=1` filter harmless | Trusted earlier review, not the data | Verify filter impact on the DB; PRD030/031 DO have sales (236 rows / 215 orders) |
-| 17 | 20-Aug | Q3b denominator = `SUM(quantity)` | Definition slip | AOV = revenue ÷ `COUNT(DISTINCT order_id)`, never ÷ items |
+| #  | Date   | Mistake                                                         | Root cause                                                      | Solution (verified)                                                              |
+| -- | ------ | --------------------------------------------------------------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| 21 | 20-Aug | Q4d`SUM(CASE...)` counted receipt **lines**, not orders | Same product can appear on 2 lines in one order → double-count | `COUNT(DISTINCT CASE WHEN ipo.product_in_order = 1 THEN oi.order_id END)`      |
+| 20 | 20-Aug | Q4b hardcoded`IN ('PRD001','PRD006','PRD015')`                | Repeat of#10 — typed the derived set                           | `underperform` CTE = Q4a flagged set; outer JOIN                               |
+| 19 | 20-Aug | Q4b windows computed over the filtered rows                     | `WHERE` runs before windows → avg 3.10 vs true 5.25          | Compute windows on the full table, filter after (**windows before WHERE**) |
+| 18 | 20-Aug | Assumed`is_active=1` filter harmless                          | Trusted earlier review, not the data                            | Verify filter impact on the DB; PRD030/031 DO have sales (236 rows / 215 orders) |
+| 17 | 20-Aug | Q3b denominator =`SUM(quantity)`                              | Definition slip                                                 | AOV = revenue ÷`COUNT(DISTINCT order_id)`, never ÷ items                     |
 
 ## Next Steps
 
@@ -197,49 +196,55 @@ JOIN underperform up ON up.prod_id = pb.prod_id;
 ## ⚠️ Step 4 — Insight-Building Guide (dedicated section, to apply when drafting `work/04-insight.md`)
 
 ### Step A — Build the Running Log (facts first, no interpretation)
+
 For each of the 12 sub-questions, write one **factual line** (metric shows X when sliced by Y) traceable to exactly one query result. Verified reference values for cross-checking:
 
-| # | Finding (write own) | Verified reference |
-| --- | --- | --- |
-| Q1a | … | Revenue rose $4,000 (Jan) → $6,360 peak (Aug), fell to $4,519 (Oct), Q4 recovers |
-| Q1b | … | Merchandise $42,145 (60%), Beverage $14,748, Food $13,342 |
-| Q1c | … | BRW001 $24,189 ≈ BRW003 $24,082 ≫ BRW002 $21,963 (≈9% gap) |
-| Q2a | … | +22% Feb, +15% Aug, **−17% May, −17% Sep**; BRW003 = biggest $ loss |
-| Q2b | … | BRW003: May count −37.5% vs AOV −22.8% → **volume-driven** |
-| Q3a | … | AOV flat across stores (~$59 / $59 / $57) |
-| Q3b | … | AOV: Merchandise $57.18 ≫ Food $18.08 > Beverage $17.13 |
-| Q3c | … | Orders: Beverage 861 > Food 738 > Merchandise 737 |
-| Q4a | … | Espresso $598.85, Cookie $622.50, Americano $624.00; **no zero-sales product** |
-| Q4b | … | All 3 **Cheap** in their category (avg 5.25 / 5.81) |
-| Q4c | … | All 3 **Active** |
-| Q4d | … | Espresso 2-alone/98-add-on (100); Americano 11/83 (94); Cookie 4/119 (123) |
+| #   | Finding (write own) | Verified reference                                                                  |
+| --- | ------------------- | ----------------------------------------------------------------------------------- |
+| Q1a | …                  | Revenue rose $4,000 (Jan) → $6,360 peak (Aug), fell to $4,519 (Oct), Q4 recovers   |
+| Q1b | …                  | Merchandise $42,145 (60%), Beverage $14,748, Food $13,342                           |
+| Q1c | …                  | BRW001 $24,189 ≈ BRW003 $24,082 ≫ BRW002 $21,963 (≈9% gap)                       |
+| Q2a | …                  | +22% Feb, +15% Aug,**−17% May, −17% Sep**; BRW003 = biggest $ loss          |
+| Q2b | …                  | BRW003: May count −37.5% vs AOV −22.8% →**volume-driven**                  |
+| Q3a | …                  | AOV flat across stores (~$59 / $59 / $57)                                           |
+| Q3b | …                  | AOV: Merchandise $57.18 ≫ Food $18.08 > Beverage $17.13                            |
+| Q3c | …                  | Orders: Beverage 861 > Food 738 > Merchandise 737                                   |
+| Q4a | …                  | Espresso $598.85, Cookie $622.50, Americano $624.00;**no zero-sales product** |
+| Q4b | …                  | All 3**Cheap** in their category (avg 5.25 / 5.81)                            |
+| Q4c | …                  | All 3**Active**                                                               |
+| Q4d | …                  | Espresso 2-alone/98-add-on (100); Americano 11/83 (94); Cookie 4/119 (123)          |
 
 ### Step B — Classify facts into the 5 insight components
-| Component | Pull from | What the data says |
-| --- | --- | --- |
-| Trend | Q1a | Up 59% Jan→Aug, down 29% into Oct, Q4 recovery |
-| Fluctuation | Q2a | Feb +22% / Aug +15% spikes; May & Sep −17% dips — repeatable seasonality |
-| Anomaly 1 | Q1c + Q3a | BRW002 trails ~9% **but AOV flat** → gap is orders, not baskets |
-| Anomaly 2 | Q2b | BRW003 collapses are **volume-driven** (orders fall, AOV holds) |
-| Anomaly 3 | Q4a–d | Underperformers = cheap, active, add-on staples → price-driven, not demand-driven |
-| Root cause | cross-bucket | AOV flat everywhere → **all revenue movement is volume**; Merchandise (60%) decides good vs bad months |
-| Recommendation | all | Replicate Aug merchandise window; fix BRW002 volume; protect cheap staples; plan around May/Sep dips |
+
+| Component      | Pull from    | What the data says                                                                                           |
+| -------------- | ------------ | ------------------------------------------------------------------------------------------------------------ |
+| Trend          | Q1a          | Up 59% Jan→Aug, down 29% into Oct, Q4 recovery                                                              |
+| Fluctuation    | Q2a          | Feb +22% / Aug +15% spikes; May & Sep −17% dips — repeatable seasonality                                   |
+| Anomaly 1      | Q1c + Q3a    | BRW002 trails ~9%**but AOV flat** → gap is orders, not baskets                                        |
+| Anomaly 2      | Q2b          | BRW003 collapses are**volume-driven** (orders fall, AOV holds)                                         |
+| Anomaly 3      | Q4a–d       | Underperformers = cheap, active, add-on staples → price-driven, not demand-driven                           |
+| Root cause     | cross-bucket | AOV flat everywhere →**all revenue movement is volume**; Merchandise (60%) decides good vs bad months |
+| Recommendation | all          | Replicate Aug merchandise window; fix BRW002 volume; protect cheap staples; plan around May/Sep dips         |
 
 ### Step C — Write the strong insight (one paragraph, this order)
+
 **Trend → Fluctuation → Anomaly → Root cause → Recommendation.** Weak version to avoid: *"Merchandise has the highest revenue. Stores are doing okay."* Model's strong example = the bar (see `expected/04-insight.md`, but DON'T read it until the draft is done).
 
 ### Step D — Recommendations (2–4, each specific + a number)
+
 1. Replicate the August merchandise window (~$1.4k over July) before the Sep dip.
 2. Fix BRW002 volume first — **compute the opportunity yourself**: (avg store orders − BRW002 orders) × AOV. Do NOT copy the model's "$2,200" blindly; verify it.
 3. Protect the cheap staples — Espresso/Cookie/Americano are traffic heroes (98/100 & 119/123 as add-ons); keep stocked despite thin per-unit revenue.
 4. Plan for the seasonal dips — May & Sep recur; run retention offers before the drop.
 
 ### Step E — Self-check before comparing to model
-- All 5 components present and highlighted? 
+
+- All 5 components present and highlighted?
 - Every claim traceable to a Step A query result?
 - **Flag data-vs-model discrepancy:** our runs show Pumpkin Latte ($1,210) and Holiday Blend ($3,904) DID sell — the model claims they "sold nothing." The insight follows **our** data.
 
 ### Workflow
+
 1. Draft `work/04-insight.md` (Running Log + insight + recommendations) myself first.
 2. Coach against the weak-vs-strong standard (no peeking at `expected/04-insight.md`).
 3. Then compare + reconcile the seasonal-items discrepancy.

@@ -8,17 +8,17 @@ FROM orders
 GROUP BY TO_CHAR(order_date, 'YYYY-MM')
 ORDER BY TO_CHAR(order_date, 'YYYY-MM');
 --
-SELECT
-	TO_CHAR(order_date, 'YYYY-MM') AS date,
-	store_id,
-	ROUND(SUM(total_amount), 2) AS revenue
-FROM orders
-GROUP BY 
-	TO_CHAR(order_date, 'YYYY-MM'),
-	store_id
-ORDER BY 
-	TO_CHAR(order_date, 'YYYY-MM'),
-	store_id;
+WITH revenue_trend AS(
+	SELECT
+		TO_CHAR(order_date, 'YYYY-MM') AS date,
+		ROUND(SUM(total_amount), 2) AS revenue
+	FROM orders
+	GROUP BY TO_CHAR(order_date, 'YYYY-MM')
+)
+SELECT *,
+	ROUND((revenue - LAG(revenue) OVER (ORDER BY date)) * 100.00 / LAG(revenue) OVER (ORDER BY date), 2) AS diff_pct
+FROM revenue_trend;
+--
 -- Q1b. How is Revenue split across menu categories? | Revenue · Category
 SELECT
 	p.category,
