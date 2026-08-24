@@ -72,3 +72,5 @@ A.  RUNNING LOG
     Q4d:
     "Are the underperformers bought alone or as add-ons inside bigger orders?" | Revenue · basket context
     Findings:
+
+B.  5 INSIGHT COMPONENTS

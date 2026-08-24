@@ -286,4 +286,27 @@ change #17: add SQL Analyst Lab development discussion note (14-Aug-2026)
    - README.md — no change needed: directory map already lists 00-personal-discuss/ generically
 4. verification: note follows the existing personal-discuss convention (date/topic header, markdown); no skill/agent/blueprint references the note — no other updates needed
 
+---
+
+change #18: add Medallion architecture study case + medallion-lab capability (24-Aug-2026)
+
+1. created the Medallion layer SQL scripts (Python stdlib, ATTACH DATABASE):
+   - script/01-sql/medallion/01-bronze.sql  (8 CTAS raw copies from the source + _ingest_ts/_source_table audit cols; row counts == source)
+   - script/01-sql/medallion/02-silver.sql  (8 cleaned tables, 1 row per source row, DQ flags: is_valid_order 456, has_payment 517, in_transit 95, is_discontinued_but_sold 9, parent_cat_name, country standardization, line_revenue, _quality_issues)
+   - script/01-sql/medallion/03-gold.sql    (star schema: dim_customer/dim_product/dim_date + fact_order_items 7,102 + fact_orders 2,800 + mart_vendor_performance 14 + mart_daily_revenue 396)
+2. created the orchestrator:
+   - script/02-python/medallion_pipeline.py  (bronze→silver→gold ATTACH chains, stage summary tables, gold run twice idempotency, row-count + no-data-loss assertions, --stage flag, exit 0 on success)
+3. generated outputs:
+   - data/medallion/bronze.db, silver.db, gold.db  (bronze counts == source; silver grain == bronze; gold star schema 7 tables; Completed+Shipped total_amount sum $5,548,140.62 preserved; end-to-end 0 assertion failures; sql-skill-push untouched)
+4. created the DWH architecture module (non-track, like 04-data-to-insight/):
+   - learning/05-dwh-architecture/README.md        (module home)
+   - learning/05-dwh-architecture/medallion-case.md (dataset profile, layer mapping, Mermaid lineage, DQ decision notes, trade-offs, DE-roadmap Week 3–4 mapping)
+5. added OpenSpec artifacts for the change (proposal pending archive):
+   - openspec/changes/add-medallion-lab/  (proposal.md, design.md, tasks.md, specs/medallion-lab/spec.md delta — new capability medallion-lab)
+6. updated documentation:
+   - README.md  (intro, What This Is module, directory map script/01-sql/medallion + script/02-python + data/medallion + 05-dwh-architecture, Getting Started step 8, Related Roadmaps)
+   - changes-log.txt (#18 this entry)
+7. not registered as a learning track — case maps onto the existing de track (Weeks 3–4); tracks.md unchanged
+
+
 

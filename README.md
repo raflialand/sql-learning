@@ -1,6 +1,6 @@
 # sql-learning
 
-A personal, AI-assisted multi-track learning environment — an 84-day SQL Fundamentals journey (12 weeks), a Data Quality Engineer module (13 units, MySQL), a Data Engineering track (26 weeks), a SQL Skill Push challenge module (60 verified problems across beginner/intermediate/advanced), a SQL Analyst Lab case-studies module (3 open-ended data-to-insight cases), and a data-to-insight notes module (turning messy data into actionable insights), with built-in progress tracking, practice databases, and agent-driven tooling.
+A personal, AI-assisted multi-track learning environment — an 84-day SQL Fundamentals journey (12 weeks), a Data Quality Engineer module (13 units, MySQL), a Data Engineering track (26 weeks), a SQL Skill Push challenge module (60 verified problems across beginner/intermediate/advanced), a SQL Analyst Lab case-studies module (3 open-ended data-to-insight cases), a data-to-insight notes module (turning messy data into actionable insights), and a Data Warehouse Architecture module (Medallion pipeline case: bronze → silver → gold on the MarketHub dataset), with built-in progress tracking, practice databases, and agent-driven tooling.
 
 ## What This Is
 
@@ -12,6 +12,7 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 - **Deep-dive modules** under `learning/02-sql-learning/`: `sql-mastery/` (currently: window functions) with lessons, exercises, datasets, and solutions, `sql-skill-push/` — a challenge-based practice module (60 verified problems with expected results) across three difficulty levels, and `sql-analyst-lab/` — an open-ended case-studies module (3 data-to-insight cases: Brew & Co., MarketHub, NovaTel) that applies the 4-step analytical framework to the shared datasets.
 - **An execution agent** (`query-inspector`) that reviews learner-submitted SQL from `script/01-sql/` for query-logic correctness and business-requirement alignment, writing analysis reports to `docs/03-query-inspector/`.
 - **A notes module** (`learning/04-data-to-insight/`) capturing video analysis reports — currently "Think Like a Senior Data Analyst: Data to Insight in 15 Minutes" (Christine Jiang) with a 4-step analytical framework for turning messy data into actionable insights.
+- **A DWH architecture module** (`learning/05-dwh-architecture/`) hosting the **Medallion study case** — a stdlib Python pipeline (`script/02-python/medallion_pipeline.py`) that builds `bronze.db → silver.db → gold.db` (star schema + marts) from the verified MarketHub dataset, with idempotency and no-data-loss assertions. See [`medallion-case.md`](learning/05-dwh-architecture/medallion-case.md).
 - **Five registered learning tracks** in `learning/00-notes/tracks.md`: SQL Fundamentals (84 units), SQL Skill Push (60 challenges), Data Quality Engineer (13 units, MySQL-based against a purpose-built "dirty" dataset), Data Engineering (26 weeks), and Data-to-Insight Case Studies (3 cases).
 
 ## Directory Map
@@ -22,7 +23,9 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 ├── changes-log.txt        # Change log for all project changes
 │
 ├── script/                # SQL practice scripts
-│   └── 01-sql/            # SQL query logs (e.g. query-log.txt)
+│   ├── 01-sql/            # SQL query logs (e.g. query-log.txt)
+│   │   └── medallion/     # Medallion layer SQL: 01-bronze.sql / 02-silver.sql / 03-gold.sql
+│   └── 02-python/         # Python scripts (e.g. medallion_pipeline.py orchestrator)
 │
 ├── learning/              # All learning material and progress
 │   ├── 00-notes/           # Learning notes — excluded from numbering rules; tracks.md is the track registry
@@ -40,12 +43,14 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 │   │   ├── sql-skill-push/ # Challenge module: 60 verified problems + datasets + solutions
 │   │   └── sql-analyst-lab/# Case-studies module: 3 open-ended data-to-insight cases
 │   ├── 03-dq-learning/     # MySQL-based Data Quality Engineer module
-│   └── 04-data-to-insight/  # Notes module: data → actionable insights
+│   ├── 04-data-to-insight/  # Notes module: data → actionable insights
+│   └── 05-dwh-architecture/ # DWH architecture module: Medallion pipeline case
 │
 ├── data/                  # Practice SQLite databases & schema files
 │   ├── library-db.sql/.db     # Library management system
 │   ├── ecommerce.db           # E-commerce database
-│   └── sql-learn.db / sql-learn-db-week6.*  # Roadmap practice databases (Week 6 etc.)
+│   ├── sql-learn.db / sql-learn-db-week6.*  # Roadmap practice databases (Week 6 etc.)
+│   └── medallion/             # Generated Medallion layers: bronze.db / silver.db / gold.db
 │
 ├── docs/                  # Documentation (dedicated folders per topic)
 │   ├── 01-erd-diagram/    # ERD diagrams
@@ -106,6 +111,7 @@ Three capstone projects punctuate the journey: a personal budget tracker (end of
 5. **Get query feedback** — put your SQL in `script/01-sql/` and run `@query-inspector` to have it checked for correctness and business alignment.
 6. **Push your SQL skills** — solve the verified challenges in `learning/02-sql-learning/sql-skill-push/` (60 problems across beginner/intermediate/advanced, each with an expected result).
 7. **Think like an analyst** — work the open-ended case studies in `learning/02-sql-learning/sql-analyst-lab/` (3 cases that apply the 4-step data-to-insight framework: scope metrics/dimensions → break the question into sub-questions → query → strong insights).
+8. **Build the Medallion pipeline** — run `python script/02-python/medallion_pipeline.py` to build bronze → silver → gold on the MarketHub dataset, then read the mapping and lineage in `learning/05-dwh-architecture/medallion-case.md`.
 
 ## Prerequisites
 
@@ -119,3 +125,4 @@ Three capstone projects punctuate the journey: a personal budget tracker (end of
 - `learning/03-dq-learning/README.md` — Data Quality Engineer module (MySQL-based, standalone)
 - `learning/02-sql-learning/sql-skill-push/README.md` — SQL Skill Push challenge module (60 verified problems)
 - `learning/02-sql-learning/sql-analyst-lab/README.md` — SQL Analyst Lab case-studies module (3 open-ended data-to-insight cases)
+- `learning/05-dwh-architecture/README.md` — Data Warehouse Architecture module (Medallion pipeline case)
