@@ -104,3 +104,48 @@ SELECT * FROM mart_order_items;
 ---
 
 *Happy Learning!*
+
+---
+
+# Follow-up — Grain, Row Order, and the Materialized-Key Trap
+
+**Date:** 24 August 2026
+**Topic:** Continued discussion on `mart_order_items` — what defines the grain, whether it's ordered, and why the grain key vanishes when materializing.
+
+---
+
+## Grain and uniqueness
+
+- The mart is **line-grained**: one row per `order_items` line (3,647 rows). The only guaranteed unique key is **`item_id`** (the `order_items` PK).
+- `(order_id, order_date, store_id, product_id)` is **NOT** unique — 154 orders repeat a product on 2+ lines, so that combo yields duplicate mart rows for them. Grouping by it would collapse a 2-line order into 1 and under-count `quantity`/`line_revenue`.
+
+## The invisible-grain problem
+
+- **Grain is not visible from the columns alone.** Nothing in the mart's own SELECT list identifies the row.
+- Someone assuming order grain would double-count revenue on the 154 repeat-line orders silently → that's how bad aggregations ship.
+- Remedy principle: every mart should **declare** its grain ("one row = one order-item line" in the header comment) and, ideally, **prove** it (carry the grain key + sanity-check `COUNT(*) = COUNT(DISTINCT item_id)`).
+
+## Row order — no default
+
+- The mart has **no `ORDER BY`** (confirmed in `05-mart.sql`), so its row order is undefined — SQL sets are unordered by definition; order only exists via explicit `ORDER BY` (or `ORDER BY` inside a window).
+- This holds for big-company marts too: no engine guarantees row order without `ORDER BY`.
+- "Tidy" splits in two:
+  - **Row order** — never tidy, and nobody should rely on it.
+  - **Design tidiness** (documented grain, keys, naming, lineage) — big companies DO enforce this.
+- Practical upshot: order only matters where a query needs it (e.g. the mart's Q2a/Q2b use `LAG ... OVER (PARTITION BY ... ORDER BY month_key)`).
+
+## The materialized-key trap
+
+- If you `CREATE TABLE mart_order_items AS SELECT ...`, the physical table **only has the projected columns** — `item_id` is not among them, so you cannot select it later. A materialized table inherits its columns from the query that built it.
+- Fix (plan): add `oi.item_id` to the SELECT inside the mart CTE (both `05-mart.sql` and `05-mart-postgres.sql`) *before* creating the table, then verify `COUNT(*) = COUNT(DISTINCT item_id)` = 3,647 and re-check bucket outputs against `expected/03-results.md`.
+- No restructuring needed — same grain, same joins; the row just becomes provably unique.
+
+## Key takeaway
+
+1. Grain lives in the source PK, not the projected columns — surface it (`item_id`) so the mart can prove its own grain.
+2. SQL row order is never a guarantee; "tidy" is a design property, not a physical one.
+3. Materialization keeps only what the query selects — project your grain key before you `CREATE TABLE ... AS`.
+
+---
+
+*Happy Learning!*
