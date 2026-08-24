@@ -8,12 +8,12 @@ This is a deliberately simple, single-business dataset: one store dimension (as 
 
 ## Tables & row counts
 
-| Table | Rows | Purpose | Key columns |
-| --- | --- | --- | --- |
-| `products` | 31 | Menu items with category and price | `prod_id`, `prod_name`, `category`, `unit_price`, `is_active` |
-| `customers` | 350 | Loyalty program members | `cust_id`, `first_name`, `last_name`, `email`, `city`, `signup_date`, `loyalty_points` |
-| `orders` | 1,200 | Customer purchases at a store | `order_id`, `order_date`, `customer_id`, `store_id`, `payment_method`, `total_amount` |
-| `order_items` | 3,647 | Line items per order | `item_id`, `order_id`, `product_id`, `quantity`, `unit_price` |
+| Table           | Rows  | Purpose                            | Key columns                                                                                          |
+| --------------- | ----- | ---------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `products`    | 31    | Menu items with category and price | `prod_id`, `prod_name`, `category`, `unit_price`, `is_active`                              |
+| `customers`   | 350   | Loyalty program members            | `cust_id`, `first_name`, `last_name`, `email`, `city`, `signup_date`, `loyalty_points` |
+| `orders`      | 1,200 | Customer purchases at a store      | `order_id`, `order_date`, `customer_id`, `store_id`, `payment_method`, `total_amount`    |
+| `order_items` | 3,647 | Line items per order               | `item_id`, `order_id`, `product_id`, `quantity`, `unit_price`                              |
 
 ## Entity Relationship Diagram (ERD)
 
@@ -61,10 +61,10 @@ erDiagram
 
 ### Relationship Summary
 
-| Relationship | Type | Description |
-|--------------|------|-------------|
-| `customers` → `orders` | One-to-Many | A customer can place many orders |
-| `orders` → `order_items` | One-to-Many | An order contains multiple line items |
+| Relationship                    | Type        | Description                             |
+| ------------------------------- | ----------- | --------------------------------------- |
+| `customers` → `orders`     | One-to-Many | A customer can place many orders        |
+| `orders` → `order_items`   | One-to-Many | An order contains multiple line items   |
 | `products` → `order_items` | One-to-Many | A product can appear in many line items |
 
 ### Join Hints

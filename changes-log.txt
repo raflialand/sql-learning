@@ -235,3 +235,78 @@ change #14: add messy-to-insight notes module (13-Aug-2026)
 3. updated documentation:
    - README.md (intro line, What This Is notes-module bullet, directory map → shows 04-messy-to-insight/)
 4. verification: folder contains the single note file; no skill/agent/blueprint references the module — no other updates needed
+
+---
+
+change #15: rename notes module to data-to-insight (14-Aug-2026)
+
+1. renamed the notes module folder + file:
+   - learning/04-messy-to-insight/messy-to-insight.md  →  learning/04-data-to-insight/data-to-insight.md
+   (folder number stays 04 — rename of the same module, not a new one)
+2. updated the note content to a new video analysis report:
+   - data-to-insight.md  ("Think Like a Senior Data Analyst: Data to Insight in 15 Minutes" by Christine Jiang, published 12-Aug-2026 — 4-step analytical framework: Northstar metrics/dimensions, break ambiguous questions into 4 buckets, investigate the "why" with technical tools, surface insights and recommendations; plus the Running Log pro-tip)
+3. NOT a registered learning track — no row added to learning/00-notes/tracks.md (reference/notes material only; tracks registry unchanged at 4 tracks)
+4. updated documentation:
+   - README.md (intro line, What This Is notes-module bullet, directory map → shows 04-data-to-insight/)
+5. not affected (no other references): no skill/agent/blueprint references the module
+6. note: historical entry for change #14 left untouched — it records the past state
+---
+change #16: add Data-to-Insight Case Studies module + register analyst track (14-Aug-2026)
+
+1. created the new learning module in @learning/:
+   - learning/02-sql-learning/sql-analyst-lab/  (open-ended analytical case studies; the next level beyond sql-skill-push)
+2. added 3 case studies, each = ONE open-ended main question + the 4-step framework
+   from learning/04-data-to-insight/data-to-insight.md (scope ~3 metrics + ~3 dimensions →
+   break into 4 buckets → one SQL query per sub-question → strong insights):
+   - 01-brew-and-co/  (Brew & Co. coffee shop on retail.db — highest scaffolding, ~6 model queries)
+   - 02-markethub/    (MarketHub marketplace on ecommerce.db — medium scaffolding, ~8 model queries incl. MoM + YoY)
+   - 03-novatel/      (NovaTel telecom on telecom.db — minimal scaffolding, ~8 model queries, MoM only, NO YoY stated as a dataset limitation)
+   - each case: case.md + expected/{01-scope.md,02-questions.md,03-queries.sql,03-results.md,04-insight.md} + work/
+3. dataset reuse (no copies, no regeneration, read-only by relative path):
+   - reuses the 3 verified sql-skill-push SQLite .db files and the _tools/run_query.py helper
+   - sql-skill-push subtree verified byte-identical (git status clean)
+4. registered a new learning track:
+   - learning/00-notes/tracks.md  (row: analyst, Data-to-Insight Case Studies, 3 Case units)
+5. created progress notes directory:
+   - learning/00-notes/05-analyst-lab/  (README with session template + 3-Case progress snapshot table)
+6. updated documentation:
+   - README.md  (intro, What This Is module + 5-track list, directory map, Getting Started, Related Roadmaps)
+7. verification: all 3 expected/03-queries.sql re-executed against the reused .db files —
+   22 queries total (6/8/8), 0 failures, outputs match 03-results.md; sql-skill-push untouched
+
+---
+
+change #17: add SQL Analyst Lab development discussion note (14-Aug-2026)
+
+1. added a personal discussion note to @learning/00-notes/00-personal-discuss/:
+   - sql-analyst-lab-development-discussion.md  (records the full build discussion for the sql-analyst-lab module: context/idea — multiple answers for one main question, design decisions, OpenSpec formalization + execution flow, adjustments made when handed to @openspec-agent, quality comparison vs sql-skill-push, and 4 improvement ideas kept for a future session)
+2. NOT a learning-track note — lives only in 00-personal-discuss/ (00 = special, not time-based; not counted toward any track's progress)
+3. updated documentation:
+   - changes-log.txt (#17 this entry)
+   - README.md — no change needed: directory map already lists 00-personal-discuss/ generically
+4. verification: note follows the existing personal-discuss convention (date/topic header, markdown); no skill/agent/blueprint references the note — no other updates needed
+
+---
+
+change #18: add Medallion architecture study case + medallion-lab capability (24-Aug-2026)
+
+1. created the Medallion layer SQL scripts (Python stdlib, ATTACH DATABASE):
+   - script/01-sql/medallion/01-bronze.sql  (8 CTAS raw copies from the source + _ingest_ts/_source_table audit cols; row counts == source)
+   - script/01-sql/medallion/02-silver.sql  (8 cleaned tables, 1 row per source row, DQ flags: is_valid_order 456, has_payment 517, in_transit 95, is_discontinued_but_sold 9, parent_cat_name, country standardization, line_revenue, _quality_issues)
+   - script/01-sql/medallion/03-gold.sql    (star schema: dim_customer/dim_product/dim_date + fact_order_items 7,102 + fact_orders 2,800 + mart_vendor_performance 14 + mart_daily_revenue 396)
+2. created the orchestrator:
+   - script/02-python/medallion_pipeline.py  (bronze→silver→gold ATTACH chains, stage summary tables, gold run twice idempotency, row-count + no-data-loss assertions, --stage flag, exit 0 on success)
+3. generated outputs:
+   - data/medallion/bronze.db, silver.db, gold.db  (bronze counts == source; silver grain == bronze; gold star schema 7 tables; Completed+Shipped total_amount sum $5,548,140.62 preserved; end-to-end 0 assertion failures; sql-skill-push untouched)
+4. created the DWH architecture module (non-track, like 04-data-to-insight/):
+   - learning/05-dwh-architecture/README.md        (module home)
+   - learning/05-dwh-architecture/medallion-case.md (dataset profile, layer mapping, Mermaid lineage, DQ decision notes, trade-offs, DE-roadmap Week 3–4 mapping)
+5. added OpenSpec artifacts for the change (proposal pending archive):
+   - openspec/changes/add-medallion-lab/  (proposal.md, design.md, tasks.md, specs/medallion-lab/spec.md delta — new capability medallion-lab)
+6. updated documentation:
+   - README.md  (intro, What This Is module, directory map script/01-sql/medallion + script/02-python + data/medallion + 05-dwh-architecture, Getting Started step 8, Related Roadmaps)
+   - changes-log.txt (#18 this entry)
+7. not registered as a learning track — case maps onto the existing de track (Weeks 3–4); tracks.md unchanged
+
+
+
