@@ -1,20 +1,23 @@
--- [LOAD RAW TABLES]
--- Load customers table
+-- [SILVER LAYER ARCHITECTURE: CLEANING THE RAW DATASETS] --
+
+-- [LOAD RAW TABLES] --
+
+-- [customers]
 DROP TABLE IF EXISTS silver.cleaned_customers;
 DROP TABLE IF EXISTS silver.customers;
 CREATE TABLE silver.customers AS SELECT * FROM bronze.customers;
 
--- Load order_items table
+-- [order_items]
 DROP TABLE IF EXISTS silver.cleaned_order_items;
 DROP TABLE IF EXISTS silver.order_items;
 CREATE TABLE silver.order_items AS SELECT * FROM bronze.order_items;
 
--- Load orders table
+-- [orders]
 DROP TABLE IF EXISTS silver.cleaned_orders;
 DROP TABLE IF EXISTS silver.orders;
 CREATE TABLE silver.orders AS SELECT * FROM bronze.orders;
 
--- Load products table
+-- [products]
 DROP TABLE IF EXISTS silver.cleaned_products;
 DROP TABLE IF EXISTS silver.products;
 CREATE TABLE silver.products AS SELECT * FROM bronze.products;
@@ -22,7 +25,7 @@ CREATE TABLE silver.products AS SELECT * FROM bronze.products;
 -----------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------
 
--- [DATA CLEANING]
+-- [DATA CLEANING] --
 
 -- [North Star Metrics]
 -- Revenue 				= SUM(total_amount)
@@ -79,6 +82,28 @@ SELECT
 FROM customer_uniqueness
 WHERE row_num = 1;
 
+-- [Create Table: cleaned_customers]
+CREATE TABLE silver.cleaned_customers AS
+	WITH customer_uniqueness AS(
+		SELECT *,
+			ROW_NUMBER() OVER(PARTITION BY cust_id ORDER BY signup_date) AS row_num
+		FROM silver.customers
+	)
+	SELECT
+		cust_id AS customer_id,
+		first_name, 
+		last_name,
+		email,
+		city,
+		signup_date,
+		loyalty_points
+	FROM customer_uniqueness
+	WHERE row_num = 1;
+
+-- [cleaned_customers check]
+SELECT *
+FROM silver.cleaned_customers;
+
 --
 -- [order_items check]
 SELECT *
@@ -126,6 +151,27 @@ FROM silver.order_items
 WHERE
 	quantity < 0
 	OR unit_price <= 0;
+	
+-- [Create Table: cleaned_order_items]
+CREATE TABLE silver.cleaned_order_items AS
+	WITH order_item_uniqueness AS(
+		SELECT *,
+			ROW_NUMBER() OVER(PARTITION BY item_id ORDER BY order_id) AS row_num
+		FROM silver.order_items
+	)
+	SELECT
+		item_id,
+		order_id,
+		product_id,
+		quantity,
+		unit_price
+	FROM order_item_uniqueness
+	WHERE row_num = 1;
+
+-- [cleaned_order_items check]
+SELECT *
+FROM silver.cleaned_order_items;
+
 --
 -- [orders check]
 SELECT *
@@ -195,6 +241,27 @@ SELECT *
 FROM accuracy_table
 WHERE is_accurate = 0;
 
+-- [Create Table: cleaned_orders]
+CREATE TABLE silver.cleaned_orders AS
+	WITH order_uniqueness AS(
+		SELECT *,
+			ROW_NUMBER() OVER(PARTITION BY order_id ORDER BY order_date) AS row_num
+		FROM silver.orders
+	)
+	SELECT
+		order_id,
+		order_date,
+		customer_id,
+		store_id,
+		payment_method,
+		total_amount
+	FROM order_uniqueness
+	WHERE row_num = 1;
+
+-- [cleaned_orders check]
+SELECT *
+FROM silver.cleaned_orders;
+
 --
 -- [products check]
 SELECT * 
@@ -239,3 +306,43 @@ SELECT
 	is_active
 FROM product_uniqueness
 WHERE row_num = 1;
+
+-- [Create Table: cleaned_products]
+CREATE TABLE silver.cleaned_products AS
+	WITH product_uniqueness AS(
+		SELECT *,
+			ROW_NUMBER() OVER(PARTITION BY prod_id ORDER BY prod_id) AS row_num
+		FROM silver.products
+	)
+	SELECT 
+		prod_id AS product_id,
+		prod_name AS product_name,
+		category,
+		unit_price,
+		is_active
+	FROM product_uniqueness
+	WHERE row_num = 1;
+
+-- [cleaned_products check]
+SELECT *
+FROM silver.cleaned_products;
+
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+
+-- [DROP RAW TABLES] --
+
+-- [customers]
+DROP TABLE IF EXISTS silver.customers	-- [optional]
+
+-- [order_items]
+DROP TABLE IF EXISTS silver.order_items	-- [optional]
+
+-- [orders]
+DROP TABLE IF EXISTS silver.orders		-- [optional]
+
+-- [products]
+DROP TABLE IF EXISTS silver.products	-- [optional]
+
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
