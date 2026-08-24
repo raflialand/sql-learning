@@ -23,10 +23,37 @@ CREATE TABLE silver.products AS SELECT * FROM bronze.products;
 -----------------------------------------------------------------------------------
 
 -- [DATA CLEANING]
--- [uniqueness] | [customers table]
+
+-- [North Star Metrics]
+-- Revenue 				= SUM(total_amount)
+-- Order count			= COUNT(*)
+-- Average Order Value	= Revenue / Order count
+
+-- [Dimensions]
+-- Store
+-- Category
+-- Month
+
+-- [customers table check]
 SELECT *
 FROM silver.customers;
 
+-- [completeness] | [customers table]
+SELECT *
+FROM silver.customers
+WHERE
+	cust_id			IS NULL
+	OR first_name	IS NULL
+	OR last_name	IS NULL
+	OR signup_date	IS NULL
+	OR cust_id		= ' '
+	OR first_name	= ' '
+	OR last_name	= ' '
+	OR cust_id		= ''
+	OR first_name	= ''
+	OR last_name	= '';
+	
+-- [uniqueness] | [customers table]
 -- [pk: customer_id]
 SELECT
 	cust_id,
@@ -53,10 +80,23 @@ FROM customer_uniqueness
 WHERE row_num = 1;
 
 --
--- [uniqueness] | [order_items table]
+-- [order_items check]
 SELECT *
 FROM silver.order_items;
 
+-- [completeness] | [order_items table]
+SELECT *
+FROM silver.order_items
+WHERE
+	item_id			IS NULL
+	OR order_id		IS NULL
+	OR product_id	IS NULL
+	OR quantity		IS NULL
+	OR unit_price	IS NULL
+	OR product_id	= ' '
+	OR product_id	= '';
+	
+-- [uniqueness] | [order_items table]
 -- [pk: item_id]
 SELECT
 	item_id,
@@ -80,11 +120,32 @@ SELECT
 FROM order_item_uniqueness
 WHERE row_num = 1;
 
+-- [validity] | [order_items table]
+SELECT *
+FROM silver.order_items
+WHERE
+	quantity < 0
+	OR unit_price <= 0;
 --
--- [uniqueness] | [orders table]
+-- [orders check]
 SELECT *
 FROM silver.orders;
 
+-- [completeness] | [orders table]
+SELECT *
+FROM silver.orders
+WHERE
+	order_id			IS NULL
+	OR order_date		IS NULL
+	OR customer_id		IS NULL
+	OR store_id			IS NULL
+	OR total_amount		IS NULL
+	OR customer_id		= ' '
+	OR store_id			= ' '
+	OR customer_id		= ''
+	OR store_id			= '';
+
+-- [uniqueness] | [orders table]
 -- [pk: order_id]
 SELECT
 	order_id,
@@ -109,11 +170,53 @@ SELECT
 FROM order_uniqueness
 WHERE row_num = 1;
 
+-- [validity - accuracy] | [orders table]
+WITH 
+	total_amount_compare AS(
+	SELECT
+		o.order_id,
+		o.total_amount,
+		ROUND(SUM(oi.quantity * oi.unit_price), 2) AS total_amount_check
+	FROM silver.orders o
+		LEFT JOIN silver.order_items oi ON oi.order_id = o.order_id
+	GROUP BY
+		o.order_id,
+		o.total_amount
+), 
+	accuracy_table AS(
+	SELECT *,
+		CASE
+			WHEN total_amount = total_amount_check AND total_amount > 0 THEN 1
+			ELSE 0
+			END AS is_accurate
+	FROM total_amount_compare
+)
+SELECT *
+FROM accuracy_table
+WHERE is_accurate = 0;
+
 --
--- [uniqueness] | [products table]
+-- [products check]
 SELECT * 
 FROM silver.products;
 
+-- [completeness] | [products table]
+SELECT *
+FROM silver.products
+WHERE
+	prod_id IS NULL
+	OR prod_name IS NULL
+	OR category IS NULL
+	OR unit_price IS NULL
+	OR is_active IS NULL
+	OR prod_id = ' '
+	OR prod_name = ' '
+	OR category = ' '
+	OR prod_id = ''
+	OR prod_name = ''
+	OR category = '';
+	
+-- [uniqueness] | [products table]
 -- [pk: product_id]
 SELECT
 	prod_id,
