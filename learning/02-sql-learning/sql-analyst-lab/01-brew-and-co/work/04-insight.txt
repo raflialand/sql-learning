@@ -84,4 +84,9 @@ A.  RUNNING LOG
     Chocolate Chip Cookie   | 4 - 119
     Espresso                | 2 - 98
 
-B.  5 INSIGHT COMPONENTS
+B.  INSIGHT COMPONENTS
+    Here the 5 insight components:
+    1.  TREND - direction of the Northstar metric over time
+        trend line: 
+        Chain-wide revenue rose from $4.0k (Jan-25) to a peak of $6.4k (Aug-25), dipped to $4.5k (Oct-25),
+        then recovered to an all-time high of $6.6k (Jan-26) — +64.4% over 13 months.

@@ -65,4 +65,42 @@ GROUP BY fp.product_id, fp.product_name, mr.price_band, mr.is_active;
 
 ---
 
+# Summary: SQL Analyst Lab Session (continued — Step B started: TREND locked)
+
+**Date:** 26 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 4: Step A complete (Buckets 1–4 verified); Step B in progress — Component 1 TREND locked, Component 2 FLUCTUATION pending
+
+---
+
+## Completed
+
+- **Step B (5 insight components) started. Component 1 — TREND locked.**
+  - **Gap closed:** verified the full 13-month revenue series (the Running Log stopped at Oct):
+    Jan-25 $4,000.30 · Feb $4,887.25 · Mar $5,693.35 · Apr $5,910.75 · May $4,898.55 · Jun $5,338.25 · Jul $5,534.00 · Aug $6,359.85 · Sep $5,257.20 · Oct $4,519.00 · Nov $5,673.95 · Dec $5,586.65 · Jan-26 $6,575.00.
+  - Computed overall change: (6,575.00 − 4,000.30) / 4,000.30 × 100 = **+64.4%**.
+  - **Locked Trend line:** "Chain-wide revenue rose from $4.0k (Jan-25) to a peak of $6.4k (Aug-25), dipped to $4.5k (Oct-25), then recovered to an all-time high of $6.6k (Jan-26) — +64.4% over 13 months."
+
+## Discussion: "direction over time" + framework Q&A
+
+- **Trend = direction over time** (up/down/flat across the period), captured as **ONE arc** (start → peak → trough → end + overall %). The specific Up/Down legs (Jan→Apr up, Apr→May down, May→Aug up, Aug→Oct down, Oct→Jan up) are **Fluctuation material**, not Trend.
+- **Coaching on the first draft:** "The trends are going up and down repetitively" = vague + no direction → rejected (breaks Narrative Guide rule: numbers before adjectives). Compressed to one arc line instead.
+- **% change formula (first principles):** (final − initial) / initial × 100; compute from exact query values, round only at the end (rounded $4.0k→$6.6k gives 65%; exact is +64.4%).
+- **Framework Q&A (conceptual):** the 5 components come from Christine Jiang's video — used across ALL lab cases, not case-specific. They're a general recipe for a "strong insight," not a law: a weak insight ("X is higher than Y, it's working") is weak because it has none of them. Other frameworks (5-Whys/RCA, So What/STAR, hypothesis-driven, KPI monitoring) have different components because their *purpose* differs. No universal "best" — pick the skeleton to fit audience / decision / stage; the underlying analysis (metrics, dimensions, verified facts) is the same.
+- **Real companies:** standardize **output, vocabulary, and process** (metric dictionaries, report templates, experiment playbooks, quality bars) — usually NOT one mandatory thinking framework; house style is learned via reviews. Transferable skill = metric × dimension discipline + traceability.
+
+## Mistakes / Notes
+
+- Typos to watch: "%6.4k" → "$6.4k"; mixed month formats (jan-2025 vs Aug-2025) — standardize (e.g. Jan-25).
+
+## Next Steps
+
+1. **Component 2 — FLUCTUATION** (inventory ready): five Up/Down legs; chain MoM **+22% Feb / +15% Aug / −17% May / −17% Sep** (recurring rhythm); BRW003 **May −51.7% / Sep −39.2% / Oct −27.3% / Nov +83.4%** bounce.
+2. **Component 3 — ANOMALY** (BRW002 ~9% gap vs flat AOV) · **4 — ROOT CAUSE** (AOV flat → volume-driven; category levers opposite: Merchandise basket / Beverage traffic; cheap, active, add-on staples → price-driven) · **5 — RECOMMENDATION** (compute the BRW002 $ opportunity yourself, don't copy $2,200).
+3. **Step C** — one strong insight paragraph (Trend → Fluctuation → Anomaly → Root cause → Recommendation).
+4. **Step D** — 2–4 recommendations · **Step E** — self-check (5 components present, every claim traceable, PRD030/031 discrepancy addressed).
+5. Compare vs `expected/04-insight.md` → close Case 01 → update snapshot → Case 02 (MarketHub).
+
+---
+
 *Happy Learning!*
