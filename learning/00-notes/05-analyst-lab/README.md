@@ -41,7 +41,7 @@ _Update this table as you go._
 
 | Case | Total | Completed | Notes |
 | --- | --- | --- | --- |
-| 01 Brew & Co. | 1 | 0 | Steps 1–3 done (all 12 queries verified + cleanup complete); Step 4 in progress — Running Log Buckets 1–3 drafted (see 21-aug summary; Q2a verified per-store: May −51.7%, Sep −39.2%), Bucket 4 + Step B–E pending; Postgres verify optional |
+| 01 Brew & Co. | 1 | 0 | Steps 1–3 done (all 12 queries verified + cleanup complete); Step 4 in progress — Running Log Buckets 1–4 drafted & verified (Bucket 4 closed 26-aug: Q4d fixed to distinct-order counts 2/98 · 11/83 · 4/119); Steps B–E pending; Postgres verify optional |
 | 02 MarketHub | 1 | 0 | — |
 | 03 NovaTel | 1 | 0 | — |
 
@@ -51,6 +51,7 @@ _Append new mistakes here after each session (newest on top). The detailed table
 
 | # | Date | Mistake | Root cause | Lesson / Fix |
 | --- | --- | --- | --- | --- |
+| 22 | 26-Aug | Q4d mart query counted line items not distinct orders | Forgot mart is line-grain (3,647 rows / 1,200 orders); `SUM(CASE WHEN alone_flag...)` counts rows | Basket-level metric = `COUNT(DISTINCT order_id)`; check grain before aggregating |
 | 21 | 20-Aug | Q4d `SUM(CASE...)` counted receipt lines | Product appears twice in one order → double-count | `COUNT(DISTINCT CASE WHEN ... THEN order_id END)` |
 | 20 | 20-Aug | Q4b hardcoded `IN ('PRD001','PRD006','PRD015')` | Repeat of #10 — typed the derived set | `underperform` CTE = Q4a flagged set; outer JOIN |
 | 19 | 20-Aug | Q4b windows over filtered rows | `WHERE` runs before windows → avg 3.10 vs true 5.25 | Compute windows on the full table, filter after (**windows before WHERE**) |

@@ -61,24 +61,27 @@ A.  RUNNING LOG
     "Which products underperform?" | Product Revenue, bottom-decile (~3 of 31); flag zero-sales
     Findings:
     The most underperformed products by revenue are Espresso($598.85), followed by Chocolate Chip Cookie($622.50), then Americano($624.00)
-
+    Verified: none exist — all 31 products sold at least once.
+    --
     Q4b:
     "Are the underperformers cheap, mid, or expensive relative to the menu?" | Revenue · unit_price band
     Findings:
-    Three of them are defined as cheap products
-
+    Three of them are defined as cheap products.
+    all ≤ $3.25 vs category avg $5.25 (Beverage) / $5.81 (Food).
+    --
     Q4c:
     "Are the underperformers active or inactive products?" | Revenue · is_active
     Findings:
     Three of them are active products
-
+    all active → underperformance is NOT a deactivation/stale-menu problem.
+    --
     Q4d:
     "Are the underperformers bought alone or as add-ons inside bigger orders?" | Revenue · basket context
     Findings:
     Most of the time bought as add-ons
     Product                 | alone - add-ons (count)
-    Americano               | 11 - 87
-    Chocolate Chip Cookie   | 5 - 122
-    Espresso                | 2 - 102
+    Americano               | 11 - 83
+    Chocolate Chip Cookie   | 4 - 119
+    Espresso                | 2 - 98
 
 B.  5 INSIGHT COMPONENTS
