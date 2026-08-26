@@ -87,6 +87,13 @@ A.  RUNNING LOG
 B.  INSIGHT COMPONENTS
     Here the 5 insight components:
     1.  TREND - direction of the Northstar metric over time
-        trend line: 
+        Trend line: 
         Chain-wide revenue rose from $4.0k (Jan-25) to a peak of $6.4k (Aug-25), dipped to $4.5k (Oct-25),
         then recovered to an all-time high of $6.6k (Jan-26) — +64.4% over 13 months.
+    
+    2.  FLUCTUATION - the wobbles
+        Fluctuation line:
+        - Revenue didn't rise smoothly — it spiked in Feb (+22%) and Aug (+15%), dipped in May (−17%) and Sep (−17%),
+          then recovered into Nov (+25.6%) and Jan (+17.7%) within 2025 — a dip-then-recover shape worth watching, but not yet proven seasonality.
+        - BRW003 is far more volatile than the chain: May −51.7%, Sep −39.2%, Oct −27.3%, 
+          then a +83.4% Nov snap-back — the largest swings in the dataset (single year, not yet proven seasonal).

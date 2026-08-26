@@ -103,4 +103,43 @@ GROUP BY fp.product_id, fp.product_name, mr.price_band, mr.is_active;
 
 ---
 
+# Summary: SQL Analyst Lab Session (continued — Step B: FLUCTUATION locked, ANOMALY started)
+
+**Date:** 26 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 4, Step B in progress: Components 1–2 (TREND, FLUCTUATION) locked; Component 3 ANOMALY guided but not yet drafted; ROOT CAUSE & RECOMMENDATION pending
+
+---
+
+## Completed
+
+- **Component 2 — FLUCTUATION locked (2 lines, hedged):**
+  > - Revenue didn't rise smoothly — it spiked in Feb (+22%) and Aug (+15%), dipped in May (−17%) and Sep (−17%), then recovered into Nov (+25.6%) and Jan (+17.7%) within 2025 — a dip-then-recover shape worth watching, but not yet proven seasonality.
+  > - BRW003 is far more volatile than the chain: May −51.7%, Sep −39.2%, Oct −27.3%, then a +83.4% Nov snap-back — the largest swings in the dataset (single year, not yet proven seasonal).
+- **Fact correction:** draft said "recovering into Nov (+5%)" — verified Nov is **+25.6%** (Oct $4,519 → Nov $5,673.95) and Jan-26 is **+17.7%**.
+
+## Discussion: Trend vs Fluctuation + the seasonality overclaim catch
+
+- **Trend = levels (raw $) · Fluctuation = % change (MoM).** Same road, two instruments: Trend = the map ("where did it end up"), Fluctuation = the speedometer ("how jumpy, how fast"). Trend uses the `revenue` column; Fluctuation uses the `mom_growth_pct` column. Both can mention "dip/recover," but one speaks in dollar levels and the other in percent change.
+- **Big lesson — cannot overclaim seasonality from one year.** With 13 months you've seen May once and Sep once. Distinguish:
+  - **Volatility / within-year dips** = observed fact ("dipped −17% in May, −17% in Sep 2025") ✅
+  - **Rhythm (same year)** = "dip → recover → dip → recover" ✅ but only one pass
+  - **Seasonality (annual recurrence)** = "it *will* dip every May/Sep" ❌ needs ≥2 full cycles
+  - Discipline: describe the observed movement, add "worth watching, but not yet proven seasonal." This also forces the Recommendation to say "**monitor** May/Sep" rather than "**plan for** the Sep dip." Overclaiming here is exactly the weak-insight trap.
+
+## Mistakes / Notes
+
+- "recovering into Nov (+5%)" was wrong → +25.6% (always recompute MoM from the query, don't recall from memory).
+
+## Next Steps
+
+1. **Component 3 — ANOMALY**: BRW002 ~9% revenue gap ($21,963 vs ~$24,135) **even though AOV is flat** ($57.20/$59.43/$58.88, spread < $2.25). Frame = *deviation + exclusion* ("it's NOT basket efficiency"), stop short of the why (that's Root cause).
+2. **Component 4 — ROOT CAUSE**: AOV flat → volume-driven (BRW002 384 vs ~408 orders); category levers opposite (Merchandise basket $57.18 / Beverage traffic 861 orders); cheap + active + add-on staples → price-driven, not demand/deactivation.
+3. **Component 5 — RECOMMENDATION**: compute the BRW002 $ opportunity yourself (don't copy $2,200).
+4. **Step C** — one strong insight paragraph (Trend → Fluctuation → Anomaly → Root cause → Recommendation).
+5. **Step D** — 2–4 recommendations · **Step E** — self-check (5 components, traceability, PRD030/031).
+6. Compare vs `expected/04-insight.md` → close Case 01 → update snapshot → Case 02 (MarketHub).
+
+---
+
 *Happy Learning!*

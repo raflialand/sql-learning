@@ -41,7 +41,7 @@ _Update this table as you go._
 
 | Case | Total | Completed | Notes |
 | --- | --- | --- | --- |
-| 01 Brew & Co. | 1 | 0 | Steps 1–3 done (all 12 queries verified + cleanup complete); Step 4 in progress — Step A Running Log Buckets 1–4 drafted & verified (Bucket 4 closed 26-aug: Q4d fixed to distinct-order counts 2/98 · 11/83 · 4/119); Step B started 26-aug: TREND locked (+64.4% arc), FLUCTUATION–RECOMMENDATION pending; Postgres verify optional |
+| 01 Brew & Co. | 1 | 0 | Steps 1–3 done (all 12 queries verified + cleanup complete); Step 4 in progress — Step A Running Log Buckets 1–4 drafted & verified (Bucket 4 closed 26-aug: Q4d fixed to distinct-order counts 2/98 · 11/83 · 4/119); Step B in progress: TREND (+64.4% arc) & FLUCTUATION (2 hedged lines) locked, ANOMALY next (BRW002 ~9% gap vs flat AOV); Postgres verify optional |
 | 02 MarketHub | 1 | 0 | — |
 | 03 NovaTel | 1 | 0 | — |
 
