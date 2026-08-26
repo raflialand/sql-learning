@@ -242,4 +242,62 @@ GROUP BY fp.product_id, fp.product_name, mr.price_band, mr.is_active;
 
 ---
 
+# Summary: SQL Analyst Lab Session (continued — Step C LOCKED: strong insight paragraph)
+
+**Date:** 26 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 4: Step A + Step B + Step C COMPLETE; Step D (final recs) & Step E (self-check) next, then close Case 01
+
+---
+
+## Completed
+
+- **Step C — strong insight paragraph locked:**
+  > Over 13 months chain-wide revenue rose 64.4% to an all-time high of $6.6k — but not smoothly: it dipped in May (−17%) and Sep (−17%) and swung sharply at BRW003 (May −51.7%, Nov +83.4%). The swings trace to one lever: Merchandise, which drives 60% of revenue through high basket values, while Beverage carries the foot traffic. One store stands out: BRW002 trails its peers by ~9% even though AOV is flat everywhere — the gap is volume, not baskets (a ~24-order monthly deficit). Next month: run a traffic-driving promo at BRW002 (worth ~$1,372/month, up to ~$2,172) and replicate the August Merchandise window to guard against May/Sep *if* the dip recurs. And keep the cheap staples — Espresso, Cookies, Americanos — they're ~90% add-ons and hold the traffic together.
+
+## Discussion: Step C vs the model answer (expected/04-insight.md)
+
+- **Matches on substance:** Merchandise 60% lever · BRW002 ~9% via fewer orders · AOV flat → volume-driven · replicate Aug window + BRW002 promo · protect staples.
+- **User's version is MORE precise/honest than the model in 3 places:**
+  1. Trend framing: model "59% Jan→Aug, 29% drop" vs user **+64.4% full 13-month arc**.
+  2. BRW002 cause: model "~9% **entirely** because fewer orders" vs user "**primarily** … volume, not baskets" (model overclaims).
+  3. $ figure: model "$2,200/month" vs user "~$1,372/mo, up to ~$2,172" (distinguishes fixable vs ceiling).
+  4. **Seasonality:** model claims "seasonal merchandise push" + "plan for the seasonal pattern" — user correctly hedges "**if** the dip recurs" (one year ≠ proven seasonality).
+- **Verdict:** the user beat the model on its two slips (seasonality overclaim + "entirely due to"). This is the honesty discipline working.
+
+## Next Steps
+
+1. **Step D** — formalize the 4 locked recommendation lines as a numbered `D. RECOMMENDATIONS` list.
+2. **Step E** — self-check: 5 components in order · every number traceable · no weak-insight filler · PRD030/031 resolved (Q4a "all 31 sold" = DB truth; expected's "0 units" note is stale).
+3. Close Case 01 → update progress snapshot (Case 01 completed) → Case 02 (MarketHub).
+
+---
+
+# Summary: SQL Analyst Lab Session (continued — Case 01 COMPLETE)
+
+**Date:** 26 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** ✅ **Case 01 (Brew & Co.) COMPLETE** — all Steps 1–4 done, `work/04-insight.txt` finalized (sections A–E). Next: Case 02 (MarketHub).
+
+---
+
+## Completed
+
+- **Finalized `work/04-insight.txt`** — sections A (Running Log), B (5 components), C (insight paragraph), D (recommendations), E (self-check).
+  - Fixed Q1a Running Log to the full arc (peak $6,360 Aug → trough $4,519 Oct → all-time high $6,575 Jan-26).
+  - Added standalone `D. RECOMMENDATIONS` (4 numbered) and `E. SELF-CHECK`.
+  - Fixed B.4 header "Volume order" → "Volume, not basket".
+- **Case 01 closed** — progress snapshot marked completed (1/3 cases).
+
+## Self-check result (Step E)
+
+- 5 components present in order · every number traceable · no weak-insight filler · PRD030/031 = DB truth (all 31 sold; expected's "0 units" is stale) · hedges preserved ("if the dip recurs", "primarily").
+
+## Next Steps
+
+1. **Case 02 — MarketHub** (ecommerce.db, 8 tables, medium scaffolding): read the dataset README + ERD, then `case.md`, then work in `work/` (scope → sub-questions → queries → insights).
+2. After Case 02 → Case 03 (NovaTel, telecom, minimal scaffolding).
+
+---
+
 *Happy Learning!*

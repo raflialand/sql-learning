@@ -41,7 +41,7 @@ _Update this table as you go._
 
 | Case | Total | Completed | Notes |
 | --- | --- | --- | --- |
-| 01 Brew & Co. | 1 | 0 | Steps 1–3 done (all 12 queries verified + cleanup complete); Step 4 in progress — Step A Running Log Buckets 1–4 drafted & verified (Bucket 4 closed 26-aug: Q4d fixed to distinct-order counts 2/98 · 11/83 · 4/119); Step B COMPLETE 26-aug (TREND +64.4% arc · FLUCTUATION 2 hedged lines · ANOMALY BRW002 ~9% gap not baskets · ROOT CAUSE volume/Merchandise/price · RECOMMENDATION 4 lines incl. BRW002 ~$1,372/mo); Steps C–E next; Postgres verify optional |
+| 01 Brew & Co. | 1 | 1 | ✅ COMPLETE (26-aug) — Steps 1–3 + Step 4 (Running Log Buckets 1–4, 5 components, insight paragraph, 4 recommendations, self-check). `work/04-insight.txt` finalized with sections A–E. Postgres verify optional |
 | 02 MarketHub | 1 | 0 | — |
 | 03 NovaTel | 1 | 0 | — |
 

@@ -5,7 +5,7 @@ A.  RUNNING LOG
     Q1a:
     "What is the chain-wide Revenue trend over time?" | Revenue · Month
     Findings:
-    Overall, revenue increased from $4,000 in January 2025 to $6,360 in August 2025, but declined to $4,519 in October 2025.
+    Overall, revenue increased from $4,000 in January 2025 to a peak of $6,360 in August 2025, declined to $4,519 in October 2025, then recovered to an all-time high of $6,575 in January 2026.
     --
     Q1b:
     "How is Revenue split across menu categories?" | Revenue · Category
@@ -104,7 +104,7 @@ B.  INSIGHT COMPONENTS
         
     4.  ROOT CAUSE — the why, one layer deeper
         Root Cause lines:
-        -   Volume order
+        -   Volume, not basket
             Revenue differences are volume-driven, not basket-driven — AOV is flat everywhere (spread < $2.25), so BRW002's ~9% gap comes from processing 24 fewer orders/month (384 vs 408).
         -   Category levers run opposite
             Merchandise = 60% of revenue ($42,145) on the fewest orders (737) → wins via basket ($57.18, ~3× others); Beverage = most orders (861) but smallest basket ($17.13) → wins via traffic. So a good month/store is a Merchandise month — that's what drives the revenue swings, not overall traffic.
@@ -116,3 +116,23 @@ B.  INSIGHT COMPONENTS
         -   Replicate the August Merchandise window — it drove the +15% Aug peak, and Merchandise is 60% of revenue ($42,145).
         -   Don't cut Espresso/Cookie/Americano — they're cheap staples bought as add-ons ~90% of the time (88–98%), so they drive traffic even though they add little revenue.
         -   Monitor May/Sep — if the dip recurs, have a Merchandise push ready (not yet proven seasonal).
+
+C.  INSIGHT PARAGRAPH
+    Over 13 months chain-wide revenue rose 64.4% to an all-time high of $6.6k — but not smoothly: it dipped in May (−17%) and Sep (−17%) and swung sharply at BRW003 (May −51.7%, Nov +83.4%). 
+    The swings trace to one lever: Merchandise, which drives 60% of revenue through high basket values, while Beverage carries the foot traffic. 
+    One store stands out: BRW002 trails its peers by ~9% even though AOV is flat everywhere — the gap is volume, not baskets (a ~24-order monthly deficit). 
+    Next month: run a traffic-driving promo at BRW002 (worth ~$1,372/month, up to ~$2,172) and replicate the August Merchandise window to guard against May/Sep if the dip recurs. 
+    And keep the cheap staples — Espresso, Cookies, Americanos — they're ~90% add-ons and hold the traffic together.
+
+D.  RECOMMENDATIONS
+    1.  Run a traffic-driving promotion at BRW002 to close its ~24-order gap vs the other stores — worth ~$1,372/month (up to ~$2,172 if the basket gap closes too).
+    2.  Replicate the August Merchandise window — it drove the +15% Aug peak, and Merchandise is 60% of revenue ($42,145).
+    3.  Don't cut Espresso/Cookie/Americano — they're cheap staples bought as add-ons ~90% of the time (88–98%), so they drive traffic even though they add little revenue.
+    4.  Monitor May/Sep — if the dip recurs, have a Merchandise push ready (not yet proven seasonal).
+
+E.  SELF-CHECK
+    - 5 components present (Trend → Fluctuation → Anomaly → Root cause → Recommendation).
+    - Every number traceable to a query result.
+    - No weak-insight filler.
+    - PRD030/031 = DB truth (all 31 products sold at least once; the expected "0 units" note is stale).
+    - Hedges preserved: "if the dip recurs" / "primarily" (one year ≠ proven seasonality).
