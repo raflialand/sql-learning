@@ -32,5 +32,7 @@ SELECT *,
 	ROUND((revenue - LAG(revenue) OVER (ORDER BY month_key)) * 100.00 / LAG(revenue) OVER (ORDER BY month_key), 2) AS diff_pct
 FROM revenue_trend;
 -- Findings:
--- Revenue didn't rise smoothly — it dipped in May (−17%) and Sep (−17%) and spiked in Feb (+22%) and Aug (+15%) within 2025, 
--- recovering into Nov (+5%) and Jan — a dip-then-recover shape worth watching next year, but not yet proven seasonality.
+-- 1. Revenue didn't rise smoothly — it spiked in Feb (+22%) and Aug (+15%), dipped in May (−17%) and Sep (−17%),
+--    then recovered into Nov (+25.6%) and Jan (+17.7%) within 2025 — a dip-then-recover shape worth watching, but not yet proven seasonality.
+-- 2. BRW003 is far more volatile than the chain: May −51.7%, Sep −39.2%, Oct −27.3%, 
+--    then a +83.4% Nov snap-back — the largest swings in the dataset (single year, not yet proven seasonal).

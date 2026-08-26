@@ -92,8 +92,21 @@ B.  INSIGHT COMPONENTS
         then recovered to an all-time high of $6.6k (Jan-26) — +64.4% over 13 months.
     
     2.  FLUCTUATION - the wobbles
-        Fluctuation line:
-        - Revenue didn't rise smoothly — it spiked in Feb (+22%) and Aug (+15%), dipped in May (−17%) and Sep (−17%),
-          then recovered into Nov (+25.6%) and Jan (+17.7%) within 2025 — a dip-then-recover shape worth watching, but not yet proven seasonality.
-        - BRW003 is far more volatile than the chain: May −51.7%, Sep −39.2%, Oct −27.3%, 
-          then a +83.4% Nov snap-back — the largest swings in the dataset (single year, not yet proven seasonal).
+        Fluctuation lines:
+        -   Revenue didn't rise smoothly — it spiked in Feb (+22%) and Aug (+15%), dipped in May (−17%) and Sep (−17%),
+            then recovered into Nov (+25.6%) and Jan (+17.7%) within 2025 — a dip-then-recover shape worth watching, but not yet proven seasonality.
+        -   BRW003 is far more volatile than the chain: May −51.7%, Sep −39.2%, Oct −27.3%, 
+            then a +83.4% Nov snap-back — the largest swings in the dataset (single year, not yet proven seasonal).
+
+    3.  ANOMALY — the odd one out
+        Anomaly line:
+        BRW002 earns ~9% less ($21,963 vs ~$24,135) even though AOV is flat ($57.20 vs $58–59) — so it's not a basket problem.
+        
+    4.  ROOT CAUSE — the why, one layer deeper
+        Root Cause lines:
+        -   Volume order
+            Revenue differences are volume-driven, not basket-driven — AOV is flat everywhere (spread < $2.25), so BRW002's ~9% gap comes from processing 24 fewer orders/month (384 vs 408).
+        -   Category levers run opposite
+            Merchandise = 60% of revenue ($42,145) on the fewest orders (737) → wins via basket ($57.18, ~3× others); Beverage = most orders (861) but smallest basket ($17.13) → wins via traffic. So a good month/store is a Merchandise month — that's what drives the revenue swings, not overall traffic.
+        -   Bottom products = price-driven
+            Cheap (≤ $3.25), active, high-volume staples bought ~90% as add-ons → they underperform because of low unit price, not low demand or deactivation.

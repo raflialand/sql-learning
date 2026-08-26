@@ -142,4 +142,69 @@ GROUP BY fp.product_id, fp.product_name, mr.price_band, mr.is_active;
 
 ---
 
+# Summary: SQL Analyst Lab Session (continued — Step B: ANOMALY locked, ROOT CAUSE started)
+
+**Date:** 26 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 4, Step B in progress: Components 1–3 (TREND, FLUCTUATION, ANOMALY) locked; Component 4 ROOT CAUSE started (inventory ready); RECOMMENDATION pending
+
+---
+
+## Completed
+
+- **Component 3 — ANOMALY locked:**
+  > BRW002 earns ~9% less ($21,963 vs ~$24,135) even though AOV is flat ($57.20 vs $58–59) — so it's not a basket problem.
+
+## Discussion: anomaly discipline + the revenue decomposition
+
+- **Anomaly must NOT solve itself.** First draft put BOTH the gap AND the order-count answer inside the Anomaly. Coach: Anomaly = *deviation + exclusion* only (raise the mystery); the mechanism is the Root cause's job (answer it). Merging them front-loads the answer and kills the narrative flow (deviation → exclusion → mechanism).
+- **Revenue decomposition = the proof tool.** Revenue = Order count × AOV. Only **two levers**. AOV flat → the gap can *only* be order count. Verified order counts: BRW001 **407** · BRW002 **384** · BRW003 **409** → BRW002 ~**24 fewer orders/month**. Sanity check: 24 × ~$57 ≈ $1.4k of the ~$2.2k gap (rest = the small AOV difference).
+
+## Mistakes / Notes
+
+- Solved the anomaly inside the anomaly (put the mechanism in the Anomaly instead of Root cause). Fix: Anomaly stops at the exclusion.
+
+## Next Steps
+
+1. **Component 4 — ROOT CAUSE** (inventory ready): (a) volume not basket — BRW002 ~24 fewer orders; (b) category levers opposite — Merchandise 60% revenue / 737 orders / basket $57.18 vs Beverage 861 orders / basket $17.13; (c) bottom products price-driven — cheap (≤$3.25) + active + ~90% add-on staples.
+2. **Component 5 — RECOMMENDATION**: compute the BRW002 $ opportunity yourself.
+3. **Step C** — insight paragraph · **Step D** — 2–4 recs · **Step E** — self-check.
+4. Compare vs `expected/04-insight.md` → close Case 01 → snapshot → Case 02.
+
+---
+
+# Summary: SQL Analyst Lab Session (continued — Step B: ROOT CAUSE locked, RECOMMENDATION guided)
+
+**Date:** 26 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 4, Step B: Components 1–4 (TREND, FLUCTUATION, ANOMALY, ROOT CAUSE) locked; Component 5 RECOMMENDATION guided (compute the BRW002 $ opportunity yourself); Step C–E pending
+
+---
+
+## Completed
+
+- **Component 4 — ROOT CAUSE locked (3 lines):**
+  > - **Volume, not basket** — Revenue differences are volume-driven, not basket-driven: AOV is flat everywhere (spread < $2.25), so BRW002's ~9% gap = ~24 fewer orders/month (384 vs ~408).
+  > - **Category levers run opposite** — Merchandise = 60% of revenue ($42,145) on the fewest orders (737) → wins via basket ($57.18, ~3× others); Beverage = most orders (861) but smallest basket ($17.13) → wins via traffic. So a good month/store is a Merchandise month — that drives the revenue swings, not overall traffic.
+  > - **Bottom products are price-driven** — cheap (≤ $3.25), active, high-volume staples bought ~90% as add-ons → underperform because of low unit price, not low demand or deactivation.
+- **Component 5 — RECOMMENDATION guided** (candidate actions + the $ computation method).
+
+## Discussion: what makes a Root cause + the recommendation math
+
+- **Root cause = mechanism, not restated numbers.** Each line must read "because X → Y." Line 1 started circular ("so it's the order-count problem") → fixed to "volume-driven, not basket-driven … AOV flat → ~24 fewer orders." Category levers needed the *so-what* payoff: Merchandise decides whether a month/store is good (ties Fluctuation back to a cause).
+- **Recommendation = action + expected effect/$** (not "improve sales"). Candidate actions from verified facts: (1) replicate the Aug Merchandise window; (2) fix BRW002 volume; (3) keep cheap staples stocked (traffic drivers); (4) monitor May/Sep (hedged — not proven seasonal).
+- **Two ways to compute the BRW002 opportunity (different questions):**
+  - Order-gap method: ~24 orders × $57.20 AOV ≈ **$1,374/month** (what closing *volume* is worth — the fair fixable figure)
+  - Revenue-gap method: $24,135 − $21,963 ≈ **$2,172/month** (the *full* gap ceiling, includes the small AOV difference)
+  - Decide which one to quote and say why.
+
+## Next Steps
+
+1. **Component 5 — RECOMMENDATION**: compute both BRW002 figures, draft 2–4 recommendation lines (action + $ + traceable reason).
+2. **Step C** — one strong insight paragraph (Trend → Fluctuation → Anomaly → Root cause → Recommendation).
+3. **Step D** — 2–4 recommendations · **Step E** — self-check (5 components, traceability, PRD030/031).
+4. Compare vs `expected/04-insight.md` → close Case 01 → update snapshot → Case 02 (MarketHub).
+
+---
+
 *Happy Learning!*
