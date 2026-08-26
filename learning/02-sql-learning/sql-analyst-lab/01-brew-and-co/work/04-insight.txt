@@ -110,3 +110,9 @@ B.  INSIGHT COMPONENTS
             Merchandise = 60% of revenue ($42,145) on the fewest orders (737) → wins via basket ($57.18, ~3× others); Beverage = most orders (861) but smallest basket ($17.13) → wins via traffic. So a good month/store is a Merchandise month — that's what drives the revenue swings, not overall traffic.
         -   Bottom products = price-driven
             Cheap (≤ $3.25), active, high-volume staples bought ~90% as add-ons → they underperform because of low unit price, not low demand or deactivation.
+
+    5.  RECOMMENDATION
+        -   Run a traffic-driving promotion at BRW002 to close its ~24-order gap vs the other stores — worth ~$1,372/month (up to ~$2,172 if the basket gap closes too).
+        -   Replicate the August Merchandise window — it drove the +15% Aug peak, and Merchandise is 60% of revenue ($42,145).
+        -   Don't cut Espresso/Cookie/Americano — they're cheap staples bought as add-ons ~90% of the time (88–98%), so they drive traffic even though they add little revenue.
+        -   Monitor May/Sep — if the dip recurs, have a Merchandise push ready (not yet proven seasonal).

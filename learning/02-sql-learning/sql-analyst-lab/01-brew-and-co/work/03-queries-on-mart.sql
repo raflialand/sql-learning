@@ -36,3 +36,6 @@ FROM revenue_trend;
 --    then recovered into Nov (+25.6%) and Jan (+17.7%) within 2025 — a dip-then-recover shape worth watching, but not yet proven seasonality.
 -- 2. BRW003 is far more volatile than the chain: May −51.7%, Sep −39.2%, Oct −27.3%, 
 --    then a +83.4% Nov snap-back — the largest swings in the dataset (single year, not yet proven seasonal).
+
+-- [Component 3: ANOMALY]
+-- Spot-test: "Does it compare one entity against its peers and find it off?"

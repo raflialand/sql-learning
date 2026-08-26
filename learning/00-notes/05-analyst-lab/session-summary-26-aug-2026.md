@@ -207,4 +207,39 @@ GROUP BY fp.product_id, fp.product_name, mr.price_band, mr.is_active;
 
 ---
 
+# Summary: SQL Analyst Lab Session (continued — Step B COMPLETE: all 5 components locked)
+
+**Date:** 26 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 4: Step A (Running Log) + Step B (5 components) COMPLETE; Step C (insight paragraph) next; Steps D–E pending
+
+---
+
+## Completed
+
+- **Component 5 — RECOMMENDATION locked (4 lines):**
+  > 1. Run a traffic-driving promotion at BRW002 to close its ~24-order gap vs the other stores — worth ~$1,372/month (up to ~$2,172 if the basket gap closes too).
+  > 2. Replicate the August Merchandise window — it drove the +15% Aug peak, and Merchandise is 60% of revenue ($42,145).
+  > 3. Don't cut Espresso/Cookie/Americano — they're cheap staples bought as add-ons ~90% of the time (88–98%), so they drive traffic even though they add little revenue.
+  > 4. Monitor May/Sep — if the dip recurs, have a Merchandise push ready (not yet proven seasonal).
+- **BRW002 opportunity computed by hand:** order-gap = 24 × $57.20 = **$1,372.80/mo**; revenue-gap = $24,135 − $21,963 = **$2,172/mo**. Decision: quote $1,372.80 (fixable via volume), mention $2,172 as the ceiling (includes basket gap).
+- **Step B COMPLETE** — all 5 components (TREND, FLUCTUATION, ANOMALY, ROOT CAUSE, RECOMMENDATION) locked.
+
+## Discussion: how the components chain into a recommendation
+
+- **The 4 components are the evidence chain that constructs the recommendation.** Each donates one ingredient: Trend → *worth acting* (+64% market moving up) · Fluctuation → *when* (May/Sep, Aug) · Anomaly → *where* (BRW002) · Root cause → *which lever* (volume, Merchandise). A recommendation without them is a guess; with them every action is traceable to a verified fact.
+- **Recommendation = action + $ + reason** (not "improve sales"). Weak = "run a promo"; strong = "run a traffic-driving promo at BRW002 … worth ~$1,372/mo."
+- **Vocabulary:** "traffic / volume" = order count; "basket" = AOV. A *traffic-driving* promo targets order count (BRW002's actual problem); a *basket-building* promo targets spend-per-order (would fix the wrong lever).
+- **Trace for +15%:** Aug MoM = ($6,359.85 − $5,534.00) / $5,534.00 = +14.92% ≈ +15% (from Q1a's LAG `diff_pct` column).
+- Draft fixes this round: "equivalent the gap" → "close the gap"; "it's" → "they're"; "constribution" → "contribution"; "prevent a recurrence" → "monitor … if it recurs" (one-year hedge).
+
+## Next Steps
+
+1. **Step C** — one strong insight paragraph, flowing Trend → Fluctuation → Anomaly → Root cause → Recommendation.
+2. **Step D** — 2–4 final recommendations · **Step E** — self-check (5 components present, every claim traceable, PRD030/031).
+3. Compare `work/04-insight.md` vs `expected/04-insight.md`; reconcile seasonal-items discrepancy.
+4. Close Case 01 → update snapshot → Case 02 (MarketHub).
+
+---
+
 *Happy Learning!*
