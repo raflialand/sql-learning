@@ -6,7 +6,7 @@
 
 | # | Metric | Definition | Why it matters |
 | --- | --- | --- | --- |
-| M1 | **GMV** | `SUM(total_amount)` from `orders` where `status IN ('Completed','Shipped')` (fulfilled sales; Cancelled + Pending excluded) | The headline marketplace sales number. |
+| M1 | **GMV (Gross Merchandise Value)** | `SUM(total_amount)` from `orders` where `status IN ('Completed','Shipped')` (fulfilled sales; Cancelled + Pending excluded) | The headline marketplace sales number. |
 | M2 | **Order count** | `COUNT(*)` of fulfilled orders (same Completed + Shipped set) | Volume of transactions; separates "more orders" from "bigger orders". |
 | M3 | **AOV** | `GMV ÷ Order count` (same grouping scope) | Basket size; the value lever vs. the volume lever. |
 | M4 | **Repeat purchase rate** | customers with ≥2 fulfilled orders ÷ customers with ≥1 fulfilled order | Buyer loyalty — the "invest next" growth signal. |
@@ -26,8 +26,8 @@
 
 ## Definitions fixed here
 
-- **GMV:** `orders.total_amount` for `status IN ('Completed','Shipped')`. Cancelled and Pending orders are excluded — Cancelled have no payment/shipment and Pending are not yet realized sales. (Note: `total_amount` = sum of its `order_items` per the dataset README.)
+- **GMV (Gross Merchandise Value):** `orders.total_amount` for `status IN ('Completed','Shipped')`. Cancelled and Pending orders are excluded — Cancelled have no payment/shipment and Pending are not yet realized sales. (Note: `total_amount` = sum of its `order_items` per the dataset README.)
 - **Order count:** `COUNT(*)` of the same Completed + Shipped set.
 - **AOV:** total GMV ÷ total fulfilled order count, computed within the same grouping scope.
-- **Repeat purchase rate:** `COUNT(DISTINCT customer_id)` with ≥2 fulfilled orders ÷ `COUNT(DISTINCT customer_id)` with ≥1 fulfilled order.
+- **Repeat purchase rate:** (`COUNT(DISTINCT customer_id)` with ≥2 fulfilled orders ÷ `COUNT(DISTINCT customer_id)` with ≥1 fulfilled order) **× 100**, expressed as a percentage.
 - **"Underperforming vendor/segment" (KPI Reporting bucket):** a vendor whose GMV ranks in the bottom of the vendor set — we investigate *why* (units sold, category mix, fulfillment/payment health) rather than just report the number.
