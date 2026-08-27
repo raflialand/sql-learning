@@ -42,3 +42,85 @@
 4. **Stage 5 — Queries + results** (`03-queries.sql`; user runs against `datainsight_markethub`) → `03-results.md` → checkpoint.
 5. **Stage 6 — Insight** (`insight-writer`): 5 components + self-check → checkpoint.
 6. Then Case 03 (NovaTel), then archive the OpenSpec change once both pilots validate.
+
+---
+
+# Summary: SQL Analyst Lab Session (continued — Stage 2 Questions finalized & approved)
+
+**Date:** 27 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 02 — Stage 2 (Questions) COMPLETE & approved: 9 sub-questions locked in `work/02-questions.md`; Stage 3 (Silver) next.
+
+---
+
+## Completed
+
+- **Wrote `work/02-questions.md`** — main question decomposed into **9 sub-questions** across the 4 buckets (approved):
+  - Bucket 1 Overall Trends (4): Q1 GMV·Month · Q2 GMV·Vendor · Q3 GMV·Category · Q4 GMV·Country.
+  - Bucket 2 Growth Rates (2): Q5 GMV·Month MoM+YoY · **Q6 GMV·Vendor×Month MoM+YoY (vendor momentum)**.
+  - Bucket 3 Performance (2): Q7 AOV·Vendor · Q8 Repeat-rate·Vendor.
+  - Bucket 4 KPI Reporting (1): Q9 bottom-vendor drill (category/shipment/payment "why").
+
+## Key Takeaways
+
+1. **Why the 4 buckets** — each is a different lens (level / % change / head-to-head snapshot / the "why") and each donates one ingredient to the final insight: Trend → *worth acting*, Growth → *when*, Performance → *where/who*, KPI → *which lever*. Level alone is a weak insight; a strong answer chains all four.
+2. **Momentum is the forward-looking invest signal.** Size (GMV), efficiency (AOV), and loyalty (repeat rate) are all backward-looking ("best today"). Vendor momentum (GMV % × Vendor) is the *trajectory* that answers "invest **next**" — a growing $80k vendor outruns a shrinking $100k vendor. That's why Q6 earned a slot.
+3. **Renumbered to clean Q1–Q9** (dropped the `Q5b` working label) — sequential numbering preferred over lettered sub-labels.
+
+## Mistakes / Notes
+
+- None (design/discussion session; no queries run).
+
+## Next Steps
+
+1. **Stage 3 — Silver** (`sql-builder`): 6 DQ dimensions, apply effective subset for MarketHub → `_silver.sql` → checkpoint.
+2. **Stage 4 — Gold mart**: declare grain + unique key, verify `COUNT(*) = COUNT(DISTINCT grain_key)` → checkpoint.
+3. **Stage 5 — Queries + results** (`03-queries.sql`; user runs against `datainsight_markethub`) → `03-results.md` → checkpoint.
+4. **Stage 6 — Insight** (`insight-writer`): 5 components + self-check → checkpoint.
+5. Then Case 03 (NovaTel), then archive the OpenSpec change once both pilots validate.
+
+---
+
+# Summary: SQL Analyst Lab Session (continued — Stage 3 Silver authored & checkpoint decisions locked)
+
+**Date:** 27 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 02 — Stage 3 (Silver) authored: `work/_silver.sql` written by `@sql-builder`; 6-DQ evaluation done (4 applied / 2 N/A); 6 open decisions confirmed. **Pending:** user runs `_silver.sql` + pastes verification output, then Stage 4 (gold mart).
+
+---
+
+## Completed
+
+- **`work/_silver.sql` authored** (`@sql-builder`) — builds 8 `silver.cleaned_*` tables, row counts preserved (16/14/120/500/2800/7102/2283/1864), **conform + flag, never drop**.
+- **6-DQ evaluation (4 applied / 2 N/A):**
+  - Completeness → applied (`in_transit` flag for 95 NULL `delivery_date`)
+  - Validity → applied (lowercase `status`/`method`, clean `is_active`)
+  - Accuracy → applied (verify `total_amount` vs line-item sum; flag discontinued-but-sold)
+  - Consistency → applied (`has_payment`/`has_shipment` flags; cardinality 2283/1864 < 2800)
+  - Uniqueness → N/A (all PKs declared); Timeliness → N/A (static snapshot)
+- **6 checkpoint decisions confirmed with the user:**
+  1. 517 no-payment orders → keep, flagged (not dropped)
+  2. 480 Pending orders → keep, excluded from GMV via `is_fulfilled`
+  3. 9 discontinued-but-sold → keep, flagged (Q9 needs them)
+  4. lowercase canonical status/method → accepted
+  5. payments cardinality → verify 1-per-order before joining
+  6. shipments cardinality → verify 1-per-order before joining
+
+## Key Takeaways
+
+1. **"Keep + flag, never drop" is the silver principle** — every quirk (no-payment, Pending, discontinued, in-transit) is a legitimate business state. Filtering happens downstream (GMV scope at the gold mart), not by deleting rows.
+2. **Where GMV is sourced from decides correctness.** No-payment orders only "ruin" the decision if you build GMV from `payments.amount` (under-counts) instead of `orders.total_amount` + fulfilled filter (correct). Right source → they're excluded from GMV but visible for Q9's payment-health drill.
+3. **`is_active=0` is a current state, not a history.** Discontinued-but-sold products have past `order_items` sales; dropping them would delete real revenue. Timeline: sold-while-active, discontinued-later.
+4. **Join cardinality = the silent double-count risk.** If any order has >1 payment/shipment row, `orders JOIN payments` duplicates the order and inflates GMV/counts — verify 1-per-order (or pre-aggregate) before joining.
+
+## Mistakes / Notes
+
+- None (authoring + decision session; SQL authored but not yet executed — user runs it).
+
+## Next Steps
+
+1. **Run `_silver.sql`** (user runs psql; run twice for idempotency) and paste verification output (row counts, PK uniqueness, payments/shipments 1-per-order).
+2. **Stage 4 — Gold mart** (`sql-builder`): declare grain + unique key, verify `COUNT(*) = COUNT(DISTINCT grain_key)` → checkpoint.
+3. **Stage 5 — Queries + results** (`03-queries.sql`; user runs against `datainsight_markethub`) → `03-results.md` → checkpoint.
+4. **Stage 6 — Insight** (`insight-writer`): 5 components + self-check → checkpoint.
+5. Then Case 03 (NovaTel), then archive the OpenSpec change once both pilots validate.
