@@ -8,16 +8,16 @@ This dataset is designed for **intermediate** practice: JOINs across 3–4 table
 
 ## Tables & row counts
 
-| Table | Rows | Purpose | Key columns |
-| --- | --- | --- | --- |
-| `categories` | 16 | Category tree (8 parents, 8 subcategories) | `cat_id`, `cat_name`, `parent_cat_id` |
-| `vendors` | 14 | Marketplace sellers | `vendor_id`, `vendor_name`, `country` |
-| `products` | 120 | Items sold by vendors | `prod_id`, `prod_name`, `cat_id`, `vendor_id`, `unit_price`, `cost`, `is_active` |
-| `customers` | 500 | Marketplace buyers | `cust_id`, `first_name`, `last_name`, `email`, `city`, `country`, `signup_date` |
-| `orders` | 2,800 | Purchase orders | `order_id`, `order_date`, `customer_id`, `status`, `total_amount` |
-| `order_items` | 7,102 | Line items per order | `item_id`, `order_id`, `product_id`, `quantity`, `unit_price` |
-| `payments` | 2,283 | Payment attempts per order | `payment_id`, `order_id`, `method`, `amount`, `status`, `paid_date` |
-| `shipments` | 1,864 | Courier shipments | `shipment_id`, `order_id`, `carrier`, `ship_date`, `delivery_date`, `address` |
+| Table           | Rows  | Purpose                                    | Key columns                                                                                    |
+| --------------- | ----- | ------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| `categories`  | 16    | Category tree (8 parents, 8 subcategories) | `cat_id`, `cat_name`, `parent_cat_id`                                                    |
+| `vendors`     | 14    | Marketplace sellers                        | `vendor_id`, `vendor_name`, `country`                                                    |
+| `products`    | 120   | Items sold by vendors                      | `prod_id`, `prod_name`, `cat_id`, `vendor_id`, `unit_price`, `cost`, `is_active` |
+| `customers`   | 500   | Marketplace buyers                         | `cust_id`, `first_name`, `last_name`, `email`, `city`, `country`, `signup_date`  |
+| `orders`      | 2,800 | Purchase orders                            | `order_id`, `order_date`, `customer_id`, `status`, `total_amount`                    |
+| `order_items` | 7,102 | Line items per order                       | `item_id`, `order_id`, `product_id`, `quantity`, `unit_price`                        |
+| `payments`    | 2,283 | Payment attempts per order                 | `payment_id`, `order_id`, `method`, `amount`, `status`, `paid_date`                |
+| `shipments`   | 1,864 | Courier shipments                          | `shipment_id`, `order_id`, `carrier`, `ship_date`, `delivery_date`, `address`      |
 
 ## Entity Relationship Diagram (ERD)
 
@@ -100,16 +100,16 @@ erDiagram
 
 ### Relationship Summary
 
-| Relationship | Type | Description |
-|--------------|------|-------------|
-| `categories` → `products` | One-to-Many | A category contains many products (products live in subcategories) |
-| `categories` → `categories` | Self-referencing | `parent_cat_id` links a subcategory to its top-level parent |
-| `vendors` → `products` | One-to-Many | A vendor sells many products |
-| `customers` → `orders` | One-to-Many | A customer places many orders |
-| `orders` → `order_items` | One-to-Many | An order contains multiple line items |
-| `products` → `order_items` | One-to-Many | A product can appear in many line items |
-| `orders` → `payments` | One-to-Many | An order can have payment attempts |
-| `orders` → `shipments` | One-to-Many | A shipped order can have shipments |
+| Relationship                     | Type             | Description                                                        |
+| -------------------------------- | ---------------- | ------------------------------------------------------------------ |
+| `categories` → `products`   | One-to-Many      | A category contains many products (products live in subcategories) |
+| `categories` → `categories` | Self-referencing | `parent_cat_id` links a subcategory to its top-level parent      |
+| `vendors` → `products`      | One-to-Many      | A vendor sells many products                                       |
+| `customers` → `orders`      | One-to-Many      | A customer places many orders                                      |
+| `orders` → `order_items`    | One-to-Many      | An order contains multiple line items                              |
+| `products` → `order_items`  | One-to-Many      | A product can appear in many line items                            |
+| `orders` → `payments`       | One-to-Many      | An order can have payment attempts                                 |
+| `orders` → `shipments`      | One-to-Many      | A shipped order can have shipments                                 |
 
 ### Join Hints
 
