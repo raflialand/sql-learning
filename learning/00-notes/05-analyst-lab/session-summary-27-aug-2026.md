@@ -124,3 +124,76 @@
 3. **Stage 5 — Queries + results** (`03-queries.sql`; user runs against `datainsight_markethub`) → `03-results.md` → checkpoint.
 4. **Stage 6 — Insight** (`insight-writer`): 5 components + self-check → checkpoint.
 5. Then Case 03 (NovaTel), then archive the OpenSpec change once both pilots validate.
+
+---
+
+# Summary: SQL Analyst Lab Session (continued — Stage 3 verified + Stage 4 Gold mart built & verified)
+
+**Date:** 27 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 02 — Stage 3 (Silver) VERIFIED in PostgreSQL; Stage 4 (Gold mart) authored, gap-fixed, and VERIFIED. Stage 5 (queries) planned but not started.
+
+---
+
+## Completed
+
+- **Stage 3 (Silver) executed & verified** — user ran `_silver.sql`: all row counts (16/14/120/500/2800/7102/2283/1864), flag counts, accuracy (0 total_amount mismatches), enum domains, and PK uniqueness matched. No errors.
+- **Stage 4 (Gold mart) authored** (`@sql-builder`) → `work/_gold.sql` → `gold.mart_markethub`:
+  - **Grain:** one row per order-item LINE · **unique key:** `item_id` · **rows:** 7,102 (no fan-out).
+  - **Scope:** all 2,800 orders kept; `is_fulfilled` carries the GMV scope (Completed + Shipped).
+  - **22 columns** after the fix (see below).
+- **Coverage gap found & fixed** — before running, traced every sub-question (Q1–Q9) to mart columns and found Q9's *product* drill missing: `category` was rolled to top-level only, and `product_id`/`product_name` were absent. Fixed by adding `oi.product_id` + `p.prod_name AS product_name` (no new joins; grain/row count unchanged). Result: **one mart answers all 9 sub-questions** — no second mart needed.
+- **Stage 4 (Gold) executed & verified** — user ran `_gold.sql`: uniqueness `total = distinct_item = 7102` · fan-out `distinct_orders = 2800` · GMV consistency `difference = 0.00` · row count `mart_rows = silver_order_items_rows = 7102`. All clean.
+
+## Key Takeaways (conceptual this session)
+
+1. **Verify mart coverage against every sub-question before authoring queries.** Mapping Q1–Q9 to columns surfaced a real gap (Q9's product drill) that a pure "does it run" check would have missed. The mart must carry every dimension a sub-question groups by — including leaf-level drill-downs (product), not just the scope dimensions (category top-level).
+2. **Fan-out = a join multiplying rows.** A 1:many join duplicates each left row once per match, silently double-counting `SUM`/`COUNT`. Grain discipline: verification #1/#4 (`COUNT(*) = COUNT(DISTINCT item_id)`; mart_rows = source rows) detect fan-out; #2 (`COUNT(DISTINCT order_id)`) detects the opposite — dropped rows.
+3. **`total_amount` is order-level, repeated on every line.** At line grain it must NEVER be aggregated after a join — GMV at any slice = `SUM(line_revenue)`, and the order-level GMV is checked by de-duplicating orders first.
+4. **Payments is provably 1:0..1** (2,283 rows = 2,800 − 517 no-payment orders), shipments 1:1 for fulfilled orders — so the line mart joins don't fan out. That's why a single line-grain mart safely answers Q1–Q9 including Q9's payment/shipment drill.
+
+## Mistakes / Notes
+
+- Authored the gold mart **without** `product_id`/`product_name`, so Q9's "product/category mix" drill had no leaf-level column. Root cause: rolled `category` to top-level and forgot product is the Q9 leaf drill (not a scope dimension). Fix: added both columns from the already-joined base/products tables.
+
+## Next Steps
+
+1. **Stage 5 — Queries** (`@sql-builder`): author `03-queries.sql` (one query per sub-question, gold-mart-only). Plan locked: Q1–Q4 level splits, Q5–Q6 MoM+YoY via `LAG`, Q7 AOV ÷ `COUNT(DISTINCT order_id)`, Q8 repeat rate per vendor, Q9 bottom-vendor drill.
+2. **QA gate** — `@query-inspector` reviews the 9 queries before execution.
+3. **Run + capture** — user runs `03-queries.sql`, I write `03-results.md` → checkpoint 5.
+4. **Stage 6 — Insight** (`@insight-writer`) → checkpoint.
+5. Then Case 03 (NovaTel), then archive the OpenSpec change once both pilots validate.
+
+---
+
+# Summary: SQL Analyst Lab Session (continued — Stage 5 queries authored & QA'd)
+
+**Date:** 27 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 02 — Stage 5 (Queries) AUTHORED + QA'd (PASS-WITH-NOTES). Pending: user runs `03-queries.sql` in psql and pastes output → `03-results.md`.
+
+---
+
+## Completed
+
+- **`work/03-queries.sql` authored** (`@sql-builder`) — 13 runnable statements covering Q1–Q9 (Q9 split into anchor 0 + drills a/b/c/d), `gold.mart_markethub`-only.
+  - Q1–Q4 level splits (month/vendor/category/country) · Q5 monthly MoM+YoY (`LAG` 1/12) · Q6 vendor×month MoM+YoY · Q7 AOV·vendor · Q8 repeat-rate·vendor · Q9 bottom-vendor drill (category/product/shipment/payment).
+  - Grain discipline: every GMV = `SUM(line_revenue)` + `is_fulfilled = 1`; orders/buyers = `COUNT(DISTINCT ...)`; `total_amount` never aggregated.
+- **QA gate** (`@query-inspector`) → `docs/03-query-inspector/query-analysis-2026-08-27.md` — **PASS-WITH-NOTES**, no correctness failures.
+- **Acted on the one meaningful note — hardened Q6.** Built a dense `vendor × month` grid (`CROSS JOIN`) so `LAG` walks true calendar months; a vendor with a gap month shows `gmv = 0` and MoM/YoY compares to the real prior period (no silent gap-span). Added `NULLIF` denominator guards. Also fixed a "12 → 13 statements" doc nit.
+
+## Key Takeaways (conceptual this session)
+
+1. **A growth `LAG` over a `GROUP BY` result compares consecutive *selling* periods, not calendar periods.** If a vendor skips a month, MoM silently compares to 2 months back. Fix = dense dimension grid (`vendors × months`) + `LEFT JOIN` the aggregate + `COALESCE(gmv, 0)` + `NULLIF` on the denominator. This matters most for momentum (Q6) — the "invest next" signal.
+2. **QA gate catches subtle grain issues, not just syntax.** The inspector confirmed all 13 statements correct against the locked metric definitions, and only flagged advisory hardening — a clean second opinion before execution.
+
+## Mistakes / Notes
+
+- None this session (authoring + QA; no queries run yet).
+
+## Next Steps
+
+1. **Run `03-queries.sql`** (user runs psql against `datainsight_markethub`, statement-by-statement) and paste all 13 outputs.
+2. **Capture** — I write `03-results.md` from the pasted output → checkpoint 5.
+3. **Stage 6 — Insight** (`@insight-writer`): 5 components + self-check → checkpoint.
+4. Then Case 03 (NovaTel), then archive the OpenSpec change once both pilots validate.
