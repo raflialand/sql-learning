@@ -308,5 +308,37 @@ change #18: add Medallion architecture study case + medallion-lab capability (24
    - changes-log.txt (#18 this entry)
 7. not registered as a learning track — case maps onto the existing de track (Weeks 3–4); tracks.md unchanged
 
+---
+
+change #19: add data-to-insight AI ecosystem (27-Aug-2026)
+
+1. created the orchestrator skill:
+   - .opencode/skills/data-to-insight/SKILL.md  (7-stage pipeline orchestrator; checkpointed autonomy; delegates SQL to @sql-builder, insight to @insight-writer, QA to @query-inspector)
+2. created two execution subagents:
+   - .opencode/agents/sql-builder.md  (stages 3–5: silver cleaning with 6 DQ dimensions, gold mart with grain + unique-key verification, sub-question queries, PostgreSQL execution)
+   - .opencode/agents/insight-writer.md  (stage 6: 5-component insight + recommendations + weak-vs-strong self-check)
+3. created the canonical blueprint:
+   - agent-blueprints/03-data-to-insight.md  (7-stage recipe 0 Context → 6 Insight, 6 checkpoints, 6 DQ dimensions, grain + unique key, gold-mart-only queries, delegation split)
+4. reused query-inspector as a QA gate (dependency, unchanged)
+5. registered the new agents in the routing registry:
+   - AGENTS.md  (domain agents table: sql-builder, insight-writer; data-to-insight capability note)
+6. updated documentation:
+   - README.md  (What This Is bullet, directory map: agents + skills + agent-blueprints)
+   - changes-log.txt (#19 this entry)
+7. added OpenSpec artifacts for the change (proposal pending archive):
+   - openspec/changes/add-data-to-insight-ecosystem/  (proposal.md, design.md, tasks.md, specs/data-to-insight/spec.md delta — new capability data-to-insight)
+8. added the PostgreSQL bootstrap:
+   - script/01-sql/data-to-insight/00-bootstrap.sql  (creates bronze/silver/gold schemas + documents loading ecommerce_pg.sql / telecom_pg.sql into bronze)
+9. target engine: PostgreSQL medallion (bronze/silver/gold schemas), datasets ecommerce_pg.sql / telecom_pg.sql; first execution targets Case 02/03 work/ folders
+10. added the canonical capability spec:
+    - openspec/specs/data-to-insight/spec.md  (13 requirements: input/orchestration/stage contracts, 6 DQ dimensions, gold grain+unique key, gold-mart-only queries, checkpoint autonomy, QA gate, failure behavior, quality acceptance, cross-capability dependency)
+11. added the silver DQ-dimension SQL pattern reference:
+    - script/01-sql/data-to-insight/01-silver-dq-patterns.sql  (reusable checks for the 6 dimensions + "evaluate all, apply the effective subset" rule)
+12. added the new-dataset onboarding template:
+    - .opencode/skills/data-to-insight/case-template/  (case.md.template + ONBOARD.md + work/.gitkeep)
+13. added the ecosystem runbook:
+    - .opencode/skills/data-to-insight/README.md  (invocation, prerequisites, 6 checkpoints, stage→artifact map, key rules)
+14. note: OpenSpec archive (moving openspec/changes/add-data-to-insight-ecosystem/ to archive/) deferred until the Case 02/03 pilot runs validate the capability
+
 
 
