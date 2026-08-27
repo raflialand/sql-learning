@@ -1,0 +1,22 @@
+# Case NN — <Business Name>
+
+**Module:** SQL Analyst Lab · **Dataset:** `<relative/path/to/dataset.db or .pg.sql>` (read-only)
+**Dataset README + ERD:** `<path/to/README.md>` — read this first: business context (<one-line business>), tables (`<t1>`, `<t2>`, …), join hints, and data quirks (<key quirks>).
+
+## Main question
+
+> **<Open-ended main question — the single ambiguous question to decompose.>**
+
+## How to work this case
+
+1. Draft your own `01-scope.md` (metrics + dimensions) and `02-questions.md` (bucket mapping) in `work/` **before** looking at the model answer.
+2. Write your queries in `work/`, run them against the dataset, and compare with `expected/03-results.md`.
+3. Check the model scope/questions/queries/insight in `expected/` only after your own attempt.
+
+## Scaffolding
+
+<Highest / Medium / Minimal — how much of the metrics/dimensions/bucket mapping is handed to you.>
+
+## Dataset limitation note
+
+<Any constraint on valid comparisons, e.g. "billing spans only 2 months → MoM only, NO YoY". Delete if none.>

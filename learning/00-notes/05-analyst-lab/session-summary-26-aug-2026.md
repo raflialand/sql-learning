@@ -1,0 +1,303 @@
+# Summary: SQL Analyst Lab Session
+
+**Date:** 26 August 2026
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 4, Step A: Running Log **Buckets 1–4 drafted & verified**; Bucket 4 closed this session (Q4d grain bug found & fixed); Steps B–E pending
+
+---
+
+## Completed
+
+- **Bucket 4 (Q4a–d) reviewed, verified against both `retail.db` (raw) and the mart (`retail_gold.db` / Postgres `gold.mart_retail`), and closed.**
+  - **Q4a** — Espresso $598.85, Chocolate Chip Cookie $622.50, Americano $624.00 = confirmed true bottom-3 by revenue. Zero-sales flag answered: **none exist — all 31 products sold at least once.**
+  - **Q4b** — all three are **cheap** (≤ $3.25 vs category avg $5.25 Beverage / $5.81 Food).
+  - **Q4c** — all **active** (`is_active = 1`) → underperformance is NOT a deactivation / stale-menu problem.
+  - **Q4d** — **grain bug found & fixed** (details below). Correct basket-context counts: Espresso 2/98, Americano 11/83, Cookie 4/119.
+- **All 12 sub-questions (Q1a–Q4d) are now answered and verified.** Bucket 4 done.
+
+## Q4d deep-dive (the bug + the lesson)
+
+**Symptom:** recorded counts (Espresso 2-102, Americano 11-87, Cookie 5-122) didn't match distinct-order truth (2/98, 11/83, 4/119).
+
+**Root cause:** `gold.mart_retail` is **line-grain** (one row per order-item line — 3,647 rows for only 1,200 distinct orders). `alone_flag` is an **order-level** flag stamped onto every line row of that order. My original query `SUM(CASE WHEN mr.alone_flag = 1 THEN 1 ELSE 0 END)` counted **rows / line items**, so an order containing the same product on multiple lines was double-counted (e.g. Espresso = 104 lines across 100 orders).
+
+**Fix — count baskets, not lines:**
+
+```sql
+WITH flagged_product AS(
+    SELECT product_id, product_name,
+           ROUND(SUM(line_revenue), 2) AS prod_revenue
+    FROM gold.mart_retail
+    GROUP BY product_id, product_name
+    ORDER BY prod_revenue ASC
+    LIMIT 3
+)
+SELECT fp.product_id, fp.product_name,
+       mr.price_band, mr.is_active,
+       COUNT(DISTINCT CASE WHEN mr.alone_flag = 1 THEN mr.order_id END) AS alone_orders,
+       COUNT(DISTINCT CASE WHEN mr.alone_flag = 0 THEN mr.order_id END) AS addon_orders
+FROM flagged_product fp
+JOIN gold.mart_retail mr ON mr.product_id = fp.product_id
+GROUP BY fp.product_id, fp.product_name, mr.price_band, mr.is_active;
+```
+
+**Why `order_id`:** `alone_flag` is order-level and "bought alone vs add-on" is a **basket metric**. `COUNT(DISTINCT order_id)` collapses all line rows of the same cart into one vote; `item_id` is line-unique (still counts lines) and `product_id` isn't unique per basket. The ELI5 anchor: **count shopping carts (`order_id`), not cookies (rows)**.
+
+## Key Takeaways
+
+1. **Grain discipline before aggregating** — know the mart grain (line vs order vs order-product) *before* writing the aggregate. Basket-level metric ⇒ `COUNT(DISTINCT order_id)`; line-level metric ⇒ `COUNT(*)`.
+2. **Flags are stamped at their defining grain** — `alone_flag` is per-order, so any use of it must collapse to order level or you silently double-count.
+3. **Underperformance here is price-driven, not demand-driven** — the bottom products are cheap (≤ $3.25), active, high-volume staples (192–249 units) bought ~90%+ as add-ons in bigger baskets. Low revenue = low price, not slow movement.
+4. Verified counts: Espresso 2/98 (98% add-ons), Americano 11/83 (88%), Cookie 4/119 (97%).
+
+## Mistakes / Notes
+
+- **Q4d regression of #13 / #21** — counted line items instead of distinct orders in the mart query. The raw-based Q4d in `work/03-queries.sql` was already correct (`COUNT(DISTINCT ...)`); the mart version reintroduced the bug. Root cause: forgot the mart is line-grain. Lesson: **check grain, then count baskets**.
+
+## Next Steps
+
+1. **Step B** — classify Running Log facts (Buckets 1–4) into the 5 components (Trend / Fluctuation / Anomaly / Root cause / Recommendation). Strong candidates already flagged in the 21-aug notes.
+2. **Step C** — one strong insight paragraph (Trend → Fluctuation → Anomaly → Root cause → Recommendation).
+3. **Step D** — 2–4 recommendations (compute the BRW002 opportunity yourself — don't copy the $2,200).
+4. **Step E** — self-check (5 components present, every claim traceable, PRD030/031 discrepancy addressed).
+5. Compare `work/04-insight.md` vs `expected/04-insight.md`; reconcile seasonal-items discrepancy.
+6. Close Case 01 → update progress snapshot → Case 02 (MarketHub).
+
+---
+
+# Summary: SQL Analyst Lab Session (continued — Step B started: TREND locked)
+
+**Date:** 26 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 4: Step A complete (Buckets 1–4 verified); Step B in progress — Component 1 TREND locked, Component 2 FLUCTUATION pending
+
+---
+
+## Completed
+
+- **Step B (5 insight components) started. Component 1 — TREND locked.**
+  - **Gap closed:** verified the full 13-month revenue series (the Running Log stopped at Oct):
+    Jan-25 $4,000.30 · Feb $4,887.25 · Mar $5,693.35 · Apr $5,910.75 · May $4,898.55 · Jun $5,338.25 · Jul $5,534.00 · Aug $6,359.85 · Sep $5,257.20 · Oct $4,519.00 · Nov $5,673.95 · Dec $5,586.65 · Jan-26 $6,575.00.
+  - Computed overall change: (6,575.00 − 4,000.30) / 4,000.30 × 100 = **+64.4%**.
+  - **Locked Trend line:** "Chain-wide revenue rose from $4.0k (Jan-25) to a peak of $6.4k (Aug-25), dipped to $4.5k (Oct-25), then recovered to an all-time high of $6.6k (Jan-26) — +64.4% over 13 months."
+
+## Discussion: "direction over time" + framework Q&A
+
+- **Trend = direction over time** (up/down/flat across the period), captured as **ONE arc** (start → peak → trough → end + overall %). The specific Up/Down legs (Jan→Apr up, Apr→May down, May→Aug up, Aug→Oct down, Oct→Jan up) are **Fluctuation material**, not Trend.
+- **Coaching on the first draft:** "The trends are going up and down repetitively" = vague + no direction → rejected (breaks Narrative Guide rule: numbers before adjectives). Compressed to one arc line instead.
+- **% change formula (first principles):** (final − initial) / initial × 100; compute from exact query values, round only at the end (rounded $4.0k→$6.6k gives 65%; exact is +64.4%).
+- **Framework Q&A (conceptual):** the 5 components come from Christine Jiang's video — used across ALL lab cases, not case-specific. They're a general recipe for a "strong insight," not a law: a weak insight ("X is higher than Y, it's working") is weak because it has none of them. Other frameworks (5-Whys/RCA, So What/STAR, hypothesis-driven, KPI monitoring) have different components because their *purpose* differs. No universal "best" — pick the skeleton to fit audience / decision / stage; the underlying analysis (metrics, dimensions, verified facts) is the same.
+- **Real companies:** standardize **output, vocabulary, and process** (metric dictionaries, report templates, experiment playbooks, quality bars) — usually NOT one mandatory thinking framework; house style is learned via reviews. Transferable skill = metric × dimension discipline + traceability.
+
+## Mistakes / Notes
+
+- Typos to watch: "%6.4k" → "$6.4k"; mixed month formats (jan-2025 vs Aug-2025) — standardize (e.g. Jan-25).
+
+## Next Steps
+
+1. **Component 2 — FLUCTUATION** (inventory ready): five Up/Down legs; chain MoM **+22% Feb / +15% Aug / −17% May / −17% Sep** (recurring rhythm); BRW003 **May −51.7% / Sep −39.2% / Oct −27.3% / Nov +83.4%** bounce.
+2. **Component 3 — ANOMALY** (BRW002 ~9% gap vs flat AOV) · **4 — ROOT CAUSE** (AOV flat → volume-driven; category levers opposite: Merchandise basket / Beverage traffic; cheap, active, add-on staples → price-driven) · **5 — RECOMMENDATION** (compute the BRW002 $ opportunity yourself, don't copy $2,200).
+3. **Step C** — one strong insight paragraph (Trend → Fluctuation → Anomaly → Root cause → Recommendation).
+4. **Step D** — 2–4 recommendations · **Step E** — self-check (5 components present, every claim traceable, PRD030/031 discrepancy addressed).
+5. Compare vs `expected/04-insight.md` → close Case 01 → update snapshot → Case 02 (MarketHub).
+
+---
+
+# Summary: SQL Analyst Lab Session (continued — Step B: FLUCTUATION locked, ANOMALY started)
+
+**Date:** 26 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 4, Step B in progress: Components 1–2 (TREND, FLUCTUATION) locked; Component 3 ANOMALY guided but not yet drafted; ROOT CAUSE & RECOMMENDATION pending
+
+---
+
+## Completed
+
+- **Component 2 — FLUCTUATION locked (2 lines, hedged):**
+  > - Revenue didn't rise smoothly — it spiked in Feb (+22%) and Aug (+15%), dipped in May (−17%) and Sep (−17%), then recovered into Nov (+25.6%) and Jan (+17.7%) within 2025 — a dip-then-recover shape worth watching, but not yet proven seasonality.
+  > - BRW003 is far more volatile than the chain: May −51.7%, Sep −39.2%, Oct −27.3%, then a +83.4% Nov snap-back — the largest swings in the dataset (single year, not yet proven seasonal).
+- **Fact correction:** draft said "recovering into Nov (+5%)" — verified Nov is **+25.6%** (Oct $4,519 → Nov $5,673.95) and Jan-26 is **+17.7%**.
+
+## Discussion: Trend vs Fluctuation + the seasonality overclaim catch
+
+- **Trend = levels (raw $) · Fluctuation = % change (MoM).** Same road, two instruments: Trend = the map ("where did it end up"), Fluctuation = the speedometer ("how jumpy, how fast"). Trend uses the `revenue` column; Fluctuation uses the `mom_growth_pct` column. Both can mention "dip/recover," but one speaks in dollar levels and the other in percent change.
+- **Big lesson — cannot overclaim seasonality from one year.** With 13 months you've seen May once and Sep once. Distinguish:
+  - **Volatility / within-year dips** = observed fact ("dipped −17% in May, −17% in Sep 2025") ✅
+  - **Rhythm (same year)** = "dip → recover → dip → recover" ✅ but only one pass
+  - **Seasonality (annual recurrence)** = "it *will* dip every May/Sep" ❌ needs ≥2 full cycles
+  - Discipline: describe the observed movement, add "worth watching, but not yet proven seasonal." This also forces the Recommendation to say "**monitor** May/Sep" rather than "**plan for** the Sep dip." Overclaiming here is exactly the weak-insight trap.
+
+## Mistakes / Notes
+
+- "recovering into Nov (+5%)" was wrong → +25.6% (always recompute MoM from the query, don't recall from memory).
+
+## Next Steps
+
+1. **Component 3 — ANOMALY**: BRW002 ~9% revenue gap ($21,963 vs ~$24,135) **even though AOV is flat** ($57.20/$59.43/$58.88, spread < $2.25). Frame = *deviation + exclusion* ("it's NOT basket efficiency"), stop short of the why (that's Root cause).
+2. **Component 4 — ROOT CAUSE**: AOV flat → volume-driven (BRW002 384 vs ~408 orders); category levers opposite (Merchandise basket $57.18 / Beverage traffic 861 orders); cheap + active + add-on staples → price-driven, not demand/deactivation.
+3. **Component 5 — RECOMMENDATION**: compute the BRW002 $ opportunity yourself (don't copy $2,200).
+4. **Step C** — one strong insight paragraph (Trend → Fluctuation → Anomaly → Root cause → Recommendation).
+5. **Step D** — 2–4 recommendations · **Step E** — self-check (5 components, traceability, PRD030/031).
+6. Compare vs `expected/04-insight.md` → close Case 01 → update snapshot → Case 02 (MarketHub).
+
+---
+
+# Summary: SQL Analyst Lab Session (continued — Step B: ANOMALY locked, ROOT CAUSE started)
+
+**Date:** 26 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 4, Step B in progress: Components 1–3 (TREND, FLUCTUATION, ANOMALY) locked; Component 4 ROOT CAUSE started (inventory ready); RECOMMENDATION pending
+
+---
+
+## Completed
+
+- **Component 3 — ANOMALY locked:**
+  > BRW002 earns ~9% less ($21,963 vs ~$24,135) even though AOV is flat ($57.20 vs $58–59) — so it's not a basket problem.
+
+## Discussion: anomaly discipline + the revenue decomposition
+
+- **Anomaly must NOT solve itself.** First draft put BOTH the gap AND the order-count answer inside the Anomaly. Coach: Anomaly = *deviation + exclusion* only (raise the mystery); the mechanism is the Root cause's job (answer it). Merging them front-loads the answer and kills the narrative flow (deviation → exclusion → mechanism).
+- **Revenue decomposition = the proof tool.** Revenue = Order count × AOV. Only **two levers**. AOV flat → the gap can *only* be order count. Verified order counts: BRW001 **407** · BRW002 **384** · BRW003 **409** → BRW002 ~**24 fewer orders/month**. Sanity check: 24 × ~$57 ≈ $1.4k of the ~$2.2k gap (rest = the small AOV difference).
+
+## Mistakes / Notes
+
+- Solved the anomaly inside the anomaly (put the mechanism in the Anomaly instead of Root cause). Fix: Anomaly stops at the exclusion.
+
+## Next Steps
+
+1. **Component 4 — ROOT CAUSE** (inventory ready): (a) volume not basket — BRW002 ~24 fewer orders; (b) category levers opposite — Merchandise 60% revenue / 737 orders / basket $57.18 vs Beverage 861 orders / basket $17.13; (c) bottom products price-driven — cheap (≤$3.25) + active + ~90% add-on staples.
+2. **Component 5 — RECOMMENDATION**: compute the BRW002 $ opportunity yourself.
+3. **Step C** — insight paragraph · **Step D** — 2–4 recs · **Step E** — self-check.
+4. Compare vs `expected/04-insight.md` → close Case 01 → snapshot → Case 02.
+
+---
+
+# Summary: SQL Analyst Lab Session (continued — Step B: ROOT CAUSE locked, RECOMMENDATION guided)
+
+**Date:** 26 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 4, Step B: Components 1–4 (TREND, FLUCTUATION, ANOMALY, ROOT CAUSE) locked; Component 5 RECOMMENDATION guided (compute the BRW002 $ opportunity yourself); Step C–E pending
+
+---
+
+## Completed
+
+- **Component 4 — ROOT CAUSE locked (3 lines):**
+  > - **Volume, not basket** — Revenue differences are volume-driven, not basket-driven: AOV is flat everywhere (spread < $2.25), so BRW002's ~9% gap = ~24 fewer orders/month (384 vs ~408).
+  > - **Category levers run opposite** — Merchandise = 60% of revenue ($42,145) on the fewest orders (737) → wins via basket ($57.18, ~3× others); Beverage = most orders (861) but smallest basket ($17.13) → wins via traffic. So a good month/store is a Merchandise month — that drives the revenue swings, not overall traffic.
+  > - **Bottom products are price-driven** — cheap (≤ $3.25), active, high-volume staples bought ~90% as add-ons → underperform because of low unit price, not low demand or deactivation.
+- **Component 5 — RECOMMENDATION guided** (candidate actions + the $ computation method).
+
+## Discussion: what makes a Root cause + the recommendation math
+
+- **Root cause = mechanism, not restated numbers.** Each line must read "because X → Y." Line 1 started circular ("so it's the order-count problem") → fixed to "volume-driven, not basket-driven … AOV flat → ~24 fewer orders." Category levers needed the *so-what* payoff: Merchandise decides whether a month/store is good (ties Fluctuation back to a cause).
+- **Recommendation = action + expected effect/$** (not "improve sales"). Candidate actions from verified facts: (1) replicate the Aug Merchandise window; (2) fix BRW002 volume; (3) keep cheap staples stocked (traffic drivers); (4) monitor May/Sep (hedged — not proven seasonal).
+- **Two ways to compute the BRW002 opportunity (different questions):**
+  - Order-gap method: ~24 orders × $57.20 AOV ≈ **$1,374/month** (what closing *volume* is worth — the fair fixable figure)
+  - Revenue-gap method: $24,135 − $21,963 ≈ **$2,172/month** (the *full* gap ceiling, includes the small AOV difference)
+  - Decide which one to quote and say why.
+
+## Next Steps
+
+1. **Component 5 — RECOMMENDATION**: compute both BRW002 figures, draft 2–4 recommendation lines (action + $ + traceable reason).
+2. **Step C** — one strong insight paragraph (Trend → Fluctuation → Anomaly → Root cause → Recommendation).
+3. **Step D** — 2–4 recommendations · **Step E** — self-check (5 components, traceability, PRD030/031).
+4. Compare vs `expected/04-insight.md` → close Case 01 → update snapshot → Case 02 (MarketHub).
+
+---
+
+# Summary: SQL Analyst Lab Session (continued — Step B COMPLETE: all 5 components locked)
+
+**Date:** 26 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 4: Step A (Running Log) + Step B (5 components) COMPLETE; Step C (insight paragraph) next; Steps D–E pending
+
+---
+
+## Completed
+
+- **Component 5 — RECOMMENDATION locked (4 lines):**
+  > 1. Run a traffic-driving promotion at BRW002 to close its ~24-order gap vs the other stores — worth ~$1,372/month (up to ~$2,172 if the basket gap closes too).
+  > 2. Replicate the August Merchandise window — it drove the +15% Aug peak, and Merchandise is 60% of revenue ($42,145).
+  > 3. Don't cut Espresso/Cookie/Americano — they're cheap staples bought as add-ons ~90% of the time (88–98%), so they drive traffic even though they add little revenue.
+  > 4. Monitor May/Sep — if the dip recurs, have a Merchandise push ready (not yet proven seasonal).
+- **BRW002 opportunity computed by hand:** order-gap = 24 × $57.20 = **$1,372.80/mo**; revenue-gap = $24,135 − $21,963 = **$2,172/mo**. Decision: quote $1,372.80 (fixable via volume), mention $2,172 as the ceiling (includes basket gap).
+- **Step B COMPLETE** — all 5 components (TREND, FLUCTUATION, ANOMALY, ROOT CAUSE, RECOMMENDATION) locked.
+
+## Discussion: how the components chain into a recommendation
+
+- **The 4 components are the evidence chain that constructs the recommendation.** Each donates one ingredient: Trend → *worth acting* (+64% market moving up) · Fluctuation → *when* (May/Sep, Aug) · Anomaly → *where* (BRW002) · Root cause → *which lever* (volume, Merchandise). A recommendation without them is a guess; with them every action is traceable to a verified fact.
+- **Recommendation = action + $ + reason** (not "improve sales"). Weak = "run a promo"; strong = "run a traffic-driving promo at BRW002 … worth ~$1,372/mo."
+- **Vocabulary:** "traffic / volume" = order count; "basket" = AOV. A *traffic-driving* promo targets order count (BRW002's actual problem); a *basket-building* promo targets spend-per-order (would fix the wrong lever).
+- **Trace for +15%:** Aug MoM = ($6,359.85 − $5,534.00) / $5,534.00 = +14.92% ≈ +15% (from Q1a's LAG `diff_pct` column).
+- Draft fixes this round: "equivalent the gap" → "close the gap"; "it's" → "they're"; "constribution" → "contribution"; "prevent a recurrence" → "monitor … if it recurs" (one-year hedge).
+
+## Next Steps
+
+1. **Step C** — one strong insight paragraph, flowing Trend → Fluctuation → Anomaly → Root cause → Recommendation.
+2. **Step D** — 2–4 final recommendations · **Step E** — self-check (5 components present, every claim traceable, PRD030/031).
+3. Compare `work/04-insight.md` vs `expected/04-insight.md`; reconcile seasonal-items discrepancy.
+4. Close Case 01 → update snapshot → Case 02 (MarketHub).
+
+---
+
+# Summary: SQL Analyst Lab Session (continued — Step C LOCKED: strong insight paragraph)
+
+**Date:** 26 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 01 — Step 4: Step A + Step B + Step C COMPLETE; Step D (final recs) & Step E (self-check) next, then close Case 01
+
+---
+
+## Completed
+
+- **Step C — strong insight paragraph locked:**
+  > Over 13 months chain-wide revenue rose 64.4% to an all-time high of $6.6k — but not smoothly: it dipped in May (−17%) and Sep (−17%) and swung sharply at BRW003 (May −51.7%, Nov +83.4%). The swings trace to one lever: Merchandise, which drives 60% of revenue through high basket values, while Beverage carries the foot traffic. One store stands out: BRW002 trails its peers by ~9% even though AOV is flat everywhere — the gap is volume, not baskets (a ~24-order monthly deficit). Next month: run a traffic-driving promo at BRW002 (worth ~$1,372/month, up to ~$2,172) and replicate the August Merchandise window to guard against May/Sep *if* the dip recurs. And keep the cheap staples — Espresso, Cookies, Americanos — they're ~90% add-ons and hold the traffic together.
+
+## Discussion: Step C vs the model answer (expected/04-insight.md)
+
+- **Matches on substance:** Merchandise 60% lever · BRW002 ~9% via fewer orders · AOV flat → volume-driven · replicate Aug window + BRW002 promo · protect staples.
+- **User's version is MORE precise/honest than the model in 3 places:**
+  1. Trend framing: model "59% Jan→Aug, 29% drop" vs user **+64.4% full 13-month arc**.
+  2. BRW002 cause: model "~9% **entirely** because fewer orders" vs user "**primarily** … volume, not baskets" (model overclaims).
+  3. $ figure: model "$2,200/month" vs user "~$1,372/mo, up to ~$2,172" (distinguishes fixable vs ceiling).
+  4. **Seasonality:** model claims "seasonal merchandise push" + "plan for the seasonal pattern" — user correctly hedges "**if** the dip recurs" (one year ≠ proven seasonality).
+- **Verdict:** the user beat the model on its two slips (seasonality overclaim + "entirely due to"). This is the honesty discipline working.
+
+## Next Steps
+
+1. **Step D** — formalize the 4 locked recommendation lines as a numbered `D. RECOMMENDATIONS` list.
+2. **Step E** — self-check: 5 components in order · every number traceable · no weak-insight filler · PRD030/031 resolved (Q4a "all 31 sold" = DB truth; expected's "0 units" note is stale).
+3. Close Case 01 → update progress snapshot (Case 01 completed) → Case 02 (MarketHub).
+
+---
+
+# Summary: SQL Analyst Lab Session (continued — Case 01 COMPLETE)
+
+**Date:** 26 August 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** ✅ **Case 01 (Brew & Co.) COMPLETE** — all Steps 1–4 done, `work/04-insight.txt` finalized (sections A–E). Next: Case 02 (MarketHub).
+
+---
+
+## Completed
+
+- **Finalized `work/04-insight.txt`** — sections A (Running Log), B (5 components), C (insight paragraph), D (recommendations), E (self-check).
+  - Fixed Q1a Running Log to the full arc (peak $6,360 Aug → trough $4,519 Oct → all-time high $6,575 Jan-26).
+  - Added standalone `D. RECOMMENDATIONS` (4 numbered) and `E. SELF-CHECK`.
+  - Fixed B.4 header "Volume order" → "Volume, not basket".
+- **Case 01 closed** — progress snapshot marked completed (1/3 cases).
+
+## Self-check result (Step E)
+
+- 5 components present in order · every number traceable · no weak-insight filler · PRD030/031 = DB truth (all 31 sold; expected's "0 units" is stale) · hedges preserved ("if the dip recurs", "primarily").
+
+## Next Steps
+
+1. **Case 02 — MarketHub** (ecommerce.db, 8 tables, medium scaffolding): read the dataset README + ERD, then `case.md`, then work in `work/` (scope → sub-questions → queries → insights).
+2. After Case 02 → Case 03 (NovaTel, telecom, minimal scaffolding).
+
+---
+
+*Happy Learning!*
