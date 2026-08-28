@@ -126,9 +126,9 @@ with_lags AS (
 )
 SELECT
     month,
-    ROUND(gmv, 2)                                                   AS gmv,
-    ROUND(100.0 * (gmv - prev_month_gmv) / prev_month_gmv, 2)      AS mom_pct,
-    ROUND(100.0 * (gmv - prev_year_gmv)  / prev_year_gmv,  2)      AS yoy_pct
+    ROUND(gmv, 2)                                              	AS gmv,
+    ROUND(100.0 * (gmv - prev_month_gmv) / prev_month_gmv, 2)	AS mom_pct,
+    ROUND(100.0 * (gmv - prev_year_gmv)  / prev_year_gmv,  2)	AS yoy_pct
 FROM with_lags
 ORDER BY month;
 
@@ -183,9 +183,9 @@ SELECT
     vendor_id,
     vendor_name,
     month,
-    ROUND(gmv, 2)                                                   AS gmv,
-    ROUND(100.0 * (gmv - prev_month_gmv) / NULLIF(prev_month_gmv, 0), 2) AS mom_pct,
-    ROUND(100.0 * (gmv - prev_year_gmv)  / NULLIF(prev_year_gmv, 0), 2)  AS yoy_pct
+    ROUND(gmv, 2)                                                  			AS gmv,
+    ROUND(100.0 * (gmv - prev_month_gmv) / NULLIF(prev_month_gmv, 0), 2)	AS mom_pct,
+    ROUND(100.0 * (gmv - prev_year_gmv)  / NULLIF(prev_year_gmv, 0), 2) 	AS yoy_pct
 FROM with_lags
 ORDER BY vendor_id, month;
 

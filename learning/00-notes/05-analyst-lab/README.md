@@ -42,7 +42,7 @@ _Update this table as you go._
 | Case | Total | Completed | Notes |
 | --- | --- | --- | --- |
 | 01 Brew & Co. | 1 | 1 | ✅ COMPLETE (26-aug) — Steps 1–3 + Step 4 (Running Log Buckets 1–4, 5 components, insight paragraph, 4 recommendations, self-check). `work/04-insight.txt` finalized with sections A–E. Postgres verify optional |
-| 02 MarketHub | 1 | 0 | 🔄 IN PROGRESS (27-aug) — via `data-to-insight` ecosystem. Stage 0–4 done & verified (Silver `_silver.sql`, Gold `gold.mart_markethub` line-grain); Stage 5 `03-queries.sql` authored + QA PASS-WITH-NOTES (Q6 hardened); pending user run → `03-results.md` |
+| 02 MarketHub | 1 | 0 | 🔄 IN PROGRESS (28-aug) — via `data-to-insight` ecosystem. Stage 0–4 done & verified (Silver `_silver.sql`, Gold `gold.mart_markethub` line-grain); Stage 5 COMPLETE — `03-queries.sql` run, all 13 statements captured in `03-results.md`; Stage 6 Insight next |
 | 03 NovaTel | 1 | 0 | — |
 
 ## Mistake Log (cumulative across sessions)
