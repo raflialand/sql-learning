@@ -113,14 +113,14 @@ The progress-evaluator capability SHALL grade `02-questions.md` on six MANDATORY
 
 ### Requirement: Silver Evaluation Contract
 
-The progress-evaluator capability SHALL grade `_silver.sql` on five MANDATORY checks: all six DQ dimensions (Completeness, Uniqueness, Validity, Accuracy, Consistency, Timeliness) are evaluated, each applied or N/A-with-reason; no dimension is N/A without a documented reason; the applied subset covers every known dataset quirk from the dataset README; row counts are preserved (conform + flag, never drop); and the SQL runs without error.
+The progress-evaluator capability SHALL grade `_silver.sql` on six MANDATORY checks: all six DQ dimensions (Completeness, Uniqueness, Validity, Accuracy, Consistency, Timeliness) are evaluated, each applied or N/A-with-reason; no dimension is N/A without a documented reason; the applied subset covers every known dataset quirk from the dataset README; row counts are preserved (conform + flag, never drop); the SQL runs without error; and the profiled dataset surfaces no metric, dimension, or data-quirk that materially affects a sub-question's answer but is absent from `01-scope.md` (i.e. no unflagged scope gap).
 
-#### Scenario: Silver passes DQ coverage
+#### Scenario: Silver passes DQ coverage and scope reconciliation
 
-- GIVEN `_silver.sql` evaluates all six dimensions, documents every N/A, covers every README quirk, preserves row counts, and runs without error
+- GIVEN `_silver.sql` evaluates all six dimensions, documents every N/A, covers every README quirk, preserves row counts, runs without error, and surfaces no unflagged scope gap against `01-scope.md`
 - WHEN the Silver checkpoint is graded
 - THEN the verdict SHALL be PASS
-- AND the report SHALL record each of the five checks as green
+- AND the report SHALL record each of the six checks as green
 
 #### Scenario: N/A without reason
 
@@ -135,6 +135,13 @@ The progress-evaluator capability SHALL grade `_silver.sql` on five MANDATORY ch
 - WHEN the Silver checkpoint is graded
 - THEN the verdict SHALL be FAIL
 - AND the report SHALL identify the drop and the expected conform-and-flag behavior
+
+#### Scenario: Unflagged scope gap
+
+- GIVEN the profiled dataset surfaces a metric, dimension, or data-quirk that materially affects a sub-question's answer but is absent from `01-scope.md`, and the gap was not surfaced for amendment
+- WHEN the Silver checkpoint is graded
+- THEN the verdict SHALL be FAIL
+- AND the report SHALL name the gap and the affected sub-question
 
 ### Requirement: Gold Mart Evaluation Contract
 

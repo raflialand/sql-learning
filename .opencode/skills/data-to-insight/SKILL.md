@@ -13,7 +13,7 @@ Canonical agent plan: `agent-blueprints/03-data-to-insight.md`. Read it for the 
 - **7 stages, in order:** 0 Context → 1 Scope → 2 Questions → 3 Bronze→Silver → 4 Silver→Gold mart → 5 Query → 6 Insight. Write each artifact to the case's `work/` folder.
 - **Delegation:** Stages 3–5 (SQL: silver, gold mart, queries + results) → `@sql-builder`. Stage 6 (insight) → `@insight-writer`. Generated queries → `@query-inspector` as a QA gate. Checkpoint verification (stages 1–6) → `@progress-evaluator` as a read-only blocking gate (FAIL blocks the checkpoint and routes the defect to the owning agent for fix-and-re-run).
 - **Checkpoints:** Pause for human approval after Scope, Questions, Silver, Gold mart, Queries+results, and final Insight. Never run a downstream stage before the current gate is approved.
-- **Key rules:** ~3 metrics + ~3 dimensions is a floor, not a cap; decompose into 4 buckets (Overall Trends / Growth Rates / Performance Measurement / KPI Reporting), one metric × one dimension per sub-question; silver evaluates all 6 DQ dimensions (Completeness, Uniqueness, Validity, Accuracy, Consistency, Timeliness) but applies only the effective subset; gold declares grain + unique key and verifies `COUNT(*) = COUNT(DISTINCT <grain_key>)`; queries read the gold mart only; insight must pass the weak-vs-strong rubric.
+- **Key rules:** ~3 metrics + ~3 dimensions is a floor, not a cap; decompose into 4 buckets (Overall Trends / Growth Rates / Performance Measurement / KPI Reporting), one metric × one dimension per sub-question; silver evaluates all 6 DQ dimensions (Completeness, Uniqueness, Validity, Accuracy, Consistency, Timeliness) but applies only the effective subset; silver profiling surfaces any profile-only scope gap (metric/dimension/quirk materially affecting a sub-question but absent from `01-scope.md`); such a finding routes to the orchestrator for a scope amendment — never to `sql-builder`; gold declares grain + unique key and verifies `COUNT(*) = COUNT(DISTINCT <grain_key>)`; queries read the gold mart only; insight must pass the weak-vs-strong rubric.
 
 ## Invariants
 
@@ -25,3 +25,4 @@ Canonical agent plan: `agent-blueprints/03-data-to-insight.md`. Read it for the 
 - Datasets and case `expected/` folders are read-only.
 - This is an execution capability — it never creates OpenSpec change proposals; planning belongs to `@openspec-agent`.
 - `@progress-evaluator` is read-only — it never authors or edits stage artifacts; it only grades and reports.
+- Surface profile-only scope gaps at Silver and route them to the orchestrator for amendment — never to `sql-builder`.
