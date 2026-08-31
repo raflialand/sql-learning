@@ -13,7 +13,7 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 - **An execution agent** (`query-inspector`) that reviews learner-submitted SQL from `script/01-sql/` for query-logic correctness and business-requirement alignment, writing analysis reports to `docs/03-query-inspector/`.
 - **A notes module** (`learning/04-data-to-insight/`) capturing video analysis reports — currently "Think Like a Senior Data Analyst: Data to Insight in 15 Minutes" (Christine Jiang) with a 4-step analytical framework for turning messy data into actionable insights.
 - **A DWH architecture module** (`learning/05-dwh-architecture/`) hosting the **Medallion study case** — a stdlib Python pipeline (`script/02-python/medallion_pipeline.py`) that builds `bronze.db → silver.db → gold.db` (star schema + marts) from the verified MarketHub dataset, with idempotency and no-data-loss assertions. See [`medallion-case.md`](learning/05-dwh-architecture/medallion-case.md).
-- **A data-to-insight AI ecosystem** (`.opencode/skills/data-to-insight/`) — an orchestrator skill that automates the 7-stage data-to-insight pipeline (context → scope → questions → bronze→silver → gold mart → query → insight) against a PostgreSQL medallion (`bronze.`/`silver.`/`gold.` schemas), delegating SQL work to `sql-builder` and insight synthesis to `insight-writer` (with `query-inspector` as a QA gate), under checkpointed human approval at each gate. Canonical plan: `agent-blueprints/03-data-to-insight.md`.
+- **A data-to-insight AI ecosystem** (`.opencode/skills/data-to-insight/`) — an orchestrator skill that automates the 7-stage data-to-insight pipeline (context → scope → questions → bronze→silver → gold mart → query → insight) against a PostgreSQL medallion (`bronze.`/`silver.`/`gold.` schemas), delegating SQL work to `sql-builder` and insight synthesis to `insight-writer` (with `query-inspector` as a QA gate and `progress-evaluator` as a read-only blocking verification gate at each checkpoint), under checkpointed human approval at each gate. Canonical plan: `agent-blueprints/03-data-to-insight.md`.
 - **Five registered learning tracks** in `learning/00-notes/tracks.md`: SQL Fundamentals (84 units), SQL Skill Push (60 challenges), Data Quality Engineer (13 units, MySQL-based against a purpose-built "dirty" dataset), Data Engineering (26 weeks), and Data-to-Insight Case Studies (3 cases).
 
 ## Directory Map
@@ -24,10 +24,10 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 ├── changes-log.txt        # Change log for all project changes
 │
 ├── script/                # SQL practice scripts
-│   ├── 01-sql/            # SQL query logs (e.g. query-log.txt)
+│   ├── 01-sql/            # SQL query logs (00-query-log.txt, 01-sql-learn.sql, 01/02/03-dq-query-log.sql)
 │   │   ├── medallion/     # Medallion layer SQL: 01-bronze.sql / 02-silver.sql / 03-gold.sql
-│   │   └── data-to-insight/ # PostgreSQL medallion bootstrap (00-bootstrap.sql)
-│   └── 02-python/         # Python scripts (e.g. medallion_pipeline.py orchestrator)
+│   │   └── data-to-insight/ # PostgreSQL medallion: 00-bootstrap.sql / 01-silver-dq-patterns.sql / 03-queries.sql
+│   └── 02-python/         # Python scripts (medallion_pipeline.py, sqlite-to-mysql.py)
 │
 ├── learning/              # All learning material and progress
 │   ├── 00-notes/           # Learning notes — excluded from numbering rules; tracks.md is the track registry
@@ -49,15 +49,16 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 │   └── 05-dwh-architecture/ # DWH architecture module: Medallion pipeline case
 │
 ├── data/                  # Practice SQLite databases & schema files
-│   ├── library-db.sql/.db     # Library management system
-│   ├── ecommerce.db           # E-commerce database
-│   ├── sql-learn.db / sql-learn-db-week6.*  # Roadmap practice databases (Week 6 etc.)
+│   ├── 00-data-creation/      # Source DDL (library.sql, sql-learn.sql, sql-learn-week6.sql)
+│   ├── 01-data-test/          # EDA/test queries (retail-eda-test.sql)
+│   ├── library.db / ecommerce.db / sql-learn.db / sql-learn-week6.db  # Practice databases
 │   └── medallion/             # Generated Medallion layers: bronze.db / silver.db / gold.db
 │
 ├── docs/                  # Documentation (dedicated folders per topic)
 │   ├── 01-erd-diagram/    # ERD diagrams
 │   ├── 02-excel-coach/    # Excel coach agent plan
-│   └── 03-query-inspector/    # Query analysis reports (query-inspector agent output)
+│   ├── 03-query-inspector/    # Query analysis reports (query-inspector agent output)
+│   └── 04-progress-evaluator/ # Checkpoint verification reports (progress-evaluator agent output)
 ├── agent-blueprints/      # Canonical agent plans
 │   ├── 01-learning-progress.md # Multi-track learning progress plan
 │   ├── 02-query-inspector.txt # Query inspector agent plan
@@ -67,7 +68,7 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 │   └── learning-progress/  # Skill-scoped ADRs (SELF-CHECK/ADJUST)
 │
 ├── .opencode/             # opencode configuration
-│   ├── agents/            # Agent definitions (openspec-agent, query-inspector, sql-builder, insight-writer)
+│   ├── agents/            # Agent definitions (openspec-agent, query-inspector, sql-builder, insight-writer, progress-evaluator)
 │   └── skills/            # Skills
 │       ├── learning-progress/  # SKILL.md + manifest.json baseline (SELF-CHECK/ADJUST)
 │       └── data-to-insight/    # SKILL.md + README (runbook) + case-template/ — 7-stage pipeline orchestrator
