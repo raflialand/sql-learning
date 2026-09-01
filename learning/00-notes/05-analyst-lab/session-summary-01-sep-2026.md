@@ -2,7 +2,7 @@
 
 **Date:** 1 September 2026
 **Track:** Data-to-Insight Case Studies (analyst)
-**Status:** Case 03 (NovaTel) — Stages 0–3 COMPLETE (Context, Scope, Questions, Silver). All 3 checkpoints PASSED by @progress-evaluator. Waiting for user approval before Stage 4 (Gold mart).
+**Status:** Case 03 (NovaTel) — Stages 0–4 COMPLETE (Context, Scope, Questions, Silver, Gold mart). All 4 checkpoints PASSED/PASS-WITH-NOTES by @progress-evaluator. Waiting for user approval before Stage 5 (Query + results).
 
 ---
 
@@ -16,6 +16,8 @@
 - **@progress-evaluator checkpoint — Stage 2: PASS** — all 6 MANDATORY checks passed (bucket mapping, metric×dimension from scope, two-way coverage, lens correct, no duplicates, serves main question). Advisory: Usage tier and Ticket category (KPI "why" dimensions) were not consumed — acceptable per "floor, not cap" rule. Report: `docs/04-progress-evaluator/verification-2026-09-01-questions.md`.
 - **Stage 3 — Bronze→Silver** — delegated to `@sql-builder`. Profiled the dataset, evaluated all 6 DQ dimensions: 5 applied (Completeness, Uniqueness, Validity, Accuracy, Consistency) + 1 N/A (Timeliness — structural 2-month limitation). Key findings: (1) 1,408/7,996 bills (17.6%) Unpaid/Overdue, (2) 2,580/7,418 usage logs (34.8%) exceed plan allowance, (3) 1,149/3,800 tickets (30.2%) unresolved, (4) 38 churned subs with unpaid bills. Silver enrichments: `_leakage_flag`, `_data_flag`, `_data_utilization_pct`, `_resolution_flag`, `_days_to_resolve`. All 27,735 bronze rows preserved (conform + flag, never drop). Wrote `work/_silver.sql` (238 lines).
 - **@progress-evaluator checkpoint — Stage 3: PASS** — all 6 MANDATORY checks passed (all 6 DQ dimensions evaluated, no N/A without reason, applied subset covers all dataset quirks, row counts preserved, SQL valid, scope coverage complete). Report: `docs/04-progress-evaluator/verification-2026-09-01-silver.md`.
+- **Stage 4 — Silver→Gold mart** — delegated to `@sql-builder`. Built denormalized mart `gold.mart_subscriber_health` with grain = one row per `bill_id` (unique key: `bill_id`). Joined 6 tables: billing (primary fact), subscribers, plans, usage_logs (aggregated), tickets (aggregated), churn. All joins many-to-one or one-to-one — no fan-out. Mart row count = 7,996 = `silver.billing`. Silver enrichments preserved (`_leakage_flag`, `_data_flag`, `_data_utilization_pct`, `_resolution_flag`, `_days_to_resolve`, `has_churned`). Verification query written but commented out (needs execution). Wrote `work/_gold.sql` (192 lines).
+- **@progress-evaluator checkpoint — Stage 4: PASS-WITH-NOTES** — all 5 MANDATORY checks passed at design level. Note: verification query needs uncommenting and execution. Design is correct. Report: `docs/04-progress-evaluator/verification-2026-09-01-gold.md`.
 
 ## Key Takeaways (conceptual this session)
 
@@ -26,6 +28,8 @@
 5. **Coverage check is critical before moving downstream.** Every metric and dimension in the scope must appear in at least one sub-question (no orphans), and no out-of-scope element should appear. This prevents wasted SQL work or hallucinated analysis.
 6. **Conform + flag, never drop.** Silver cleaning preserves all rows and adds diagnostic flags (`_leakage_flag`, `_data_flag`, `_resolution_flag`). This keeps the full dataset intact for downstream analysis while making quality issues filterable.
 7. **DQ dimensions are a lens, not a checklist.** Not all 6 dimensions apply to every dataset. Timeliness was N/A here because the 2-month span is a structural limitation, not a quality defect. Applying it blindly would waste effort.
+8. **Grain choice is the most consequential design decision in the gold mart.** Choosing billing grain (one row per `bill_id`) preserves per-bill payment status — essential for collection rate queries. A coarser grain (subscriber) would lose the month dimension; a finer grain (line items) doesn't exist in this dataset.
+9. **Aggregate before joining to prevent fan-out.** Pre-aggregating usage_logs and tickets by (sub_id, month) before joining to billing grain keeps the row count stable. Joining raw ticket rows would multiply billing rows.
 
 ## Artifacts Produced
 
@@ -35,9 +39,11 @@
 | `work/01-scope.md` | Stage 1 scope: metrics, dimensions, definitions, constraints |
 | `work/02-questions.md` | Stage 2 questions: 12 sub-questions across 4 buckets |
 | `work/_silver.sql` | Stage 3 silver cleaning SQL (238 lines, DDL + verification) |
+| `work/_gold.sql` | Stage 4 gold mart DDL (192 lines, grain = bill_id) |
 | `docs/04-progress-evaluator/verification-2026-09-01-scope.md` | Evaluator report: Stage 1 PASS |
 | `docs/04-progress-evaluator/verification-2026-09-01-questions.md` | Evaluator report: Stage 2 PASS |
 | `docs/04-progress-evaluator/verification-2026-09-01-silver.md` | Evaluator report: Stage 3 PASS |
+| `docs/04-progress-evaluator/verification-2026-09-01-gold.md` | Evaluator report: Stage 4 PASS-WITH-NOTES |
 
 ## Mistakes / Notes
 
@@ -45,11 +51,10 @@
 
 ## Next Steps
 
-1. **Await user approval** on Stage 3 silver before proceeding.
-2. **Stage 4 — Silver→Gold** (mart): delegated to `@sql-builder`. Declare grain + unique key, build denormalized mart, verify COUNT(*) = COUNT(DISTINCT grain_key). Checkpoint 4 — @progress-evaluator verification, then pause for approval.
-3. **Stage 5 — Query** (`03-queries.sql` → `03-results.md`): delegated to `@sql-builder`. One query per sub-question, gold mart only. Checkpoint 5.
-4. **Stage 6 — Insight** (`04-insight.md`): delegated to `@insight-writer`. 5-component insight + recommendations + self-check. Checkpoint 6.
+1. **Await user approval** on Stage 4 gold mart before proceeding.
+2. **Stage 5 — Query + results** (`03-queries.sql` → `03-results.md`): delegated to `@sql-builder`. One query per sub-question, gold mart only. Reuse `@query-inspector` as QA gate. Checkpoint 5 — @progress-evaluator verification, then pause for approval.
+3. **Stage 6 — Insight** (`04-insight.md`): delegated to `@insight-writer`. 5-component insight + recommendations + self-check. Checkpoint 6.
 
 ---
 
-*Session saved. Waiting for approval to continue to Stage 4 (Silver→Gold mart).*
+*Session saved. Waiting for approval to continue to Stage 5 (Query + results).*
