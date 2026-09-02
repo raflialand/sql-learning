@@ -171,22 +171,22 @@ SELECT
 
 FROM billing_plan bp
 LEFT JOIN usage_agg ua
-    ON  bp.sub_id        = ua.sub_id
-    AND bp.billing_month = ua.bill_month_str
+    ON  bp.sub_id         = ua.sub_id
+    AND bp.bill_month_str = ua.bill_month_str
 LEFT JOIN ticket_agg ta
-    ON  bp.sub_id        = ta.sub_id
-    AND bp.billing_month = ta.bill_month_str
+    ON  bp.sub_id         = ta.sub_id
+    AND bp.bill_month_str = ta.bill_month_str
 LEFT JOIN churn_info ci
-    ON  bp.sub_id        = ci.sub_id;
+    ON  bp.sub_id         = ci.sub_id;
 
 
 -- ============================================================================
 -- VERIFICATION: Uniqueness check
 -- Run this after execution. Must return difference = 0.
 -- ============================================================================
--- SELECT
---     COUNT(*)               AS total_rows,
---     COUNT(DISTINCT bill_id) AS unique_bills,
---     COUNT(*) - COUNT(DISTINCT bill_id) AS difference
--- FROM gold.mart_subscriber_health;
+SELECT
+    COUNT(*)               AS total_rows,
+    COUNT(DISTINCT bill_id) AS unique_bills,
+    COUNT(*) - COUNT(DISTINCT bill_id) AS difference
+FROM gold.mart_subscriber_health;
 -- ============================================================================
