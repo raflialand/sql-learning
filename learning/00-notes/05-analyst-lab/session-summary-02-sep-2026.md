@@ -149,3 +149,60 @@ The gold mart grain is **one row per bill_id**. The `has_churned` flag is a **su
 ---
 
 *Session saved. Continue later with Stage 6 (Insight).* 
+
+---
+
+# Summary: SQL Analyst Lab Session (continued — Stage 6 completed + verification folder reorganization)
+
+**Date:** 2 September 2026 (same-day continuation)
+**Track:** Data-to-Insight Case Studies (analyst)
+**Status:** Case 03 (NovaTel) — Stage 6 (Insight) COMPLETE (`04-insight.md`), verification PASS-WITH-NOTES. **Awaiting user approval before closing Case 03.** Also reorganized verification files into per-case `verification/` folders.
+
+---
+
+## Completed
+
+- **Stage 6 — Insight synthesized** (`@insight-writer`) → `work/04-insight.md`: running log + 5 components (Trend/Fluctuation/Anomaly/Root cause/Recommendation) + insight paragraph + 4 recommendations + self-check.
+- **Stage 6 verification** (`@progress-evaluator`) → PASS-WITH-NOTES: all 5 MANDATORY checks passed. Two numeric fixes applied and verified (unpaid bills 659→660, percentage -11.90%→-11.76%). Every claim traced to `03-results.md`.
+- **Verification folder reorganization** — created `<case>/verification/` in all 3 analyst lab cases:
+  - `01-brew-and-co/verification/` (empty, `.gitkeep`)
+  - `02-markethub/verification/` (empty, `.gitkeep`)
+  - `03-novatel/verification/` (6 files moved from `work/`)
+- **Moved 6 files from Case 03 `work/` to `verification/`:** `query-analysis.md`, `verification-stage5.md`, `verification-stage5-2026-09-02.md`, `verification-stage6.md`, `verification-stage6-2026-09-02.md`, `verification-stage6-final.md`
+- **Updated agent definitions** — `progress-evaluator` and `query-inspector` now write to `<case>/verification/` instead of `docs/04-progress-evaluator/` and `docs/03-query-inspector/`
+- **Updated data-to-insight skill + blueprint** — orchestrator passes case path to delegated agents
+- **Updated registry files** — `AGENTS.md`, `README.md`, `agent-blueprints/02-query-inspector.txt`
+
+---
+
+## Case 03 Final Status (pending approval)
+
+| Stage | Status |
+|-------|--------|
+| Stage 0 — Context | ✅ Complete |
+| Stage 1 — Scope | ✅ Complete |
+| Stage 2 — Questions | ✅ Complete |
+| Stage 3 — Silver | ✅ Complete |
+| Stage 4 — Gold | ✅ Verified |
+| Stage 5 — Query + results | ✅ PASS |
+| **Stage 6 — Insight** | **✅ PASS-WITH-NOTES (awaiting approval)** |
+
+---
+
+## Key Takeaways
+
+1. **Verification files belong with the case, not in a global docs/ folder.** Each case's `verification/` folder keeps evaluator reports and QA analysis co-located with the pipeline artifacts they inspect.
+2. **Agent output paths must be dynamically configurable.** The orchestrator passes the case path to delegated agents so they know where to write — this avoids hardcoding paths in agent definitions.
+3. **Existing `docs/` files are kept as archive.** The old `docs/04-progress-evaluator/` and `docs/03-query-inspector/` files from pilot cases stay put — only new output goes to `<case>/verification/`.
+
+---
+
+## Next Steps
+
+1. **Await user approval** on Stage 6 (`04-insight.md`) before closing Case 03.
+2. **Close Case 03** — mark complete, update progress snapshot.
+3. **3/3 cases complete** — track finished.
+
+---
+
+*Happy Learning!*
