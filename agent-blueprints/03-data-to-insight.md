@@ -89,10 +89,11 @@ The orchestrator is invoked against a specific case, e.g. "run data-to-insight o
 | 4 Silver→Gold | gold mart DDL/definition | `sql-builder` |
 | 5 Query | `03-queries.sql`, `03-results.md` | `sql-builder` |
 | 6 Insight | `04-insight.md` | `insight-writer` |
+| Verification | `<case>/verification/` — evaluator reports + query-analysis | `progress-evaluator`, `query-inspector` |
 
 ### Checkpoint gates (verification + human approval)
 
-At each of the six checkpoints, the `progress-evaluator` subagent runs as a read-only verification gate BEFORE the human-approval pause. A FAIL verdict blocks the checkpoint and routes the defect to the owning agent for fix-and-re-run; only a non-FAIL verdict (PASS or PASS-WITH-NOTES) lets the human approval proceed.
+At each of the six checkpoints, the `progress-evaluator` subagent runs as a read-only verification gate BEFORE the human-approval pause. A FAIL verdict blocks the checkpoint and routes the defect to the owning agent for fix-and-re-run; only a non-FAIL verdict (PASS or PASS-WITH-NOTES) lets the human approval proceed. Evaluator reports are written to `<case>/verification/`.
 
 1. After Scope (`01-scope.md`)
 2. After Questions (`02-questions.md`)
@@ -155,7 +156,7 @@ The evaluator itself is read-only and never receives a defect — it only re-ins
 1. One query per sub-question, `GROUP BY` over the mart grain.
 2. Query the gold mart only.
 3. Execute against PostgreSQL and capture verified results into `03-results.md`.
-4. Reuse `query-inspector` as a QA gate before results are locked in.
+4. Reuse `query-inspector` as a QA gate before results are locked in — QA output goes to `<case>/verification/query-analysis.md`.
 5. Verify with `progress-evaluator` (Results checks); a FAIL blocks the checkpoint and routes back to `sql-builder`.
 
 ### Stage 6 — Insight (`04-insight.md`) — delegated to `insight-writer`

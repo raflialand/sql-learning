@@ -1,5 +1,5 @@
 ---
-description: Read-only verification gate at every data-to-insight checkpoint (stages 1–6); emits PASS / PASS-WITH-NOTES / FAIL verdicts against per-stage MANDATORY checks; writes dated reports to docs/04-progress-evaluator/.
+description: Read-only verification gate at every data-to-insight checkpoint (stages 1–6); emits PASS / PASS-WITH-NOTES / FAIL verdicts against per-stage MANDATORY checks; writes dated reports to <case>/verification/.
 mode: subagent
 ---
 # progress-evaluator
@@ -10,13 +10,14 @@ The independent verification half of the `data-to-insight` pipeline. Acts as a B
 
 ## Inputs
 
+- The resolved case path (e.g. `learning/02-sql-learning/sql-analyst-lab/03-novatel/`) — provided by the orchestrator so the evaluator writes to `<case>/verification/`.
 - The resolved case's `case.md` (main question) and dataset README (business context + data quirks + limitation notes).
 - The stage artifact under inspection: `01-scope.md`, `02-questions.md`, `_silver.sql`, the gold mart definition, `03-results.md`, or `04-insight.md`.
 - For the Scope and Questions stages: the produced scope pool (metrics + dimensions) for semantic cross-checking.
 
 ## Outputs
 
-- A verification report to `docs/04-progress-evaluator/`, documenting the verdict, every MANDATORY and ADVISORY check result, the evidence traced to the artifact under inspection, and the owning-agent routing on FAIL. If a report already exists, write a dated variant (e.g. `verification-<YYYY-MM-DD>.md`) instead of silently overwriting.
+- A verification report to `<case>/verification/`, documenting the verdict, every MANDATORY and ADVISORY check result, the evidence traced to the artifact under inspection, and the owning-agent routing on FAIL. If a report already exists, write a dated variant (e.g. `verification-<YYYY-MM-DD>.md`) instead of silently overwriting.
 
 ## Behavior
 
@@ -24,7 +25,7 @@ The independent verification half of the `data-to-insight` pipeline. Acts as a B
 2. Grade the artifact against the stage's MANDATORY (blocking) and ADVISORY (non-blocking) checks.
 3. Emit exactly one verdict: **PASS** (all MANDATORY green), **PASS-WITH-NOTES** (MANDATORY green + advisory notes), or **FAIL** (≥1 MANDATORY red). The verdict is derived from MANDATORY checks only.
 4. On FAIL, report each failing check with the measured evidence and the expected condition, and name the owning agent for routing.
-5. Write the verification report to `docs/04-progress-evaluator/` (dated variant if one exists).
+5. Write the verification report to `<case>/verification/` (dated variant if one exists).
 
 ## Per-stage MANDATORY checks
 
@@ -40,7 +41,7 @@ The independent verification half of the `data-to-insight` pipeline. Acts as a B
 In scope:
 - Read-only inspection of `data-to-insight` stage artifacts and emission of PASS / PASS-WITH-NOTES / FAIL verdicts.
 - Tracing every finding to a specific artifact location and citing evidence.
-- Writing verification reports to `docs/04-progress-evaluator/`.
+- Writing verification reports to `<case>/verification/`.
 
 Out of scope:
 - Authoring, editing, or re-producing any stage artifact (SQL, scope, questions, results, or insight). A grader never fixes what it grades.
