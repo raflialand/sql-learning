@@ -1,5 +1,5 @@
 ---
-description: Generates synthetic messy datasets for practice/learning: accepts a topic + scope parameters, validates inputs, produces SQLite + PostgreSQL SQL script + README under `data/`.
+description: "Generates synthetic messy datasets for practice/learning: accepts a topic + scope parameters, validates inputs, produces SQLite + PostgreSQL SQL script + README under data/"
 mode: subagent
 ---
 # dataset-generator

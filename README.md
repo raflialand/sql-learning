@@ -1,6 +1,6 @@
 # sql-learning
 
-A personal, AI-assisted multi-track learning environment — an 84-day SQL Fundamentals journey (12 weeks), a Data Quality Engineer module (13 units, MySQL), a Data Engineering track (26 weeks), a SQL Skill Push challenge module (60 verified problems across beginner/intermediate/advanced), a SQL Analyst Lab case-studies module (3 open-ended data-to-insight cases), a data-to-insight notes module (turning messy data into actionable insights), a Data Warehouse Architecture module (Medallion pipeline case: bronze → silver → gold on the MarketHub dataset), and a dataset-generator agent for synthetic messy datasets, with built-in progress tracking, practice databases, and agent-driven tooling.
+A personal, AI-assisted multi-track learning environment — an 84-day SQL Fundamentals journey (12 weeks), a Data Quality Engineer module (13 units, MySQL), a Data Engineering track (26 weeks), a SQL Skill Push challenge module (60 verified problems across beginner/intermediate/advanced), a SQL Analyst Lab case-studies module (3 open-ended data-to-insight cases), a data-to-insight notes module (turning messy data into actionable insights), a Data Warehouse Architecture module (Medallion pipeline case: bronze → silver → gold on the MarketHub dataset), a dataset-generator agent for synthetic messy datasets, and a case-generator agent for realistic business case generation with System Analysis Documents, with built-in progress tracking, practice databases, and agent-driven tooling.
 
 ## What This Is
 
@@ -12,6 +12,7 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 - **Deep-dive modules** under `learning/02-sql-learning/`: `sql-mastery/` (currently: window functions) with lessons, exercises, datasets, and solutions, `sql-skill-push/` — a challenge-based practice module (60 verified problems with expected results) across three difficulty levels, and `sql-analyst-lab/` — an open-ended case-studies module (3 data-to-insight cases: Brew & Co., MarketHub, NovaTel) that applies the 4-step analytical framework to the shared datasets.
 - **An execution agent** (`query-inspector`) that reviews learner-submitted SQL from `script/01-sql/` for query-logic correctness and business-requirement alignment, writing analysis reports to `docs/03-query-inspector/` (standalone QA) or `<case>/verification/` (data-to-insight pipeline).
 - **A dataset-generator agent** that creates synthetic messy datasets for practice — accepts a topic + scope (table count, column count, row count, dirty level: low/mid/high), validates inputs, and produces a SQLite DB + PostgreSQL SQL script + README under `data/<NN>-<name>/`.
+- **A case-generator agent** that generates realistic business cases from user-provided datasets and READMEs — analyzes data structure, creates a business case with a main question, and produces a System Analysis Document (SAD) with C4, flowchart, sequence, and ERD diagrams under `learning/04-data-to-insight/generated-case/<NN>-<dataset-name>-<case-name>/`.
 - **A notes module** (`learning/04-data-to-insight/`) capturing video analysis reports — currently "Think Like a Senior Data Analyst: Data to Insight in 15 Minutes" (Christine Jiang) with a 4-step analytical framework for turning messy data into actionable insights.
 - **A DWH architecture module** (`learning/05-dwh-architecture/`) hosting the **Medallion study case** — a stdlib Python pipeline (`script/02-python/medallion_pipeline.py`) that builds `bronze.db → silver.db → gold.db` (star schema + marts) from the verified MarketHub dataset, with idempotency and no-data-loss assertions. See [`medallion-case.md`](learning/05-dwh-architecture/medallion-case.md).
 - **A data-to-insight AI ecosystem** (`.opencode/skills/data-to-insight/`) — an orchestrator skill that automates the 7-stage data-to-insight pipeline (context → scope → questions → bronze→silver → gold mart → query → insight) against a PostgreSQL medallion (`bronze.`/`silver.`/`gold.` schemas), delegating SQL work to `sql-builder` and insight synthesis to `insight-writer` (with `query-inspector` as a QA gate and `progress-evaluator` as a read-only blocking verification gate at each checkpoint), under checkpointed human approval at each gate. Canonical plan: `agent-blueprints/03-data-to-insight.md`.
@@ -46,7 +47,9 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 │   │   ├── sql-skill-push/ # Challenge module: 60 verified problems + datasets + solutions
 │   │   └── sql-analyst-lab/# Case-studies module: 3 open-ended data-to-insight cases
 │   ├── 03-dq-learning/     # MySQL-based Data Quality Engineer module
-│   ├── 04-data-to-insight/  # Notes module: data → actionable insights
+│   ├── 04-data-to-insight/  # Notes module + generated cases
+│   │   ├── data-to-insight.md  # Video analysis report
+│   │   └── generated-case/     # Case-generator output (00-<dataset>-<case>/)
 │   └── 05-dwh-architecture/ # DWH architecture module: Medallion pipeline case
 │
 ├── data/                  # Practice SQLite databases & schema files
@@ -70,7 +73,7 @@ This directory is a living learning workspace where daily SQL sessions are taugh
 │   └── learning-progress/  # Skill-scoped ADRs (SELF-CHECK/ADJUST)
 │
 ├── .opencode/             # opencode configuration
-│   ├── agents/            # Agent definitions (openspec-agent, query-inspector, sql-builder, insight-writer, progress-evaluator, dataset-generator)
+│   ├── agents/            # Agent definitions (openspec-agent, query-inspector, sql-builder, insight-writer, progress-evaluator, dataset-generator, case-generator)
 │   └── skills/            # Skills
 │       ├── learning-progress/  # SKILL.md + manifest.json baseline (SELF-CHECK/ADJUST)
 │       └── data-to-insight/    # SKILL.md + README (runbook) + case-template/ — 7-stage pipeline orchestrator
