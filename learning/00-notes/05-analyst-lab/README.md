@@ -43,7 +43,7 @@ _Update this table as you go._
 | --- | --- | --- | --- |
 | 01 Brew & Co. | 1 | 1 | ✅ COMPLETE (26-aug) — Steps 1–3 + Step 4 (Running Log Buckets 1–4, 5 components, insight paragraph, 4 recommendations, self-check). `work/04-insight.txt` finalized with sections A–E. Postgres verify optional |
 | 02 MarketHub | 1 | 1 | ✅ COMPLETE (28-aug) — via `data-to-insight` ecosystem. Stage 0–6 done & approved: Silver `_silver.sql`, Gold `gold.mart_markethub` (line-grain, 7,102 rows), `03-results.md` (13/13), `04-insight.md` (5 components + 4 recommendations; rank error fixed) |
-| 03 NovaTel | 1 | 0 | — |
+| 03 NovaTel | 1 | 1 | ✅ COMPLETE (02-sep) — via `data-to-insight` ecosystem. Stage 0–6 done & verified: Silver `_silver.sql`, Gold `gold.mart_subscriber_health` (7,996 rows), `03-results.md` (12/12, Q9/Q11 grain fix), `04-insight.md` (5 components + 4 recommendations). Verification PASS-WITH-NOTES. Track 3/3 complete. |
 
 ## Mistake Log (cumulative across sessions)
 
