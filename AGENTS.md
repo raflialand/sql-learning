@@ -32,11 +32,13 @@ When the intent is planning, the main agent SHALL delegate to `@openspec-agent`.
 
 | Agent                | Purpose                                                       |
 | -------------------- | ------------------------------------------------------------- |
-| `query-inspector`    | Inspects learner-submitted SQL queries for query-logic correctness and business-requirement alignment; writes `query-analysis.md` to `docs/03-query-inspector/` |
+| `query-inspector`    | Inspects learner-submitted SQL queries for query-logic correctness and business-requirement alignment; writes `query-analysis.md` to `<case>/verification/` (data-to-insight pipeline) or `docs/03-query-inspector/` (standalone QA) |
 | `sql-builder`        | Authors and executes PostgreSQL SQL for the data-to-insight pipeline (stages 3–5: silver cleaning, gold mart, sub-question queries); declares grain + unique key and verifies row uniqueness |
 | `insight-writer`     | Synthesizes the 5-component insight (Trend, Fluctuation, Anomaly, Root cause, Recommendation) + recommendations + self-check (stage 6), graded against the weak-vs-strong rubric |
+| `progress-evaluator` | Read-only verification gate at every data-to-insight checkpoint (stages 1–6); emits PASS / PASS-WITH-NOTES / FAIL verdicts; writes dated reports to `<case>/verification/` |
+| `dataset-generator`  | Generates synthetic messy datasets for practice/learning: accepts a topic + scope parameters, validates inputs, produces SQLite + PostgreSQL SQL script + README under `data/` |
 
-Domain agents are project-specific. Add agent definitions to `.opencode/agents/` and register them in this table. The `learning-progress` execution capability is defined in `.opencode/skills/learning-progress/`, `agent-blueprints/01-learning-progress.md`, and the track registry `learning/00-notes/tracks.md`. The `data-to-insight` execution capability is defined in `.opencode/skills/data-to-insight/`, `agent-blueprints/03-data-to-insight.md`, and delegates SQL work to `@sql-builder` and insight synthesis to `@insight-writer`, reusing `@query-inspector` as a QA gate.
+Domain agents are project-specific. Add agent definitions to `.opencode/agents/` and register them in this table. The `learning-progress` execution capability is defined in `.opencode/skills/learning-progress/`, `agent-blueprints/01-learning-progress.md`, and the track registry `learning/00-notes/tracks.md`. The `data-to-insight` execution capability is defined in `.opencode/skills/data-to-insight/`, `agent-blueprints/03-data-to-insight.md`, and delegates SQL work to `@sql-builder`, insight synthesis to `@insight-writer`, and checkpoint verification to `@progress-evaluator` (read-only blocking gate), reusing `@query-inspector` as a QA gate.
 
 ## Directory Write Rules
 

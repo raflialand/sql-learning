@@ -53,6 +53,7 @@ Measurable success criteria:
 - Not a progress tracker — `learning-progress` owns session notes and progress reporting.
 - Not a change-proposal author — the ecosystem is an execution capability; planning stays with `@openspec-agent`.
 - Does not modify datasets, the `sql-analyst-lab` module, or the `query-inspector` agent.
+- Not a fixer — `progress-evaluator` is read-only and never authors or edits stage artifacts; it grades and reports, and the orchestrator routes defects to the owning agent.
 
 ---
 
@@ -88,8 +89,11 @@ The orchestrator is invoked against a specific case, e.g. "run data-to-insight o
 | 4 Silver→Gold | gold mart DDL/definition | `sql-builder` |
 | 5 Query | `03-queries.sql`, `03-results.md` | `sql-builder` |
 | 6 Insight | `04-insight.md` | `insight-writer` |
+| Verification | `<case>/verification/` — evaluator reports + query-analysis | `progress-evaluator`, `query-inspector` |
 
-### Checkpoint gates (pause for human approval)
+### Checkpoint gates (verification + human approval)
+
+At each of the six checkpoints, the `progress-evaluator` subagent runs as a read-only verification gate BEFORE the human-approval pause. A FAIL verdict blocks the checkpoint and routes the defect to the owning agent for fix-and-re-run; only a non-FAIL verdict (PASS or PASS-WITH-NOTES) lets the human approval proceed. Evaluator reports are written to `<case>/verification/`.
 
 1. After Scope (`01-scope.md`)
 2. After Questions (`02-questions.md`)
@@ -97,6 +101,16 @@ The orchestrator is invoked against a specific case, e.g. "run data-to-insight o
 4. After Gold mart
 5. After Queries + results (`03-results.md`)
 6. After final Insight (`04-insight.md`)
+
+### Owner routing on FAIL
+
+| Stages | Owning agent (receives the defect) |
+|---|---|
+| 1–2 (Scope, Questions) | orchestrator |
+| 3–5 (Silver, Gold mart, Results) | `sql-builder` |
+| 6 (Insight) | `insight-writer` |
+
+The evaluator itself is read-only and never receives a defect — it only re-inspects the corrected artifact. The re-run loop (block → route → fix → re-inspect), the 3-fix retry budget, the fail-closed halt on exhaustion, and the explicit human override are all enforced by the orchestrator, not the evaluator.
 
 ---
 
@@ -113,18 +127,21 @@ The orchestrator is invoked against a specific case, e.g. "run data-to-insight o
 1. Fix approximately three Northstar metrics + approximately three dimensions as a **floor** (not a hard cap).
 2. Add a metric/dimension beyond the floor only if the business question genuinely requires it, and only if it maps to a specific sub-question.
 3. Record exact definitions for any metric with multiple plausible interpretations (a "Definitions fixed here" section).
+4. Verify with `progress-evaluator` (Scope checks); a FAIL blocks the checkpoint and routes back to the orchestrator.
 
 ### Stage 2 — Questions (`02-questions.md`)
 
 1. Decompose the main question into sub-questions mapped to exactly four buckets: Overall Trends, Growth Rates, Performance Measurement, KPI Reporting.
 2. Each sub-question = one metric × one dimension.
 3. Do NOT author any sub-question that requests a forbidden comparison (per the limitation note).
+4. Verify with `progress-evaluator` (Questions checks); a FAIL blocks the checkpoint and routes back to the orchestrator.
 
 ### Stage 3 — Bronze→Silver (`_silver.sql`) — delegated to `sql-builder`
 
 1. Profile the dataset.
 2. Evaluate all six DQ dimensions — Completeness, Uniqueness, Validity, Accuracy, Consistency, Timeliness.
 3. Apply only the subset effective for the current case; document each skipped dimension as N/A with a reason.
+4. Verify with `progress-evaluator` (Silver checks); a FAIL blocks the checkpoint and routes back to `sql-builder`.
 
 ### Stage 4 — Silver→Gold (mart) — delegated to `sql-builder`
 
@@ -132,18 +149,21 @@ The orchestrator is invoked against a specific case, e.g. "run data-to-insight o
 2. DECLARE the unique key (what makes a row distinct).
 3. Build the denormalized mart from the silver layer.
 4. VERIFY `COUNT(*) = COUNT(DISTINCT <grain_key>)` before any query runs.
+5. Verify with `progress-evaluator` (Gold mart checks); a FAIL blocks the checkpoint and routes back to `sql-builder`.
 
 ### Stage 5 — Query (`03-queries.sql` → `03-results.md`) — delegated to `sql-builder`
 
 1. One query per sub-question, `GROUP BY` over the mart grain.
 2. Query the gold mart only.
 3. Execute against PostgreSQL and capture verified results into `03-results.md`.
-4. Reuse `query-inspector` as a QA gate before results are locked in.
+4. Reuse `query-inspector` as a QA gate before results are locked in — QA output goes to `<case>/verification/query-analysis.md`.
+5. Verify with `progress-evaluator` (Results checks); a FAIL blocks the checkpoint and routes back to `sql-builder`.
 
 ### Stage 6 — Insight (`04-insight.md`) — delegated to `insight-writer`
 
 1. Running log → 5 components (Trend, Fluctuation, Anomaly, Root cause, Recommendation) → insight paragraph → recommendations → self-check.
 2. Grade against the weak-vs-strong rubric; strengthen any weak insight before delivery.
+3. Verify with `progress-evaluator` (Insight checks); a FAIL blocks the checkpoint and routes back to `insight-writer`.
 
 ---
 
@@ -156,4 +176,5 @@ The orchestrator is invoked against a specific case, e.g. "run data-to-insight o
 | `.opencode/agents/sql-builder.md` | SQL subagent (stages 3–5) |
 | `.opencode/agents/insight-writer.md` | Insight subagent (stage 6) |
 | `.opencode/agents/query-inspector.md` | Reused QA gate (unchanged) |
+| `.opencode/agents/progress-evaluator.md` | Read-only checkpoint verification gate (stages 1–6) |
 | `learning/04-data-to-insight/data-to-insight.md` | Pedagogy source (4-step framework + Running Log + weak-vs-strong rubric) |

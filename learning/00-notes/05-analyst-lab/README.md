@@ -42,8 +42,8 @@ _Update this table as you go._
 | Case | Total | Completed | Notes |
 | --- | --- | --- | --- |
 | 01 Brew & Co. | 1 | 1 | ✅ COMPLETE (26-aug) — Steps 1–3 + Step 4 (Running Log Buckets 1–4, 5 components, insight paragraph, 4 recommendations, self-check). `work/04-insight.txt` finalized with sections A–E. Postgres verify optional |
-| 02 MarketHub | 1 | 0 | 🔄 IN PROGRESS (27-aug) — via `data-to-insight` ecosystem. Stage 0 Context + Stage 1 Scope (`01-scope.md`) done & approved; Stage 2 Questions decomposed (8 sub-questions), pending write |
-| 03 NovaTel | 1 | 0 | — |
+| 02 MarketHub | 1 | 1 | ✅ COMPLETE (28-aug) — via `data-to-insight` ecosystem. Stage 0–6 done & approved: Silver `_silver.sql`, Gold `gold.mart_markethub` (line-grain, 7,102 rows), `03-results.md` (13/13), `04-insight.md` (5 components + 4 recommendations; rank error fixed) |
+| 03 NovaTel | 1 | 1 | ✅ COMPLETE (02-sep) — via `data-to-insight` ecosystem. Stage 0–6 done & verified: Silver `_silver.sql`, Gold `gold.mart_subscriber_health` (7,996 rows), `03-results.md` (12/12, Q9/Q11 grain fix), `04-insight.md` (5 components + 4 recommendations). Verification PASS-WITH-NOTES. Track 3/3 complete. |
 
 ## Mistake Log (cumulative across sessions)
 
@@ -51,6 +51,7 @@ _Append new mistakes here after each session (newest on top). The detailed table
 
 | # | Date | Mistake | Root cause | Lesson / Fix |
 | --- | --- | --- | --- | --- |
+| 23 | 27-Aug | Gold mart omitted `product_id`/`product_name` | Rolled category to top-level only; forgot product is Q9's leaf drill (not a scope dimension) | Trace every mart column to every sub-question before authoring queries |
 | 22 | 26-Aug | Q4d mart query counted line items not distinct orders | Forgot mart is line-grain (3,647 rows / 1,200 orders); `SUM(CASE WHEN alone_flag...)` counts rows | Basket-level metric = `COUNT(DISTINCT order_id)`; check grain before aggregating |
 | 21 | 20-Aug | Q4d `SUM(CASE...)` counted receipt lines | Product appears twice in one order → double-count | `COUNT(DISTINCT CASE WHEN ... THEN order_id END)` |
 | 20 | 20-Aug | Q4b hardcoded `IN ('PRD001','PRD006','PRD015')` | Repeat of #10 — typed the derived set | `underperform` CTE = Q4a flagged set; outer JOIN |

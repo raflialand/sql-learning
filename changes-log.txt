@@ -272,7 +272,7 @@ change #16: add Data-to-Insight Case Studies module + register analyst track (14
 6. updated documentation:
    - README.md  (intro, What This Is module + 5-track list, directory map, Getting Started, Related Roadmaps)
 7. verification: all 3 expected/03-queries.sql re-executed against the reused .db files —
-   22 queries total (6/8/8), 0 failures, outputs match 03-results.md; sql-skill-push untouched
+    22 queries total (6/8/8), 0 failures, outputs match 03-results.md; sql-skill-push untouched
 
 ---
 
@@ -287,6 +287,7 @@ change #17: add SQL Analyst Lab development discussion note (14-Aug-2026)
 4. verification: note follows the existing personal-discuss convention (date/topic header, markdown); no skill/agent/blueprint references the note — no other updates needed
 
 ---
+
 
 change #18: add Medallion architecture study case + medallion-lab capability (24-Aug-2026)
 
@@ -340,5 +341,81 @@ change #19: add data-to-insight AI ecosystem (27-Aug-2026)
     - .opencode/skills/data-to-insight/README.md  (invocation, prerequisites, 6 checkpoints, stage→artifact map, key rules)
 14. note: OpenSpec archive (moving openspec/changes/add-data-to-insight-ecosystem/ to archive/) deferred until the Case 02/03 pilot runs validate the capability
 
+---
 
+change #20: reorganize data/ + script/01-sql/ numbering (7-Aug-2026)
+
+(backfilled entry — predates #12; recorded after the fact)
+
+1. reorganized @data/ into numbered subfolders:
+   - data/00-data-creation/  (library.sql, sql-learn.sql, sql-learn-week6.sql — source DDL for the practice DBs)
+   - data/01-data-test/      (retail-eda-test.sql)
+   - renamed .db files (e.g. library-db.db → library.db)
+2. renumbered @script/01-sql/ per the numbering rules:
+   - script/01-sql/00-query-log.txt  (renamed from query-log.txt)
+   - script/01-sql/01-sql-learn.sql
+   - script/01-sql/01-dq-query-log.sql, 02-dq-query-log.sql, 03-dq-query-log.sql
+3. added a conversion helper:
+   - script/02-python/sqlite-to-mysql.py  (stdlib SQLite → MySQL .sql converter, DDL + INSERTs)
+4. updated references:
+   - README.md (data/ + script/01-sql/ directory map — reconciled in this pass)
+
+---
+
+change #21: add PostgreSQL dataset conversions (18-Aug-2026)
+
+1. added PostgreSQL loaders for the three sql-skill-push datasets (for the PostgreSQL medallion target):
+   - datasets/01-beginner/retail_pg.sql
+   - datasets/02-intermediate/ecommerce_pg.sql
+   - datasets/03-advanced/telecom_pg.sql
+2. added an EDA test query file:
+   - data/01-data-test/retail-eda-test.sql
+
+---
+
+change #22: retail dataset silver/gold medallion (24-Aug-2026)
+
+1. applied the Medallion pipeline to the Brew & Co. retail dataset (complements the MarketHub case in change #18):
+   - datasets/01-beginner/retail_silver.sql  (cleaned layer, DQ flags)
+   - datasets/01-beginner/retail_gold.db     (gold star schema + mart, generated)
+   - datasets/01-beginner/retail_gold.csv    (mart export)
+
+---
+
+change #23: progress-evaluator + scope-data-reconciliation + D2I ecosystem archive (28-Aug-2026)
+
+1. added the progress-evaluator verification capability:
+   - .opencode/agents/progress-evaluator.md  (read-only blocking gate at all 6 checkpoints; PASS / PASS-WITH-NOTES / FAIL; per-stage MANDATORY checks; 3-fix retry budget + fail-closed)
+   - openspec/specs/progress-evaluator/spec.md  (canonical spec)
+   - openspec/changes/archive/2026-08-28-add-progress-evaluator/
+2. added the scope-data-reconciliation change:
+   - openspec/changes/archive/2026-08-28-add-scope-data-reconciliation/  (extends data-to-insight + progress-evaluator specs)
+3. archived the deferred data-to-insight ecosystem change (pending in #19):
+   - openspec/changes/archive/2026-08-28-add-data-to-insight-ecosystem/
+4. completed the Case 02 (MarketHub) pilot — stages 1–6:
+   - learning/02-sql-learning/sql-analyst-lab/02-markethub/work/  (_bronze.sql, _silver.sql, _gold.sql, 01-scope.md, 02-questions.md, 03-queries.sql, 03-results.md, 04-insight.md)
+5. updated documentation:
+   - README.md  (progress-evaluator in What This Is + directory map: agents, docs/04-progress-evaluator/)
+   - changes-log.txt (#23 this entry)
+
+---
+
+change #24: add dataset-generator agent (3-Sep-2026)
+
+1. added new domain agent:
+   - .opencode/agents/dataset-generator.md  (generates synthetic messy datasets for practice/learning; accepts topic + scope params: table count, column count, row count, dirty level low/mid/high; produces SQLite DB + PostgreSQL SQL script + README under data/<NN>-<name>/)
+2. registered the agent in the routing registry:
+   - AGENTS.md  (domain agents table: dataset-generator)
+3. added the canonical capability spec:
+   - openspec/specs/dataset-generator/spec.md  (6 requirements: Input Validation, Dirty Data Generation by Level, Output File Contract, README Documentation, Dataset Naming, Input-Only Execution Gate)
+4. added the agent blueprint:
+   - agent-blueprints/04-dummy-data-generator.txt  (original planning prompt)
+5. archived the change:
+   - openspec/changes/archive/2026-09-03-add-dataset-generator/  (proposal.md, design.md, tasks.md, delta spec)
+6. updated documentation:
+   - README.md (What This Is bullet, directory map: agents)
+   - changes-log.txt (#24 this entry)
+7. verification: agent definition structure valid; AGENTS.md registration present; canonical spec matches agent behavior; no generated datasets yet (output deferred to runtime)
+
+---
 

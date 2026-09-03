@@ -33,7 +33,7 @@ The system SHALL require, before any stage executes, a resolvable case folder co
 
 ### Requirement: Orchestration Contract
 
-The system SHALL execute the pipeline stages in order (0 Context → 1 Scope → 2 Questions → 3 Bronze→Silver → 4 Silver→Gold → 5 Query → 6 Insight), SHALL write each stage's artifact to the case's `work/` folder, and SHALL delegate SQL work to the `sql-builder` subagent and insight synthesis to the `insight-writer` subagent.
+The system SHALL execute the pipeline stages in order (0 Context → 1 Scope → 2 Questions → 3 Bronze→Silver → 4 Silver→Gold → 5 Query → 6 Insight), SHALL write each stage's artifact to the case's `work/` folder, SHALL delegate SQL work to the `sql-builder` subagent and insight synthesis to the `insight-writer` subagent, and SHALL delegate checkpoint verification to the `progress-evaluator` subagent.
 
 #### Scenario: Ordered execution
 
@@ -49,6 +49,13 @@ The system SHALL execute the pipeline stages in order (0 Context → 1 Scope →
 - WHEN that stage executes
 - THEN the SQL work SHALL be delegated to the `sql-builder` subagent
 - AND when stage 6 executes, the insight work SHALL be delegated to the `insight-writer` subagent
+
+#### Scenario: Delegation of checkpoint verification
+
+- GIVEN a checkpoint stage has completed
+- WHEN the orchestrator reaches the checkpoint
+- THEN the verification SHALL be delegated to the `progress-evaluator` subagent
+- AND the orchestrator SHALL route any FAIL defect to the owning agent (orchestrator for stages 1–2, `sql-builder` for stages 3–5, `insight-writer` for stage 6)
 
 #### Scenario: Existing artifacts are not silently overwritten
 
@@ -181,20 +188,29 @@ The system SHALL produce `04-insight.md` containing a running log, the five insi
 
 ### Requirement: Checkpoint Autonomy Contract
 
-The system SHALL pause for human approval at six checkpoints — after Scope, Questions, Silver, Gold mart, Queries+results, and final Insight — and SHALL NOT execute any downstream stage before the current checkpoint is approved.
+The system SHALL pause for human approval at six checkpoints — after Scope, Questions, Silver, Gold mart, Queries+results, and final Insight — SHALL run the `progress-evaluator` gate on the stage's artifact before pausing at each checkpoint, and SHALL NOT execute any downstream stage before the evaluator returns a non-FAIL verdict and the human approves the checkpoint.
 
-#### Scenario: Checkpoint approval required
+#### Scenario: Evaluator gate precedes human approval
 
 - GIVEN a checkpoint stage has completed
 - WHEN the orchestrator is about to proceed
-- THEN the orchestrator SHALL pause for human approval
-- AND SHALL NOT execute the next stage without it
+- THEN the orchestrator SHALL invoke `progress-evaluator` on the stage's artifact
+- AND SHALL pause for human approval only after the evaluator returns a non-FAIL verdict
+- AND SHALL NOT execute the next stage without both the evaluator's non-FAIL verdict and human approval
+
+#### Scenario: Evaluation FAIL blocks the checkpoint
+
+- GIVEN the evaluator returns a FAIL verdict at a checkpoint
+- WHEN the orchestrator processes the verdict
+- THEN the orchestrator SHALL block the checkpoint
+- AND SHALL route the defect to the owning agent for fix-and-re-run
+- AND SHALL NOT execute any downstream stage
 
 #### Scenario: Approval withheld
 
 - GIVEN the human withholds approval at a checkpoint
 - WHEN the rejection is communicated
-- THEN the pipeline SHALL not advance
+- THEN the pipeline SHALL NOT advance
 - AND the current artifact SHALL remain available for revision before re-submission
 
 ### Requirement: QA Gate Contract
@@ -254,7 +270,7 @@ The system SHALL validate each case's outputs against the `expected/` model answ
 
 ### Requirement: Cross-Capability Dependency
 
-The system SHALL reuse the `sql-analyst-lab` case folders and the `sql-skill-push` datasets read-only without modifying either, SHALL reuse the existing `query-inspector` agent as a QA gate without modifying its contract, SHALL NOT register a new learning track or modify the `learning-progress` skill, blueprint, manifest, or spec, and SHALL register the new agents in the project's agent routing registry.
+The system SHALL reuse the `sql-analyst-lab` case folders and the `sql-skill-push` datasets read-only without modifying either, SHALL reuse the existing `query-inspector` agent as a QA gate without modifying its contract, SHALL reuse the new `progress-evaluator` agent as a read-only verification gate without modifying the authoring roles of `sql-builder`, `insight-writer`, or the orchestrator, SHALL NOT register a new learning track or modify the `learning-progress` skill, blueprint, manifest, or spec, and SHALL register the new agents in the project's agent routing registry.
 
 #### Scenario: Case folders and datasets reused read-only
 
@@ -270,12 +286,77 @@ The system SHALL reuse the `sql-analyst-lab` case folders and the `sql-skill-pus
 - THEN the `sql-analyst-lab`, `query-inspector`, and `learning-progress` specs SHALL remain unchanged
 - AND no new row SHALL be added to `learning/00-notes/tracks.md`
 
+#### Scenario: Evaluator is read-only and non-authoring
+
+- GIVEN the `progress-evaluator` gate inspects a stage artifact
+- WHEN the dependency surface is inspected
+- THEN `progress-evaluator` SHALL NOT modify the artifact under inspection or the owning agent's authoring role
+- AND a FAIL verdict SHALL be routed to the owning agent, never fixed by the evaluator itself
+
 #### Scenario: Registry entry required
 
 - GIVEN the new skill and subagents are added
 - WHEN the capability is documented
-- THEN `data-to-insight`, `sql-builder`, and `insight-writer` SHALL be registered in `AGENTS.md`
+- THEN `data-to-insight`, `sql-builder`, `insight-writer`, and `progress-evaluator` SHALL be registered in `AGENTS.md`
 - AND the subagents SHALL be declared as execution agents that do not create OpenSpec change proposals
+
+### Requirement: Evaluation Gate Contract
+
+The system SHALL run the `progress-evaluator` subagent as a read-only verification gate at every checkpoint (after Scope, Questions, Silver, Gold mart, Queries+results, and final Insight), SHALL block the checkpoint on a FAIL verdict, SHALL route the defect to the owning agent for fix-and-re-run, and SHALL re-inspect the corrected artifact until PASS or a retry budget of three fixes per checkpoint is exhausted, failing closed on exhaustion and escalating to the human rather than silently advancing.
+
+#### Scenario: Evaluator gate runs before human approval
+
+- GIVEN a checkpoint stage has completed
+- WHEN the orchestrator reaches the checkpoint
+- THEN the `progress-evaluator` SHALL inspect the stage artifact
+- AND the orchestrator SHALL pause for human approval only after the evaluator returns a non-FAIL verdict
+
+#### Scenario: FAIL blocks downstream execution
+
+- GIVEN the evaluator returns FAIL at a checkpoint
+- WHEN the orchestrator processes the verdict
+- THEN the orchestrator SHALL block the checkpoint
+- AND no downstream stage SHALL execute
+- AND the defect SHALL be routed to the owning agent
+
+#### Scenario: Fail-closed on budget exhaustion
+
+- GIVEN the retry budget of three fixes is exhausted while the verdict is still FAIL
+- WHEN the checkpoint is evaluated
+- THEN the pipeline SHALL halt entirely and escalate to the human
+- AND SHALL NEVER silently advance
+
+### Requirement: Scope Reconciliation Contract
+
+The system SHALL, when the Silver stage profiles the dataset, surface any metric, dimension, or data-quirk present in the data that (a) is NOT captured in `01-scope.md` AND (b) materially affects a sub-question's answer, SHALL route such a finding to the orchestrator for a scope amendment (the orchestrator owns `01-scope.md` and `02-questions.md`) rather than to `sql-builder`, and SHALL amend and re-verify the scope (and questions where needed) BEFORE questions and queries are locked.
+
+#### Scenario: Profiled data reveals a material scope gap
+
+- GIVEN the Silver stage profiles the dataset and finds a metric, dimension, or data-quirk that is not captured in `01-scope.md` and materially affects a sub-question's answer
+- WHEN the finding is surfaced
+- THEN the finding SHALL be routed to the orchestrator for a scope amendment
+- AND SHALL NOT be routed to `sql-builder`
+
+#### Scenario: Scope amended before questions and queries are locked
+
+- GIVEN a scope amendment is required by a profiled-data finding
+- WHEN the amendment is applied
+- THEN `01-scope.md` SHALL be amended and, where a sub-question is affected, `02-questions.md` SHALL be amended
+- AND the amended scope SHALL be re-verified BEFORE questions and queries are locked
+
+#### Scenario: Scope amendment is a documented safety net
+
+- GIVEN a scope amendment arises from data profiling
+- WHEN the amendment is documented
+- THEN the amendment SHALL be recorded as a legitimate, documented outcome
+- AND SHALL NOT be treated as a failure of the "scope before data" rule
+
+#### Scenario: No material scope gap surfaced
+
+- GIVEN the profiled dataset surfaces no metric, dimension, or data-quirk that materially affects a sub-question but is absent from `01-scope.md`
+- WHEN the Silver stage completes
+- THEN no scope amendment SHALL be triggered
+- AND the scope SHALL remain unchanged
 
 ## Boundaries
 

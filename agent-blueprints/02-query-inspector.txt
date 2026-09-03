@@ -13,4 +13,4 @@ Input:
 - mentioned .sql file that lived in @script/01-sql/
 
 Output:
-- query-analysis.md in @docs/03-query-inspector/
+- query-analysis.md in @<case>/verification/ (data-to-insight pipeline) or @docs/03-query-inspector/ (standalone QA)
