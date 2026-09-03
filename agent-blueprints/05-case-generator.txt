@@ -1,0 +1,23 @@
+Business Case Generator
+====================================================================================================================================================================================
+
+@openspec-agent
+Plan me an opencode agent called case-generator.
+
+Requirement:
+- case-generator are an ai agent that generate a real business case. highlighting the main business question. 
+- case-generator also must build system analysis document (SAD). contains: C4, flowchart, sequence, and ERD.
+
+Input: 
+- dataset (.db or .xlxs or .csv file) that mentioned by the user (me).
+- README.md that rooted in the same folder as dataset that have been mentioned by the user (me).
+- example input "generate business case using @<dataset-name>" or "generate business case using @<dataset-name> folder". in other words, its mean "analyze the dataset along with the readme file".
+
+Output:
+- one folder rooted in @learning/04-data-to-insight/generated-case\ named '00-<dataset-name>-<case-name>'. in this folder contains:
+- real business case file named '<case-name>.md', and
+- system analysisi document file named '<dataset-name>-sad.md'
+
+folder naming rules:
+- new folder that produced must start from 00-
+- next folder that produced will continuously +1 (00-, 01-, 02-, etc)

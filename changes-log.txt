@@ -419,3 +419,25 @@ change #24: add dataset-generator agent (3-Sep-2026)
 
 ---
 
+change #25: add case-generator agent (3-Sep-2026)
+
+1. added new domain agent:
+   - .opencode/agents/case-generator.md  (analyzes user-provided datasets + READMEs to generate realistic business cases with main questions and System Analysis Documents; produces C4, flowchart, sequence, and ERD diagrams in Mermaid syntax)
+2. registered the agent in the routing registry:
+   - AGENTS.md  (domain agents table: case-generator)
+3. added the canonical capability spec:
+   - openspec/specs/case-generator/spec.md  (6 requirements: Input Validation, Sequential Folder Numbering, Case File Generation, SAD Diagram Generation, Output File Contract, Dataset Analysis)
+4. created the output directory:
+   - learning/04-data-to-insight/generated-case/  (.gitkeep)
+5. archived the change:
+   - openspec/changes/archive/2026-09-03-add-case-generator/  (proposal.md, design.md, tasks.md, delta spec)
+6. fixed YAML frontmatter in agent definitions:
+   - .opencode/agents/case-generator.md  (wrapped description in quotes to avoid colon parsing error)
+   - .opencode/agents/dataset-generator.md  (same fix, pre-existing bug)
+7. updated documentation:
+   - README.md (What This Is bullet, directory map: agents + generated-case/)
+   - changes-log.txt (#25 this entry)
+8. verification: agent definition structure valid; AGENTS.md registration present; canonical spec matches agent behavior; output directory created; YAML frontmatter valid
+
+---
+
