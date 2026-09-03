@@ -1,0 +1,20 @@
+Dummy Data Generator
+====================================================================================================================================================================================
+
+@openspec-agent
+Plan me an opencode agent called dataset-generator.
+
+Requirement:
+- dataset-generator are an ai agent that generate a messy dataset (NULL value, duplicate, wrong data format, typo, etc)
+- dataset-generator also create a README.md file for explain what dataset it is
+- dataset-generator may ask the user before execute the task if the input not fullfil yet (never execute before the input already fullfiled)
+
+Input: 
+- dataset topic (mentioned by the user (me))
+- scope (how many tables, how many columns, how many rows, how dirty the dataset (dirty level: low/mid/high)). also must mentioned by the user (me)
+
+Output:
+- one folder rooted in @data\ named '[00-dataset-name]', in this folder contains:
+- [raw-dataset-name].db, 
+- [raw-dataset-name].sql (for creating the dataset in postgresql), and
+- README.md
