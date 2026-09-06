@@ -54,6 +54,7 @@
 - Book Category analysis on Revenue and Inventory Turnover
 - Store-level performance ranking (top/bottom)
 - MoM and YoY growth rates (allowed per L1)
+- Data quality cleaning (L2) — deferred to Stage 3 (Bronze→Silver); scope assumes cleaned data
 
 ### Out of Scope (Limitation-Driven)
 - **True margin analysis** — no COGS data (L3). Proxy discount spread (`list_price - price`) may appear in queries but will not be framed as "margin."

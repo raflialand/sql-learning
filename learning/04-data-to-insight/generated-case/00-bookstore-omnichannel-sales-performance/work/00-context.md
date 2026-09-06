@@ -109,6 +109,21 @@ employees >── stores
 
 ---
 
-## 7. Stage 0 Complete — Ready for Stage 1 (Scope)
+## 7. Database Setup (PostgreSQL)
+
+**Status**: Fixed and verified (2026-09-06)
+
+The original `bookstore.sql` had dirty data (`'n/a'`, `'NA'`, `'NULL'`, `'999'`, `'-'`, `'undefined'`, `'MISSING'`, `'missing'`, `'null'`, `'--'`, `'0'`, `'TBD'`) in columns typed as `INTEGER`/`NUMERIC`/`TIMESTAMP`/`DATE`/`BOOLEAN`, causing PostgreSQL to reject the INSERT statements.
+
+**Fix applied**: Created `data/02-bookstore/bookstore-postgres.sql` with dirty-data columns changed to `TEXT`. Row counts verified against SQLite `bookstore.db` — all 15 tables match exactly (40,348 total rows).
+
+**PostgreSQL connection**: `psql.exe` available at `C:\Program Files\PostgreSQL\18\bin\`. Load with:
+```powershell
+& "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -d your_database -f "F:\#MY DATA\AI & DATA\.LESSONS\sql-learning\data\02-bookstore\bookstore-postgres.sql"
+```
+
+---
+
+## 8. Stage 0 Complete — Ready for Stage 1 (Scope)
 
 All context has been read and limitations surfaced. Proceed to Stage 1 to define Northstar metrics and dimensions.
