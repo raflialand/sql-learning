@@ -124,6 +124,20 @@ The original `bookstore.sql` had dirty data (`'n/a'`, `'NA'`, `'NULL'`, `'999'`,
 
 ---
 
-## 8. Stage 0 Complete — Ready for Stage 1 (Scope)
+## 8. Pipeline Progress
 
-All context has been read and limitations surfaced. Proceed to Stage 1 to define Northstar metrics and dimensions.
+| Stage | Status | Artifact |
+|-------|--------|----------|
+| 0 — Context | ✅ Complete | `00-context.md` |
+| 1 — Scope | ✅ Complete | `01-scope.md` |
+| 2 — Questions | ✅ Complete (PASS-WITH-NOTES) | `02-questions.md` |
+| 3 — Silver | ✅ Complete (PASS-WITH-NOTES) | `_silver.sql` |
+| 4 — Gold | ⏳ Ready | — |
+| 5 — Queries | ⏸ Pending | — |
+| 6 — Insight | ⏸ Pending | — |
+
+### Database Setup for Silver
+The `_silver.sql` reads from `bronze.*` schema. Before running:
+1. Load `bookstore-postgres.sql` into `bronze` schema (or `public` and adjust)
+2. Or load into `raw` schema (already done) and adjust silver SQL to read from `raw`
+3. Then run `_silver.sql` to create `silver.*` tables
