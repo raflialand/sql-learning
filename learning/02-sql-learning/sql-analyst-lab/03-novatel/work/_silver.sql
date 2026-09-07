@@ -204,17 +204,17 @@ DROP VIEW IF EXISTS silver.dq_summary;
 CREATE VIEW silver.dq_summary AS
 SELECT 'plans'       AS table_name, COUNT(*) AS silver_rows, 6   AS bronze_rows FROM silver.plans
 UNION ALL
-SELECT 'subscribers',  COUNT(*), 4500                          FROM silver.subscribers
+SELECT 'subscribers',	COUNT(*), 4500	FROM silver.subscribers
 UNION ALL
-SELECT 'billing',     COUNT(*), 7996                          FROM silver.billing
+SELECT 'billing',    	COUNT(*), 7996  FROM silver.billing
 UNION ALL
-SELECT 'payments',    COUNT(*), 6588                          FROM silver.payments
+SELECT 'payments',   	COUNT(*), 6588  FROM silver.payments
 UNION ALL
-SELECT 'usage_logs',  COUNT(*), 7418                          FROM silver.usage_logs
+SELECT 'usage_logs',  	COUNT(*), 7418  FROM silver.usage_logs
 UNION ALL
-SELECT 'tickets',     COUNT(*), 3800                          FROM silver.tickets
+SELECT 'tickets',     	COUNT(*), 3800  FROM silver.tickets
 UNION ALL
-SELECT 'churn',       COUNT(*), 427                           FROM silver.churn;
+SELECT 'churn',       	COUNT(*), 427   FROM silver.churn;
 
 
 -- ============================================================================

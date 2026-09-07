@@ -23,7 +23,7 @@ Scope the skill to a case, e.g.:
 
 | Stage | Artifact | Owner |
 |---|---|---|
-| 0 Context | — | orchestrator |
+| 0 Context + Stakeholder Brief | `00-stakeholder-brief.md` | orchestrator |
 | 1 Scope | `01-scope.md` | orchestrator |
 | 2 Questions | `02-questions.md` | orchestrator |
 | 3 Bronze→Silver | `_silver.sql` | `@sql-builder` |
@@ -33,7 +33,7 @@ Scope the skill to a case, e.g.:
 
 ## Checkpoints (human approval gates)
 
-The pipeline pauses for your approval after: Scope, Questions, Silver, Gold mart, Queries+results, and final Insight. No downstream stage runs before you approve the current one.
+The pipeline pauses for your approval after: Stakeholder Brief, Scope, Questions, Silver, Gold mart, Queries+results, and final Insight (7 checkpoints total). No downstream stage runs before you approve the current one.
 
 ## Key rules enforced
 

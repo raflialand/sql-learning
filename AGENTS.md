@@ -35,7 +35,7 @@ When the intent is planning, the main agent SHALL delegate to `@openspec-agent`.
 | `query-inspector`    | Inspects learner-submitted SQL queries for query-logic correctness and business-requirement alignment; writes `query-analysis.md` to `<case>/verification/` (data-to-insight pipeline) or `docs/03-query-inspector/` (standalone QA) |
 | `sql-builder`        | Authors and executes PostgreSQL SQL for the data-to-insight pipeline (stages 3–5: silver cleaning, gold mart, sub-question queries); declares grain + unique key and verifies row uniqueness |
 | `insight-writer`     | Synthesizes the 5-component insight (Trend, Fluctuation, Anomaly, Root cause, Recommendation) + recommendations + self-check (stage 6), graded against the weak-vs-strong rubric |
-| `progress-evaluator` | Read-only verification gate at every data-to-insight checkpoint (stages 1–6); emits PASS / PASS-WITH-NOTES / FAIL verdicts; writes dated reports to `<case>/verification/` |
+| `progress-evaluator` | Read-only verification gate at every data-to-insight checkpoint (stages 0–6); emits PASS / PASS-WITH-NOTES / FAIL verdicts; writes dated reports to `<case>/verification/` |
 | `dataset-generator`  | Generates synthetic messy datasets for practice/learning: accepts a topic + scope parameters, validates inputs, produces SQLite + PostgreSQL SQL script + README under `data/` |
 | `case-generator`     | Generates realistic business cases with SAD (C4, flowchart, sequence, ERD) from user-provided datasets and READMEs: analyzes data structure, creates business case with main question |
 

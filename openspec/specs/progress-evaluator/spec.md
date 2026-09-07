@@ -353,7 +353,7 @@ The progress-evaluator capability SHALL reuse the `data-to-insight` stage artifa
 
 ### In scope
 
-- The read-only verification of `data-to-insight` stage artifacts at checkpoints (stages 1–6).
+- The read-only verification of `data-to-insight` stage artifacts at checkpoints (stages 0–6).
 - The PASS / PASS-WITH-NOTES / FAIL verdict model and the MANDATORY vs ADVISORY check split.
 - The per-stage MANDATORY PASS criteria for Scope, Questions, Silver, Gold mart, Results, and Insight.
 - The block / re-run / fail-closed loop and the per-stage owner routing on FAIL.

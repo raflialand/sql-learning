@@ -21,13 +21,14 @@ Use this template when a new case/dataset should be run through the `data-to-ins
 2. **Scaffold the case** from this template:
    - Copy `case.md.template` → `<case>/case.md` and fill in the main question, dataset pointer, and limitation notes.
    - Ensure `work/` exists.
-3. **Run the pipeline**: invoke the `data-to-insight` skill scoped to the case. It walks the 7 stages and pauses for approval at each of the 6 checkpoints.
+3. **Run the pipeline**: invoke the `data-to-insight` skill scoped to the case. It walks the 7 stages and pauses for approval at each of the 7 checkpoints.
 4. **Validate** against `expected/` (if present) — results, scope, and insight must match the model answers.
 
 ## What the pipeline produces (per case `work/`)
 
 | Stage | Artifact |
 |---|---|
+| 0 Brief | `00-stakeholder-brief.md` |
 | 1 Scope | `01-scope.md` |
 | 2 Questions | `02-questions.md` |
 | 3 Silver | `_silver.sql` |
