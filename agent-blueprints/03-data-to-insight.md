@@ -83,6 +83,7 @@ The orchestrator is invoked against a specific case, e.g. "run data-to-insight o
 
 | Stage | Artifact | Owner |
 |---|---|---|
+| 0 Context + Stakeholder Brief | `00-stakeholder-brief.md` | orchestrator |
 | 1 Scope | `01-scope.md` | orchestrator |
 | 2 Questions | `02-questions.md` | orchestrator |
 | 3 Bronze→Silver | `_silver.sql` (+ any silver DDL) | `sql-builder` |
@@ -93,8 +94,9 @@ The orchestrator is invoked against a specific case, e.g. "run data-to-insight o
 
 ### Checkpoint gates (verification + human approval)
 
-At each of the six checkpoints, the `progress-evaluator` subagent runs as a read-only verification gate BEFORE the human-approval pause. A FAIL verdict blocks the checkpoint and routes the defect to the owning agent for fix-and-re-run; only a non-FAIL verdict (PASS or PASS-WITH-NOTES) lets the human approval proceed. Evaluator reports are written to `<case>/verification/`.
+At each of the seven checkpoints, the `progress-evaluator` subagent runs as a read-only verification gate BEFORE the human-approval pause. A FAIL verdict blocks the checkpoint and routes the defect to the owning agent for fix-and-re-run; only a non-FAIL verdict (PASS or PASS-WITH-NOTES) lets the human approval proceed. Evaluator reports are written to `<case>/verification/`.
 
+0. After Stakeholder Brief (`00-stakeholder-brief.md`)
 1. After Scope (`01-scope.md`)
 2. After Questions (`02-questions.md`)
 3. After Silver (`_silver.sql`)
@@ -106,7 +108,7 @@ At each of the six checkpoints, the `progress-evaluator` subagent runs as a read
 
 | Stages | Owning agent (receives the defect) |
 |---|---|
-| 1–2 (Scope, Questions) | orchestrator |
+| 0–2 (Stakeholder Brief, Scope, Questions) | orchestrator |
 | 3–5 (Silver, Gold mart, Results) | `sql-builder` |
 | 6 (Insight) | `insight-writer` |
 
@@ -114,13 +116,15 @@ The evaluator itself is read-only and never receives a defect — it only re-ins
 
 ---
 
-## 6. Workflow — the 7-stage recipe
+## 6. Workflow — the 7-stage recipe (8 artifacts, 7 checkpoints)
 
-### Stage 0 — Context
+### Stage 0 — Context + Stakeholder Brief
 
 1. Read the dataset README: business context, ERD/join hints, data quirks.
 2. Read `case.md`: the main question + dataset limitation notes.
 3. Surface any limitation (e.g. NovaTel billing spans only 2025-12-01 and 2026-01-01 → MoM only, NO YoY) to the user and carry it as a hard constraint for all downstream stages.
+4. Write `00-stakeholder-brief.md` to the case's `work/` folder — a structured brief with 5 mandatory sections (Business context summary, Stakeholder priorities, Assumptions, Questions I'd ask the stakeholder, Success criteria) + optional case-specific questions + forced "If I were the stakeholder..." perspective flip.
+5. Checkpoint 0: `progress-evaluator` verifies the brief exists and is non-trivial; learner approves before Stage 1 begins.
 
 ### Stage 1 — Scope (`01-scope.md`)
 
@@ -176,5 +180,5 @@ The evaluator itself is read-only and never receives a defect — it only re-ins
 | `.opencode/agents/sql-builder.md` | SQL subagent (stages 3–5) |
 | `.opencode/agents/insight-writer.md` | Insight subagent (stage 6) |
 | `.opencode/agents/query-inspector.md` | Reused QA gate (unchanged) |
-| `.opencode/agents/progress-evaluator.md` | Read-only checkpoint verification gate (stages 1–6) |
+| `.opencode/agents/progress-evaluator.md` | Read-only checkpoint verification gate (stages 0–6) |
 | `learning/04-data-to-insight/data-to-insight.md` | Pedagogy source (4-step framework + Running Log + weak-vs-strong rubric) |

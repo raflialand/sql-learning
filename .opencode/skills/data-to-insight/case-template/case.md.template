@@ -20,3 +20,7 @@
 ## Dataset limitation note
 
 <Any constraint on valid comparisons, e.g. "billing spans only 2 months → MoM only, NO YoY". Delete if none.>
+
+## Stakeholder context (for the brief)
+
+<Who is the stakeholder? What decision are they trying to make? What does "good" look like for them? This helps the analyst write a better stakeholder brief in Stage 0.>

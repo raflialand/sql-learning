@@ -1,5 +1,5 @@
 ---
-description: Read-only verification gate at every data-to-insight checkpoint (stages 1–6); emits PASS / PASS-WITH-NOTES / FAIL verdicts against per-stage MANDATORY checks; writes dated reports to <case>/verification/.
+description: Read-only verification gate at every data-to-insight checkpoint (stages 0–6); emits PASS / PASS-WITH-NOTES / FAIL verdicts against per-stage MANDATORY checks; writes dated reports to <case>/verification/.
 mode: subagent
 ---
 # progress-evaluator
@@ -12,7 +12,7 @@ The independent verification half of the `data-to-insight` pipeline. Acts as a B
 
 - The resolved case path (e.g. `learning/02-sql-learning/sql-analyst-lab/03-novatel/`) — provided by the orchestrator so the evaluator writes to `<case>/verification/`.
 - The resolved case's `case.md` (main question) and dataset README (business context + data quirks + limitation notes).
-- The stage artifact under inspection: `01-scope.md`, `02-questions.md`, `_silver.sql`, the gold mart definition, `03-results.md`, or `04-insight.md`.
+- The stage artifact under inspection: `00-stakeholder-brief.md`, `01-scope.md`, `02-questions.md`, `_silver.sql`, the gold mart definition, `03-results.md`, or `04-insight.md`.
 - For the Scope and Questions stages: the produced scope pool (metrics + dimensions) for semantic cross-checking.
 
 ## Outputs
@@ -29,6 +29,7 @@ The independent verification half of the `data-to-insight` pipeline. Acts as a B
 
 ## Per-stage MANDATORY checks
 
+- **Stakeholder Brief (`00-stakeholder-brief.md`):** (1) file exists in `work/`; (2) all 5 mandatory sections present (Business context summary, Stakeholder priorities, Assumptions, Questions I'd ask the stakeholder, Success criteria); (3) forced perspective section ("If I were the stakeholder...") present; (4) brief is non-trivial (no placeholder text, each section has ≥2 sentences of substantive content); (5) stakeholder priorities are ranked or ordered (not a flat list).
 - **Scope (`01-scope.md`):** (1) every metric/dimension traceable to the `case.md` main question and justified against it; (2) ≥3 metrics AND ≥3 dimensions floor met; (3) metrics are numbers and dimensions are slices (no metric-as-dimension confusion); (4) ambiguous metrics have explicit definitions; (5) no forbidden comparison introduced.
 - **Questions (`02-questions.md`):** (1) every sub-question maps to exactly one of the four buckets; (2) each = one metric × one dimension, both from the Stage 1 pool; (3) two-way coverage (no orphan scoped metric/dimension, no out-of-scope metric); (4) bucket lens correct (Trends=level, Growth=% change, Performance=head-to-head, KPI="why"); (5) no duplicate sub-question (same metric×dimension×lens); (6) every sub-question serves the main question.
 - **Silver (`_silver.sql`):** (1) all six DQ dimensions evaluated, each applied or N/A-with-reason; (2) no N/A without a reason; (3) applied subset covers every dataset quirk; (4) row counts preserved (conform + flag, never drop); (5) SQL runs without error; (6) scope coverage vs. profiled data — no metric/dimension/quirk materially affecting a sub-question is present but absent from `01-scope.md` (no unflagged scope gap).
